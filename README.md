@@ -1,0 +1,1 @@
+# Manual-of-Applied-Spatial-Ecology
