@@ -1,0 +1,76 @@
+Type: Package
+Package: FedData
+Title: Functions to Automate Downloading Geospatial Data Available from
+        Several Federated Data Sources
+Version: 4.0.1
+Date: 2023-11-13
+Authors@R: 
+    c(person(given = c("R.", "Kyle"),
+             family = "Bocinsky",
+             role = c("aut", "cre", "cph"),
+             email = "bocinsky@gmail.com",
+             comment = c(ORCID = "0000-0003-1862-3428")),
+      person(given = "Dylan",
+             family = "Beaudette",
+             role = "ctb"),
+      person(given = "Scott",
+             family = "Chamberlain",
+             role = c("ctb", "rev")),
+      person(given = "Jeffrey",
+             family = "Hollister",
+             role = "ctb"),
+      person(given = "Julia",
+             family = "Gustavsen",
+             role = "rev"))
+Description: Functions to automate downloading geospatial data available
+    from several federated data sources (mainly sources maintained by the
+    US Federal government). Currently, the package enables extraction from
+    nine datasets: The National Elevation Dataset digital elevation
+    models (1 and 1/3 arc-second; USGS); The National Hydrography Dataset
+    (USGS); The Soil Survey Geographic (SSURGO) database from the National
+    Cooperative Soil Survey (NCSS), which is led by the Natural Resources
+    Conservation Service (NRCS) under the USDA; the Global Historical
+    Climatology Network (GHCN), coordinated by National Climatic Data
+    Center at NOAA; the Daymet gridded estimates of daily weather
+    parameters for North America, version 4, available from the Oak Ridge
+    National Laboratory's Distributed Active Archive Center (DAAC); the
+    International Tree Ring Data Bank; the National Land Cover
+    Database (NLCD); the Cropland Data Layer from the National Agricultural 
+    Statistics Service; and the PAD-US dataset of protected area boundaries 
+    from the USGS.
+License: MIT + file LICENSE
+URL: https://docs.ropensci.org/FedData/,
+        https://github.com/ropensci/FedData
+BugReports: https://github.com/ropensci/FedData/issues
+SystemRequirements: GDAL (>= 3.0.0)
+Depends: R (>= 3.2.0)
+Imports: curl, httr, dplyr, tibble, tidyr, stringr, igraph, xml2,
+        lifecycle, lubridate, magrittr, progress, purrr, readr, terra
+        (>= 1.0), sf (>= 1.0)
+Encoding: UTF-8
+LazyData: true
+NeedsCompilation: no
+Repository: CRAN
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: covr, ggplot2, testthat, ncdf4, usethis, styler, mapview,
+        knitr, rmarkdown, leaflet, rmapshaper
+RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: FedData
+RemoteUsername: ropensci
+RemoteRef: HEAD
+RemoteSha: 429f2442f0291929f5a657aeebc0d3b939c4f5db
+GithubRepo: FedData
+GithubUsername: ropensci
+GithubRef: HEAD
+GithubSHA1: 429f2442f0291929f5a657aeebc0d3b939c4f5db
+Packaged: 2023-12-12 12:31:41 UTC; davidwalter
+Author: R. Kyle Bocinsky [aut, cre, cph]
+    (<https://orcid.org/0000-0003-1862-3428>),
+  Dylan Beaudette [ctb],
+  Scott Chamberlain [ctb, rev],
+  Jeffrey Hollister [ctb],
+  Julia Gustavsen [rev]
+Maintainer: R. Kyle Bocinsky <bocinsky@gmail.com>
+Built: R 4.3.2; ; 2023-12-12 12:31:45 UTC; unix

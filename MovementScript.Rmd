@@ -1,0 +1,94 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Movement Trajectories
+
+We will start with simply creating trajectories between successive locations. As stated previously, there are 2 types of trajectories but their are also 2 forms of Type II trajectories if we have time recorded. Depending on the duration between locations we can have uniform time lag between successive relocations termed regular trajectories and non-uniform time lag that results in irregular trajectories. We will begin this section with simply creating irregular trajectories from relocation data because, even though we set up a time schedule to collection locations at uniform times, climate, habitat, and satellites do not always permit such schedules of data collection.
+
+1\. Open the script "MovementScript.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(adehabitatLT)
+library(chron)
+library(sf)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs <- st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+```
+
+4\. We are again going to be using more of the mule deer dataset than from the earlier exercises
+
+```{r}
+muleys <-read.csv("data/DCmuleysedited.csv", header=T)
+```
+
+5\. Check for duplicate locations in dataset. The reason for this is very important and will be apparent shortly.
+
+```{r fig.height=4, fig.width=4}
+#Check for duplicate locations in dataset
+summary(duplicated(muleys))
+```
+
+6\. For trajectories of type II (time recorded), the conversion of the date to the format POSIX needs to be done to get proper digits of date into R.
+
+```{r}
+da <- as.POSIXct(strptime(muleys$GPSFixTime,format="%Y.%m.%d %H:%M:%S"))
+muleys$da <- da
+
+timediff <- diff(muleys$da)*60
+muleys <-muleys[-1,]
+muleys$timediff <-as.numeric(abs(timediff)) 
+
+#Remove outlier locations
+coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
+plot(st_geometry(coords),axes=T)
+deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.spdf),axes=T)
+
+#Project deer.spdf to Albers as in previous exercise
+deer.albers <-st_transform(deer.spdf, crs=albers.crs)
+plot(st_geometry(deer.albers),axes=T)
+
+```
+
+6\. Now create an object of class "ltraj" by animal using the ID field and display by each individual (i.e., ltraj[1])
+
+```{r}
+ltraj <- as.ltraj(st_coordinates(deer.albers),deer.albers$da,id=deer.albers$id)
+head(ltraj[1])#Describes the trajectory
+plot(ltraj)#plot all trajectories created
+#Plot each trajectory separately
+plot(ltraj[1])
+plot(ltraj[2])
+plot(ltraj[3])
+plot(ltraj[4])
+plot(ltraj[5])
+plot(ltraj[6])
+```
+
+7\. Create a histogram of time lag (i.e., interval) and distance between successive locations for each deer. This is a nice way to inspect the time lag between locations as you don't want to include a location if too much time has passed since the previous and it also shows why a trajectory is irregular.
+
+```{r eval=FALSE}
+hist(ltraj[1], "dt", freq = TRUE)
+hist(ltraj[1], "dist", freq = TRUE)
+hist(ltraj[2], "dt", freq = TRUE)
+hist(ltraj[2], "dist", freq = TRUE)
+hist(ltraj[3], "dt", freq = TRUE)
+hist(ltraj[3], "dist", freq = TRUE)
+hist(ltraj[4], "dt", freq = TRUE)
+hist(ltraj[4], "dist", freq = TRUE)
+hist(ltraj[5], "dt", freq = TRUE)
+hist(ltraj[5], "dist", freq = TRUE)
+hist(ltraj[6], "dt", freq = TRUE)
+hist(ltraj[6], "dist", freq = TRUE)
+```

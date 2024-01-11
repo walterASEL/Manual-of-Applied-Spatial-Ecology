@@ -1,0 +1,186 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Manipulate Raster Data Layer
+
+1\. Open the script "RasterScript.R"
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+#install.packages(c("adehabitatHR","maptools","raster", "rgdal"))
+library(terra)
+library(sf)
+library(dplyr)
+library(tigris)
+#options(tigris_use_cache = TRUE)
+#tigris_cache_dir("/Users/davidwalter/Library/CloudStorage/OneDrive-ThePennsylvaniaStateUniversity/WalterRprojects/Manual-Applied-Spatial-Ecology/data")
+#'
+#install.packages("remotes")
+# remotes::install_github(repo = "r-lib/devtools",
+#                               dependencies = TRUE,
+#                               upgrade = TRUE)
+# devtools::install_github(repo = "r-lib/devtools",
+#                            dependencies = TRUE,
+#                            upgrade = TRUE)
+#devtools::install_github("ropensci/FedData")
+#remotes::install_github("ropensci/FedData")
+library(FedData)
+sessionInfo() #Search for and confirm FedData_4.0.0 was loaded
+#library(adehabitatHR)
+#library(maptools)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise
+
+```{r warning=FALSE, message=FALSE}
+ll.crs=st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+#CRS of shapefile layers
+#crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 
+#  +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
+#CRS of raster layers
+#crs2 <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 
+#  +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+
+```
+
+4\. We will use the tigris package to downloaded statewide layers for state and county outlines
+
+```{r}
+st <- tigris::states() %>%
+  dplyr::filter(GEOID < "60") %>% 
+  tigris::shift_geometry()
+#GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling.
+plot(st_geometry(st))
+
+st <- st_transform(st, albers.crs)
+SC.outline <- subset(st, st$NAME == "South Carolina")
+
+SCcounties <- counties("South Carolina", cb = TRUE)
+SCcounties <- st_transform(SCcounties, albers.crs)
+```
+
+5\. Now let's add some shapefiles to our raster specific to the military base of interest
+
+```{r warning=FALSE, message=FALSE, hide=TRUE}
+#Load county shapefile
+county<- subset(SCcounties, SCcounties$NAME == "Beaufort")
+
+#Load airport runway shapefile
+run<-st_read("data/RunwayAlbers.shp")
+
+#Load aircraft flight pattern shapefile
+path<-st_read("data/FlightImage.shp")
+
+#Load aircraft flight pattern shapefile
+road <- st_read("data/CountyRoadAlbers.shp")
+```
+
+6.  Using county outline, we can then download National Land Cover data for any year of interest using the FedData package
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+#new.outline <- sf::as_Spatial(county)#need to do this line due to error with dplyr package
+SC.outline <- subset(st, st$NAME == "South Carolina")
+SCnlcd <- get_nlcd(template=SC.outline, year = 2019, label = 'SC',force.redo = T)
+#Write raster if needed
+#writeRaster(SCnlcd, filename = "SCnlcd2019.tif", filetype = "GTiff", datatype = 'INT4U',overwrite=TRUE)
+  
+plot(SCnlcd)
+plot(st_geometry(SCcounties), add=T, lwd=3)
+
+#Import raster saved above just for demonstration
+#SCnlcd <-rast("SCnlcd2019.tif")
+plot(SCnlcd)
+plot(st_geometry(SCcounties), add=T, lwd=3)
+```
+
+\newline
+
+7\. Plot out all the shapefiles overlayed on each other with and without the raster.
+
+```{r}
+plot(st_geometry(county))
+plot(st_geometry(road), add=T)
+plot(st_geometry(run), col="red",add=T)
+plot(st_geometry(path), col="blue",add=T)
+```
+
+\newline
+8. Let's reclassify NLCD layer to get fewer land cover categories to make it easier to work with the raster.
+
+```{r eval=FALSE}
+# reclassify the values into 7 groups all values between 0 and 20 equal 1, etc. while removing water (11)
+m <- c(0, 19, NA, 20, 39, 1, 40, 50, 2, 51, 68, 3, 69,79, 4, 80, 88, 5, 89, 99, 6)
+rclmat <- matrix(m, ncol=3, byrow=TRUE)
+rc <- classify(SCnlcd, rclmat)
+plot(rc)
+
+#Clip the raster within the county polygon for a zoomed in view then plot
+clip <- crop(rc, county)
+plot(clip)
+plot(st_geometry(county),add=T,lwd=2)
+plot(st_geometry(run),add=T,lwd=2, col="red")
+plot(st_geometry(path),add=T,lty="62", col="blue")
+plot(st_geometry(road),add=T,lty="22", col="yellow")
+```
+
+\newline
+9. We can load some vulture locations to extract landcover that each location occurs in that will be considered "used" habitat in resource selection analysis.
+
+```{r}
+#Import bird 49 locations to R
+bv49 <-read.csv("data/Bird49.csv", header=T)#How many bird locations?
+
+utm.crs<-"+proj=utm +zone=17 +ellps=WGS84" #NOTE: If using a mac, we need to remove the N in zone 17 prior to running line below
+#Include geometry
+bvspdf <- st_as_sf(bv49, coords = c("x", "y"), crs = utm.crs)
+
+plot(st_geometry(bvspdf), col="red")
+#NOTE: Locations must be assigned to the UTM coordinate system prior to projection to Albers 
+#so won't overlay on veg layer at this point because veg is in Albers
+bv49Albers <- st_transform(bvspdf, albers.crs)
+#plot(clip)
+plot(st_geometry(bv49Albers), col="blue",add=T)
+```
+
+10\. Determine which of those points lie within a cell that contains data by using the extract function. The extract function will extract covariate information from the raster for xy coordinates at for each location.
+
+```{r eval=FALSE}
+bvspdf.df <- data.frame(st_coordinates(bv49Albers))
+bvspdf2 <- st_as_sf(bvspdf.df, coords= c("X", "Y"), crs = albers.crs)
+bvspdf.sv <- vect(bvspdf2)#Need SpatVector for extract function in terra
+veg.survey<-terra::extract(clip, bvspdf.sv)
+veg.survey<-subset(bv49Albers,!is.na(veg.survey$Class))
+plot(st_geometry(veg.survey), col="black")
+```
+
+11\. We can also create some random points within the extent of the area to be considered as "available" habitat.
+
+```{r eval=FALSE}
+##First we need to create a box across the study site to generate a random sample of locations
+e.box <- as.polygons(clip,extent=TRUE)
+e.box <- st_as_sf(e.box)
+Sample.points <- st_sample(e.box, 1000, type="random")
+
+plot(clip)
+plot(st_geometry(Sample.points),add=T)
+
+#Determine which of those points lie within a cell that contains data by using the extract function again.
+Sample.points.sv <- vect(Sample.points)#Need SpatVector class for extract function in terra
+samp.survey<-terra::extract(clip, Sample.points.sv)
+samp.survey<-subset(samp.survey,!is.na(samp.survey$Class))
+```
+
+12\. New code addition below (Update 1/7/2021) to use mapview package to treat plotting data layers as done with GIS software. This package enables user to zoom in and out and scroll around layer after calling a plot function \newpage
+
+```{r eval=FALSE}
+library(mapview)
+mapview(clip)
+mapview(county) + mapview(bv49Albers, color="yellow")
+mapview(run) + bv49Albers + road
+```

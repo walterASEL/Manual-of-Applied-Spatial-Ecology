@@ -1,0 +1,99 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Mid-Atlantic layers using online sources
+
+1\. Open the script "MidAtlantic.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(sf)
+library(terra)
+library(FedData)
+sessionInfo()#be sure version 3.0 is installed
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise
+
+```{r warning=FALSE, message=FALSE}
+ll.crs=st_crs(4269)
+utm.crs <- st_crs(9001) 
+albers.crs <- st_crs(5070) #CRS of shapefile layers #crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0  #  +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0") #CRS of raster layers #crs2 <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0  #  +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs") 
+```
+
+4\. We will use the tigris package to downloaded statewide layers for state and county outlines
+
+```{r}
+st <- tigris::states() %>%   dplyr::filter(GEOID < "60") %>%    tigris::shift_geometry() #GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling 
+plot(st_geometry(st)) 
+st <- st_transform(st, albers.crs) 
+PA.outline <- subset(st, st$NAME == "Pennsylvania")  
+#PAcounties <- counties("Pennsylvania", cb = TRUE) 
+#PAcounties <- st_transform(PAcounties, albers.crs)
+#plot(st_geometry(PAcounties))
+#We will also get the outline for Maryland to learn to combine rasters
+MD.outline <- subset(st, st$NAME == "Maryland")
+```
+
+5\. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site.
+
+```{r}
+PAnlcd <- get_nlcd(template=PA.outline, label = 'Pennsylvania',force.redo = T)
+MDnlcd <- get_nlcd(template=MD.outline, label = 'Maryland',force.redo = T)
+nlcd <- mosaic(PAnlcd, MDnlcd, fun=min)
+plot(nlcd)
+#writeRaster(nlcd,"mosaic_nlcd.tif",format="GTiff",datatype = 'INT4U',overwrite=T)
+
+#nlcd <- raster("mosaic_nlcd.tif")
+# PAstate <- spTransform(PAstate, CRS=proj4string(PAnlcd))
+# OHstate <- spTransform(OHstate, CRS=proj4string(OHnlcd))
+# plot(PAstate, add=T);plot(OHstate, add=T)
+
+PADEM <- get_ned(template=PA.outline, label = 'PAdem',force.redo = T)
+PADEM.proj <- project(PADEM,PAnlcd,method='near')
+#writeRaster(PADEM.proj,"PA_elev.tif",format="GTiff",datatype = 'INT4U',overwrite=T)
+
+#Or read in raster from above
+#PADEM.proj <- raster("PA_elev.tif")
+plot(PADEM.proj)
+plot(st_geometry(PA.outline), add = TRUE)
+```
+
+```{r eval=FALSE}
+DMA2 <- readOGR(dsn=".",layer="PGC_CWDManagementUnits2020",verbose=FALSE)
+DMA2.proj <- spTransform(DMA2, CRS=proj4string(PAnlcd))
+DMA_DAYMET <- get_daymet(template=DMA2.proj,label = 'PAdaymet',elements = c('prcp','tmin','tmax'),
+                     years = 2010:2011)
+plot(DMA_DAYMET$tmin$X2011.05.23)
+plot(DMA_DAYMET$tmin$X2011.06.23)
+plot(DMA_DAYMET$tmin$X2011.10.23)
+plot(DMA_DAYMET$tmin$X2012.05.23)
+plot(DMA_DAYMET$prcp$X2011.05.23)
+
+GHCN.prcp <- get_ghcn_daily(template=DMA2, label='GHCNprecip', elements=c('prcp'))
+plot(DMA2)
+plot(GHCN.prcp$spatial, pch=1)
+legend('topright', pch=1, legend='GHCN Precipitation Records')
+```
+
+```{r eval=FALSE}
+DMAsoil <- get_ssurgo(template=PAstate, label = 'DMA_SSURGO',force.redo = T) 
+
+
+```
+
+```{r eval=FALSE}
+NHD <- get_nhd(template=PAstate, label='PAnhd')%>%
+  plot_nhd(template = PAstate)
+get_nhd(template=PAstate, label='PAnhd')%>%
+  plot_nhd(template = PAstate)
+plot(DMA2.proj)
+plot(NHD$NHDFlowline, add=T)
+plot(NHD$NHDLine, add=T)
+plot(NHD$NHDArea, col='black', add=T)
+plot(NHD$NHDWaterbody, col='black', add=T)
+```

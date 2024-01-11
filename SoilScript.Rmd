@@ -1,0 +1,108 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Manipulate Polygon Layer
+
+1\. Open the script "SoilScript.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(sf)
+library(terra)
+```
+
+3\. Import shapefile of soils dataset
+
+```{r , message=FALSE, warning=FALSE}
+soils<-st_read("data/Soil_Properties.shp")
+plot(soils)
+names(soils) #get attribute data
+
+#Rename original category headings to something more familiar
+soils$Clay <- soils$SdvOutpu_1
+soils$pH <- soils$SdvOutpu_2
+soils$CEC <- soils$SdvOutpu_3
+```
+
+4.Shapefiles contain several features associated with each polygons that collectively make up the entire layer so let's explore
+
+```{r eval=FALSE}
+soils #a data frame with geometry type "polygon" associated with 10 features
+bbox(soils) #boundary box
+st_crs(soils) #projection information
+soils[1, ] #will bring up data associated with the first polygon
+```
+
+5\. Select portions of the data that fit some set criteria
+
+```{r}
+#Highlights the areas that Percent Clay polygons are over 30%
+plot(st_geometry(soils))
+high.clay <- soils[soils$Clay>30,]
+plot(st_geometry(high.clay), border="red", add=TRUE)
+
+##Highlights the areas that Cation Exchange Capacity is greater than 14
+high.CEC<- soils[soils$CEC>14,]
+plot(st_geometry(high.CEC), border="green", add=TRUE)
+
+##Highlights the areas that soil pH is greater than 8
+high.pH <- soils[soils$pH>8,]
+plot(st_geometry(high.pH), border="yellow", add=TRUE)
+```
+
+6\. Bring in locations of harvested mule deer
+
+```{r}
+#Import mule deer locations from harvested animals tested for CWD
+#Note: Locations have been offset or altered so do not reflect actual locations of samples
+mule <- read.csv("data/MDjitterclip.csv", header=T)
+crs<-"+proj=utm +zone=13 +datum=WGS84 +no_defs +towgs84=0,0,0"
+coords <- st_as_sf(mule, coords = c("x", "y"), crs = st_crs(soils))
+
+plot(st_geometry(coords), col="blue")
+#par(new=TRUE)
+```
+
+7\. Let's generate random points with the extent of the soil layer
+
+```{r}
+#Sampling points in a Spatial Object "type=regular" will give a regular grid
+samples<-st_sample(soils, 1000, type="random")
+
+plot(st_geometry(soils), col="wheat")
+plot(st_geometry(coords), col="blue", add=T)
+plot(st_geometry(samples), col="red", add=T)
+```
+
+8\. Extract and tally Clay soil types for random samples and mule deer locations
+
+```{r}
+#Matches points with polygons:
+soils.idx<- st_intersects(samples,soils)
+soil.samples <- soils[unlist(soils.idx), "Clay", drop = TRUE] # drop geometry
+# locs <- SpatialPoints(coords)
+# locs@proj4string <- soils@proj4string
+soils.locations<- st_intersects(coords, soils)
+soils.locs <- soils[unlist(soils.locations), "Clay", drop = TRUE]
+#Tally clay soil types for random samples
+obs.tbl <- table(soil.samples[soil.samples])
+obs.tbl
+
+#Also tally soil types for each mule deer sampled
+obs.tbl2 <- table(soils.locs[soils.locs])
+obs.tbl2
+```
+
+10\. Converts the counts to proportions
+
+```{r}
+obs <- obs.tbl/sum(obs.tbl)
+obs
+
+obs2 <- obs.tbl2/sum(obs.tbl2)
+obs2
+```
