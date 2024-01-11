@@ -1,0 +1,130 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Creating Buffers
+
+For this exercise, we will again be working with the Colorado mule deer locations and rasters from earlier sections (1.3, 1.7). Creating buffers around locations of animals, plots, or some other variable may be necessary to determine what occurs around the locations. Often times,in resource selection studies, we may want to generate buffers that can be considered used habitat within the buffer as opposed to simply counting only the habitat that the location is found. Lets begin with loading the proper packages and mule deer locations from previous exercise. Because we are dealing with the raster layer projected in Albers, we will need to project our mule deer locations as we did above.
+
+1\. Open the script "BufferScript.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(sf)
+library(terra)
+library(exactextractr)
+library(FedData)
+library(zoo)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs <- st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+```
+
+4\. We will import a dataset then subset by a single deer to make processing time faster
+
+```{r fig.height=4, fig.width=4, warning=FALSE, message=FALSE}
+#Import the location from earlier exercise
+muleys <-read.csv("data/muleysexample.csv", header=T)
+
+#Remove outlier locations
+coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
+plot(st_geometry(coords),axes=T)
+deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.spdf),axes=T)
+
+#Project deer.spdf to Albers as in previous exercise
+deer.albers <-st_transform(deer.spdf, crs=albers.crs)
+plot(st_geometry(deer.albers,axes=T))
+
+#Let us subset data so there are fewer locations to work with
+muley8 <- subset(deer.albers, id=="D8")
+```
+
+5\. For mule deer 8 locations, we will create a bounding box.
+
+```{r fig.height=4, fig.width=4, warning=FALSE, message=FALSE}
+bb <- st_bbox(muley8) %>% st_as_sfc()
+#bb <- cbind(x=c(-108.83966,-108.83966,-108.9834,-108.9834, -108.83966), 
+#  y=c(37.8142, 37.86562,37.86562,37.8142,37.8142))
+plot(st_geometry(bb))
+plot(st_geometry(deer.albers),col="red",add=T)
+```
+
+\newline
+6. But let us create a new bounding box that encompass mule deer 8 locations but also extends beyond the periphery of the outermost locations. Then clip the large vegetation raster again so it is within the newly created bounding box polygon
+
+```{r fig.height=4, fig.width=4,warning=FALSE, message=FALSE}
+# Create vectors of the x and y points using boundary box created around deer locations
+bb1 <- st_bbox(muley8)
+     
+increment = 2000
+minx=(min(bb1$xmin)-(increment))
+maxx=(max(bb1$xmax)+(increment))
+miny=(min(bb1$ymin)-(increment))
+maxy=(max(bb1$ymax)+(increment))
+  # Create vectors of the x and y points using mean size of deer home range of X square kilometers
+x=seq(from=minx,to=maxx,by=increment)
+y=seq(from=miny,to=maxy,by=increment)
+# Create a grid of all pairs of coordinates (as a data.frame) 
+xy=expand.grid(x=x,y=y)
+grid.pts<-st_as_sf(xy, coords = c("x","y"),crs = albers.crs)
+plot(st_geometry(grid.pts))
+
+grid_spacing <- 500
+grid <- st_make_grid(grid.pts, square=T,cellsize = grid_spacing) %>%
+   cbind(data.frame(ID = sprintf(paste("GID%0",nchar(length(.)),"d",sep=""), 1:length(.)))) %>%
+   st_sf()
+
+plot(st_geometry(grid))
+plot(st_geometry(muley8),add=T, col="blue")
+```
+
+7\. Now we can load use FedData package with new bounding box to get Land Cover categories for use later.
+
+```{r}
+nlcd <- get_nlcd(template=grid, year = 2019, label = 'nlcd',force.redo = T)
+plot(nlcd)
+```
+
+8\. To conduct some analyses, let us create 100 m buffered circles around all the locations and extract Land Cover that occurs in each buffered circle. Most efforts will want percent habitat or area of each habitat defined individually for each location (i.e., within each buffered circle).
+
+```{r hide=TRUE, fig.height=4, fig.width=4,warning=FALSE, message=FALSE}
+settbuff=st_buffer(muley8,500) %>% st_as_sfc()
+plot(nlcd)
+plot(st_geometry(settbuff), add=T, lty=2)
+
+ext <- exact_extract(nlcd, st_as_sf(settbuff))
+head(ext[[1]])#Here we can see the percent of each category in buffer IDs 1-6 for category 52
+
+et=lapply(ext,table)
+
+prop <- list()
+for(i in 1:length(ext)[1] ){
+  prop[[i]] <- round((margin.table(et[[i]],1)/margin.table(et[[i]])),digits = 6)
+}
+prop
+
+M <- coredata(do.call(cbind, lapply(prop, zoo)))
+colnames(M) <- NULL
+#Transpose matrix so land cover become separate columns of data
+matrix <- t(M)
+#Now convert the matrix to a data frame so it is easier to manipulate
+dfland <- as.data.frame(matrix)
+
+#Assing column names to land cover
+colnames(dfland) <- c("21","22","41","42","52","71","82")
+head(dfland)
+#Cell size of raster layer
+res(nlcd)
+# 30^2
+# 900*37
+# (900*37)/1000000
+```

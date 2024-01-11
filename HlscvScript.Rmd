@@ -1,0 +1,61 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Kernel Density Estimation (KDE) with least squares cross validation (lscv)
+
+Both the least squares cross-validation (hlscv) and bias crossed validation (hbcv) have been suggested instead of href in attempts to prevent over-smoothing of KDE (Rodgers and Kie 2010). However, (hlscv) and (hbcv) have been minimally evaluated on GPS datasets because previous literature only evaluated datasets collected on VHF sampling protocols or simulated data that included at most 1,000 locations. Least-squares cross validation, suggested as the most reliable bandwidth for KDE was considered better than plug-in bandwidth selection (hplug-in; for description see section 3.3) at identifying distributions with tight clumps but risk of failure increases with hlscv when a distribution has a "very tight cluster of points" (Gitzen et al. 2006, Pellerin et al. 2008, Walter et al. 2011).
+
+1\. Open the script "HlscvScript.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(adehabitatHR)
+library(sf)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs <- st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+```
+
+4\. Now we can run fixed kernel home range with hlscv
+
+```{r warning=FALSE, message=FALSE}
+panther <-read.csv("data/pantherjitter.csv", header=T)
+loc <- data.frame("x"=panther$X,"y"=panther$Y)
+pantherspdf <- SpatialPointsDataFrame(loc,panther)
+plot(pantherspdf, col=pantherspdf$CatID)
+proj4string(pantherspdf) <- "+proj=utm +zone=17 +ellps=WGS84"
+
+
+```
+
+5.  Note that regardless of change hlim or extent, LSCV will not converge for these animals and defaults to href smoothing.
+
+```{r eval=FALSE}
+## Example of estimation using LSCV
+udbis2 <- kernelUD(pantherspdf[,1], h = "LSCV", hlim = c(10,50),extent=1)
+image(udbis2)
+```
+
+6\. So we can try a trick here. I believe LSCV is a poor estimator with GPS locations being too numerous and very close together compared to traditional VHF datasets which LSCV were originally evaluated. So we will jitter locations 50 meters from their original location and try again.
+
+```{r warning=FALSE, message=FALSE}
+panther$jitterX <- jitter(panther$X, factor=500)
+panther$jitterY <- jitter(panther$Y, factor=500)
+locjitter <- data.frame("x"=panther$jitterX,"y"=panther$jitterY)
+jitterspdf <- SpatialPointsDataFrame(locjitter,panther)
+proj4string(jitterspdf) <- "+proj=utm +zone=17 +ellps=WGS84"
+plot(jitterspdf, col=pantherspdf$CatID)
+udbis3 <- kernelUD(jitterspdf[,1], h = "LSCV")#, hlim = c(1, 5),extent=1)
+image(udbis3)
+```
+
+7\. Now rerun with jitter factor = 100 instead of 50 and see what happens? Then rerun with jitter factor = 500 instead of 100 and see what happens?

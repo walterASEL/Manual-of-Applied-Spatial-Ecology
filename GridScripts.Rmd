@@ -1,0 +1,157 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Creating a Hexagonal Polygon Grid Over a Study Area
+
+1\. Open the script "GridScripts.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(terra)
+library(sf)
+library(tigris)
+library(FedData)
+library(ggplot2)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs=st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+```
+
+4\. We will use the tigris package to downloaded statewide layers for state and county outlines
+
+```{r warning=FALSE, message=FALSE, hide=TRUE}
+st <- tigris::states() %>%
+  dplyr::filter(GEOID < "60") %>% #GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling.
+  tigris::shift_geometry()
+plot(st_geometry(st))
+
+st <- st_transform(st, utm.crs)
+CO.outline <- subset(st, st$NAME == "Colorado")
+
+COcounties <- counties("Colorado", cb = TRUE)
+COcounties <- st_transform(COcounties, utm.crs)
+plot(st_geometry(COcounties))
+
+#Import the location from earlier exercise
+muleys <-read.csv("data/muleysexample.csv", header=T)
+
+#Remove outlier locations
+coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
+plot(st_geometry(coords),axes=T)
+deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.spdf),axes=T)
+deer.spdf <-st_transform(deer.spdf, crs=utm.crs)
+```
+
+5\. Now lets extract counties within the extent of the mule deer locations
+
+```{r fig.height=4, fig.width=4, warning=FALSE, message=FALSE}
+int <- st_intersection(COcounties,deer.spdf)
+clipped <- COcounties[int,]
+plot(st_geometry(clipped))
+plot(st_geometry(deer.spdf), add=T)
+```
+
+6\. We also can create a hexagonal grid across the study site
+
+```{r fig.height=4, fig.width=4, warning=FALSE, message=FALSE}
+grid_spacing <- 1500
+HexPols <- st_make_grid(clipped, square = F, cellsize = c(grid_spacing, grid_spacing)) %>% # the grid, covering bounding box
+  st_intersection(clipped) 
+  
+plot(st_geometry(clipped))
+plot(st_geometry(HexPols),add=T)
+```
+
+7\. Create this hexagonal grid across our study site by zooming into deer locations
+
+```{r hide=TRUE, fig.height=4, fig.width=4, warning=FALSE, message=FALSE}
+#Import the study site zoomed in shapefile
+study.zoom<-st_read("data/MDzoom.shp")
+study.zoom <- st_transform(study.zoom, crs=utm.crs)
+
+#Create new hexagonal grid
+grid_spacing <- 1500
+HexPols <- st_make_grid(study.zoom, square = F, cellsize = c(grid_spacing, grid_spacing)) %>% # the grid, covering bounding box
+  st_intersection(study.zoom) %>%
+    cbind(data.frame(ID = sprintf(paste("GID%0",nchar(length(.)),"d",sep=""), 1:length(.)))) %>%
+    st_sf()
+plot(st_geometry(study.zoom))
+plot(st_geometry(HexPols),add=T)
+
+#Now add labels to each hexagon for unique ID
+hex.centroids <- sf::st_point_on_surface(HexPols)
+hex_coords <- as.data.frame(sf::st_coordinates(hex.centroids))
+hex_coords$NAME <- HexPols$ID
+ggplot() +
+  geom_sf(data = HexPols) +
+  geom_text(data = hex_coords, aes(X, Y, label = NAME), colour ="black")
+
+```
+
+8\. We can intersect the mule deer locations with the polygon shapefile (i.e., county) they occurred in Hexagon ID if needed
+
+```{r fig.height=4, fig.width=4}
+o = st_intersection(deer.spdf,COcounties)
+
+```
+
+9\. As an alternative to importing a polygon that we created in ArcMap above, we can create a polygon in R using the coordinates of the boundary box of the area of interest. In our case here, the bounding box will be the mule deer locations.
+
+```{r fig.height=4, fig.width=4, warning=FALSE, message=FALSE}
+bb <- st_bbox(deer.spdf) %>% st_as_sfc()
+#bb <- cbind(x=c(-108.83966,-108.83966,-108.9834,-108.9834, -108.83966), 
+#  y=c(37.8142, 37.86562,37.86562,37.8142,37.8142))
+plot(st_geometry(bb))
+plot(st_geometry(deer.spdf),col="red",add=T)
+```
+
+10\. Now make practical use of the new bounding box we created by clipping a larger raster dataset. A smaller raster dataset runs analyses faster, provides a zoomed in view of mule deer locations and vegetation, and is just easier to work with.
+
+```{r message=FALSE, eval=FALSE, fig.height=4, fig.width=4}
+#Load vegetation raster layer textfile clipped in ArcMap 
+veg <-raster("extentnlcd2.txt")
+plot(veg)
+class(veg)
+```
+
+```{r eval=FALSE, warning=FALSE, message=FALSE}
+#Clip using the raster imported with "raster" package
+bbclip <- st_crop(veg, bb)
+veg
+```
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+#WON'T WORK because projections are not the same, WHY?
+#Let's check projections of layers we are working with now.
+st_crs(MDclip)
+st_crs(deer.spdf)
+st_crs(SP)
+st_crs(veg)
+```
+
+11\. We need to have all layers in same projection so project the deer.spdf to Albers and then clip vegetation layer with new polygon we created in the Albers projection.
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+deer.albers <-st_transform(deer.spdf, crs=albers.crs)
+bb.albers <- st_bbox(deer.albers) %>% st_as_sfc()
+#Check to see all our layers are now in Albers projection
+st_crs(veg)
+st_crs(deer.albers)
+st_crs(bb.albers)
+
+#Clip using the raster imported with "raster" package 
+bbclip <- st_crop(veg, AlbersSP)
+plot(bbclip)
+plot(st_geometry(deer.albers), col="red", add=T)
+plot(st_geometry(bb.albers), lwd=5, add=T)
+```

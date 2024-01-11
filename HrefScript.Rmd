@@ -1,0 +1,53 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Home Range Estimation
+
+## Kernel Density Estimation (KDE) with reference bandwidth selection (href)
+
+In KDE, a kernel distribution (i.e. a three-dimensional hill or kernel) is placed on each telemetry location. The height of the hill is determined by the bandwidth of the distribution, and many distributions and methods are available (e.g. fixed versus adaptive, univariate versus bivariate bandwidth). We will focus here on "fixed kernel" but will alter the bandwidth selection. Datasets for avian and mammalian species can include as many as 10,000 locations and only the reference or default bandwidth (href) was able to produce KDE in both Home Range Tools and adehabitat or adehabitatHR (Calenge 2007, 2011). Estimation with (href) typically is not reliable for use on multimodal datasets because it results in over-smoothing of home ranges and multimodal distribution of locations is typical for most species (Worton 1995, Seaman et al. 1999).
+
+1\. Open the script "HrefScript.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(adehabitatHR)
+library(sf)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs <- st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+```
+
+4\. Using the adehabitatHR package requires dataset to be formatted appropriately as a SpatialPointsDataFrame using the sp package
+
+```{r warning=FALSE, message=FALSE}
+#Let's select only one animal
+panther<-read.csv("data/pantherjitter.csv", header=T)
+panther <- subset(panther, panther$CatID == "143")
+panther$CatID <- factor(panther$CatID)
+loc <- data.frame("x"=panther$X,"y"=panther$Y)
+cats <- SpatialPointsDataFrame(loc,panther)
+proj4string(cats) <- "+proj=utm +zone=17 +ellps=WGS84"
+udbis <- kernelUD(cats[,1], h = "href")
+image(udbis)
+
+ver <- getverticeshr(udbis, standardize = FALSE)
+ver50 <- getverticeshr(udbis, percent=50)
+ver80 <- getverticeshr(udbis, percent=80)
+ver90 <- getverticeshr(udbis, percent=90)
+ver95 <- getverticeshr(udbis, percent=95)
+ver99 <- getverticeshr(udbis, percent=99)
+ver
+plot(ver99, col="grey",axes=T);plot(ver95, add=T);plot(ver90, add=T);plot(ver80, add=T)
+plot(ver50, add=T)
+points(cats)
+```

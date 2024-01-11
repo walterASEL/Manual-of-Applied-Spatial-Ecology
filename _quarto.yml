@@ -1,0 +1,85 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Manual-Applied-Spatial-Ecology"
+  reader-mode: true
+
+  page-footer:
+    left: |
+      R for Data Science (2e) was written by Hadley Wickham, Mine
+      Çetinkaya-Rundel, and Garrett Grolemund.
+    right: |
+      This book was built with <a href="https://quarto.org/">Quarto</a>.
+  cover-image: CoverSlide2.jpg
+  favicon: CoverSlide2.jpg
+  repo-branch: main
+  repo-actions: [edit, issue]
+  chapters:
+    - index.Rmd
+    - Preface.qmd
+    - Intro.Rmd
+
+    - part: Data-Manipulation-Management.qmd
+      chapters:
+        - MDprojections.Rmd
+        - TimeLagScript.Rmd
+        - SoilScript.Rmd
+        - RasterScript.Rmd
+        - GridScripts.Rmd
+        - GridSystem2Script.Rmd
+        - BufferScript.Rmd
+        - MidAtlantic.Rmd
+    
+    - part: Climate-Data-Interpretion.qmd
+      chapters:
+        - ReadFilesScript.Rmd
+        - Weather-Station-Code_Snowfall.Rmd
+        - NetCDF_Script.Rmd
+
+    - part: Movement-Methods.qmd
+      chapters:
+        - DMAdeerMovebank.Rmd
+        - MovementScript.Rmd
+        - DistanceUniqueBurst.Rmd
+        - FPTscript.Rmd
+        - RegTrajScript.Rmd
+        - NSDscript.Rmd
+        - TrajDynScript.Rmd
+
+    - part: Home-Range-Estimation.qmd
+      chapters:
+        - HrefScript.Rmd
+        - HlscvScript.Rmd
+        - Panther_All4.Rmd
+        - BBMMscript.Rmd
+        - MKDEcat_script.Rmd
+        - CatdBBMM.Rmd
+
+    - part: Landscape-Metrics.qmd
+      chapters:
+        - Frag_Auto.Rmd
+        - PatchAnalystScript.Rmd
+
+    - part: Resource-Selection.qmd
+      chapters:
+        - MCPscript.Rmd
+        - LinearDistScript.Rmd
+        - MD_DataPrep.Rmd
+        - MuledeerSR.Rmd
+        - LogisticRSF.Rmd
+        - NegBinomial.Rmd
+        
+
+format:
+  html:
+    theme:
+      - cosmo
+      - r4ds.scss
+    code-link: true
+
+    author-meta: "W. David Walter"
+    callout-appearance: simple
+
+editor: visual

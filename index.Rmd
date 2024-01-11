@@ -1,0 +1,29 @@
+---
+title: "Manual of Applied Spatial Ecology"
+author: "W. David Walter"
+date: "`r Sys.Date()`"
+documentclass: book
+execute: 
+  enabled: false
+link-citations: TRUE
+colorlinks: TRUE
+#github-repo: rstudio/bookdown-demo
+#graphics: yes
+cover-image: "CoverSlide2.jpg"
+#header-includes:
+#  - \usepackage{titling}
+#  - \pretitle{\begin{center}
+#    \includegraphics[width=2in,height=2in]{CoverSlide2.jpg}\LARGE\\}
+#  - \posttitle{\end{center}}
+---
+
+\mainmatter
+
+New version of manual after conversion to terra and sf packages"
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```

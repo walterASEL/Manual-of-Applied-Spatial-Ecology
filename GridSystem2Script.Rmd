@@ -1,0 +1,146 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Creating a Square Polygon Grid Over a Study Area
+
+1\. Open the script "GridSystem2Script.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+library(sf)
+library(terra)
+library(adehabitatMA)
+library(FedData)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs <- st_crs(4269)
+utm.crs <- st_crs(9001)
+albers.crs <- st_crs(5070)
+```
+
+4\. We need to have all layers in same projection so import, create, and remove outliers for mule deer locations then project all to the Albers projection as we did previously.
+
+```{r warning=FALSE, message=FALSE}
+#Import the location from earlier exercise
+muleys <-read.csv("data/muleysexample.csv", header=T)
+
+#Remove outlier locations
+coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
+plot(st_geometry(coords),axes=T)
+deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.spdf),axes=T)
+deer.spdf <-st_transform(deer.spdf, crs=utm.crs)
+
+#Project deer.spdf to Albers as in previous exercise
+deer.albers <-st_transform(deer.spdf, crs=albers.crs)
+plot(st_geometry(deer.albers,axes=T))
+```
+
+5\. Create points for x and y from the bounding box of all mule deer locations with 1500 m spacing between each point.
+
+```{r warning=FALSE, message=FALSE}
+bb <- st_bbox(deer.albers) %>% st_as_sfc()
+#bb <- cbind(x=c(-108.83966,-108.83966,-108.9834,-108.9834, -108.83966), 
+#  y=c(37.8142, 37.86562,37.86562,37.8142,37.8142))
+plot(st_geometry(bb))
+plot(st_geometry(deer.albers),col="red",add=T)
+```
+
+6\. Create a grid of all pairs of coordinates (as a data.frame) using the "expand grid" function and then make it a gridded object.
+
+```{r warning=FALSE, message=FALSE}
+grid_spacing <- 500
+GridPols <- st_make_grid(bb, square = T, cellsize = c(grid_spacing, grid_spacing)) %>% # the grid, covering bounding box
+  st_intersection(bb) %>%
+    cbind(data.frame(ID = sprintf(paste("GID%0",nchar(length(.)),"d",sep=""), 1:length(.)))) %>%
+    st_sf()
+plot(st_geometry(bb))
+plot(st_geometry(GridPols),add=T)
+```
+
+7\. Similar to the hexagonal grid, identify the cell ID that contains each mule deer location.
+
+```{r}
+o = st_intersection(deer.albers,GridPols)
+head(o)
+```
+
+8\. If we get some NA errors because our grid does not encompass all mule deer locations then we can expand the grid size extending beyond our locations.
+
+```{r}
+# Create vectors of the x and y points using boundary box created around deer locations
+bb1 <- st_bbox(GridPols)
+     
+increment = 2000
+minx=(min(bb1$xmin)-(increment))
+maxx=(max(bb1$xmax)+(increment))
+miny=(min(bb1$ymin)-(increment))
+maxy=(max(bb1$ymax)+(increment))
+  # Create vectors of the x and y points using mean size of deer home range of X square kilometers
+x=seq(from=minx,to=maxx,by=increment)
+y=seq(from=miny,to=maxy,by=increment)
+# Create a grid of all pairs of coordinates (as a data.frame) 
+xy=expand.grid(x=x,y=y)
+grid.pts<-st_as_sf(xy, coords = c("x","y"),crs = albers.crs)
+plot(st_geometry(grid.pts))
+
+GridPols2 <- st_make_grid(grid.pts, square=T,cellsize = grid_spacing) %>%
+   cbind(data.frame(ID = sprintf(paste("GID%0",nchar(length(.)),"d",sep=""), 1:length(.)))) %>%
+   st_sf()
+
+plot(st_geometry(GridPols2))
+plot(st_geometry(GridPols),add=T, col="red")
+plot(st_geometry(deer.albers),add=T, col="blue")
+```
+
+9.  Then identify the cell ID that contains each mule deer location from the new expanded grid
+
+```{r}
+##BE SURE TO RUN CODE FROM XY CREATION THROUGH NEW2 AGAIN THEN LOOK AT DATA!!
+o2 = st_intersection(deer.albers,GridPols2)
+
+```
+
+10\. Now we can load a vegetation raster layer using the FedData package to summarize vegetation categories within each polygon grid cell.
+
+```{r}
+nlcd <- get_nlcd(template=GridPols2, year = 2019, label = 'nlcd',force.redo = T)
+plot(nlcd)
+```
+
+11\. Clip the raster within the extent of the newly created grid
+
+```{r}
+bbclip <- crop(nlcd, GridPols2)
+plot(bbclip)
+plot(st_geometry(deer.albers),add=T,col="red")
+plot(st_geometry(GridPols2), add=T)
+
+#Cell size of raster layer
+xres(bbclip)
+
+#Create histogram of vegetation categories in bbclip
+hist(bbclip)
+
+#Calculate cell size in square meters
+ii <- st_area(GridPols2)#requires adehabitatMA package
+ii[1]
+```
+
+12. We can extract the vegetation characteristics within each polygon of the grid and then tabulate area of each vegetation category within each polygon by extracting vegetation within each polygon by ID then appending the results back to the extracted table by running it twice but with different names. Summarizing the vegetation characteristics in each cell will be used in future resource selection analysis or disease epidemiology.
+
+```{r}
+table = extract(bbclip,GridPols2)
+str(table[1])
+
+area = extract(bbclip,GridPols2)
+combine=lapply(area,table)
+combine
+```
