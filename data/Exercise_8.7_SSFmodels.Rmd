@@ -1,0 +1,267 @@
+---
+title: "8.7 Step Selection Function"
+author: "Farshid Ahrestani for the Manual of Applied Spatial Ecology"
+date: "3/11/2022"
+output: 
+  pdf_document: default
+  html_document: default
+editor_options: 
+  chunk_output_type: console
+---
+The following code allows you to analyze resource selection of bears collared with GPS in suburban areas of Pennsylvania, USA. The location data of the bears were from GPS collars of American black bear to understand landownership patterns on harvest vulnerability to black bear in 3 urban/suburban settings.
+Covariate data were accessed from raster layers sourced mainly from the publically available U.S. National Land Cover Dataset
+
+1\. Exercise 8.7 - Download and extract zip folder into your preferred location
+
+2\. Set working directory to the extracted folder in R under Session - Set Working Directory...
+
+3\. Now open the script "Exercise_8.7_SSF.Rmd" and run code directly from the script
+
+4\. First we need to load the packages needed for the exercise. This requires the mclogit library, which is best sourced from the link provided below:
+```{r warning=FALSE, message=FALSE}
+# require(devtools)
+# install_version("mclogit", version = "0.3-1", repos = "http://cran.us.r-project.org")
+require(mclogit)
+library(MuMIn)
+library(memisc)
+library(rgdal)
+```
+5\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+```{r}
+albers.crs=CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 
+               +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
+```
+6\. Read the .csv dataset for black bear in the study area
+```{r}
+# Reading in and getting data ready
+all.locations <- read.csv("nrs10.csv", stringsAsFactors=TRUE)
+
+all.locations$bearID <- paste(all.locations$bear,"_",all.locations$season,sep="")
+
+all.locations$Huntable <- as.factor(all.locations$Huntable)
+all.locations$Landcover <- as.factor(all.locations$Landcover)
+all.locations$HousingDensity <- as.factor(all.locations$HousingDensity)
+all.locations$bearID <- as.factor(all.locations$bearID)
+#all.locations$case <- as.factor(all.locations$case)
+all.locations$case <- as.numeric(all.locations$case)
+all.locations$Aspect <- as.numeric(all.locations$Aspect)
+all.locations$BEAR <- substr(all.locations$bear, 1, 5)
+all.locations$BEAR <- as.numeric(all.locations$BEAR)
+
+#Run function to standardize distance covariates
+normalit<-function(m){
+  (m - min(m))/(max(m)-min(m))
+}
+
+# Standardizing env. data
+all.locations$std_elev <- normalit(all.locations$Elevation)
+all.locations$std_slope <- normalit(all.locations$Slope)
+all.locations$std_aspect <- normalit(all.locations$Aspect)
+
+# Eliminating two of the Housing Density categories
+all.locations$HousingDensity[all.locations$HousingDensity == "4"] <- "3"
+all.locations$HousingDensity[all.locations$HousingDensity == "5"] <- "3"
+all.locations$HousingDensity <- droplevels(all.locations$HousingDensity)
+all.locations <- all.locations[order(all.locations$id),]
+
+# Categorizing ASPECT
+backup <- all.locations
+backup$Asp <- cut(backup$Aspect, breaks = c(-Inf,45,135,225,315,Inf), labels = c("N", "E",
+              "S", "W", "NW"), right=T)
+backup$Asp[backup$Asp == "NW"] <- "N"
+backup$Asp <- droplevels(backup$Asp)
+
+all.locations <- backup
+```
+only to match code online
+```{r}
+all.seasons <-all.locations 
+
+# Ensure categorical variables that have numerical values remain factors for the analysis
+all.seasons$HousingDensity <- as.factor(all.seasons$HousingDensity)
+all.seasons$Huntable <- as.factor(all.seasons$Huntable)
+all.seasons$Landcover <- as.factor(all.seasons$Landcover)
+
+
+# Seperating the data into the three seasons of interest
+season1 <- all.seasons[all.seasons$season == 1,] # pre-hunt season
+season2 <- all.seasons[all.seasons$season == 2,] # hunting season
+season3 <- all.seasons[all.seasons$season == 3,] # post-hunt season
+season1$bearID <- droplevels(season1$bearID)
+season2$bearID <- droplevels(season2$bearID)
+season3$bearID <- droplevels(season3$bearID)
+
+# Create empty vectors to store resuults of the eight models
+results1 <- vector("list", 3) 
+results2 <- vector("list", 3) 
+results3 <- vector("list", 3) 
+results4 <- vector("list", 3) 
+results5 <- vector("list", 3) 
+results6 <- vector("list", 3) 
+results7 <- vector("list", 3) 
+results8 <- vector("list", 3) 
+
+#Create a list of the data of the three seasons to then analyze with lapply
+seasons <- list(season1, season2, season3)
+```
+7\. Execute all eight models for all three seasons
+```{r eval=FALSE}
+results1 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ std_elev + Asp
+  + std_slope, random=~1|bearID, start.theta=0.5, data=x))
+results2 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ Huntable + 
+  std_elev + Asp + std_slope, random=~1|bearID, start.theta=0.5, data=x))
+results3 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ HousingDensity 
+  + std_elev + Asp + std_slope, random=~1|bearID, start.theta=0.5, data=x))
+results4 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ Landcover + 
+  std_elev + Asp + std_slope, random=~1|bearID, start.theta=0.5, data=x))
+results5 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ Landcover + 
+  Huntable + HousingDensity, random=~1|bearID, start.theta=0.5, data=x))
+results6 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ Huntable, 
+ random=~1|bearID, start.theta=0.5, data=x))
+results7 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ HousingDensity,
+  random=~1|bearID, start.theta=0.5, data=x))
+results8 <- lapply(seasons, function(x) mclogit(cbind(case,id) ~ Landcover, 
+  random=~1|bearID, start.theta=0.5, data=x))
+results.all <- list(results1, results2, results3, results4, results5, results6, 
+  results7, results8)
+```
+8\. Next use the model.sel function in the MuMIN library to evalute the strengths of all eight models for all three seasons
+```{r eval=FALSE}
+season1.model <- model.sel(list(results1[[1]], results2[[1]], results3[[1]], results4[[1]],
+  results5[[1]], results6[[1]], results7[[1]], results8[[1]]), rank = AIC)
+season2.model <- model.sel(list(results1[[2]], results2[[2]], results3[[2]], results4[[2]],
+  results5[[2]], results6[[2]], results7[[2]], results8[[2]]), rank = AIC)
+season3.model <- model.sel(list(results1[[3]], results2[[3]], results3[[3]], results4[[3]],
+  results5[[3]], results6[[3]], results7[[3]], results8[[3]]), rank = AIC)
+season1.model
+season2.model
+season3.model
+```
+9\. We can then view the results of specific models, parameter estimates, and confidence intervals for the different variables
+```{r eval=FALSE}
+season1.mod1 <- mclogit(cbind(case,id) ~ Landcover + std_elev + Asp + std_slope,
+  random=~1|bearID, start.theta=0.5, data=season1)
+season2.mod1 <- mclogit(cbind(case,id) ~ Landcover + std_elev + Asp + std_slope,
+  random=~1|bearID, start.theta=0.5, data=season2)
+season3.mod5 <- mclogit(cbind(case,id) ~ Landcover + 
+  Huntable + HousingDensity, 
+  random=~1|bearID, start.theta=0.5, data=season3)
+
+summary(season1.mod1)
+summary(season2.mod1)
+summary(season3.mod5)
+```
+10\. Here we can apply model predictions to rasters to create a probability surface. Skip this section of code if not running Exercise_8.7_SSFdatprep.Rmd within same R environment
+```{r}
+  s <- stack(list(LC=LC2, elev=elev2, asp=aspect2, slo=slope2, huntable=hunt, House=HD3))
+  s1<-as.data.frame(s)
+  s2<-rasterToPoints(s)
+  s2<-na.omit(s2)
+  s1<-na.omit(s1)
+  s1$x<-s2[,1]
+  s1$y<-s2[,2]
+  
+  colnames(s1)<-c("Landcover","elev", "aspect", "slope", "Huntable","HousingDensity" ,"x","y")
+  
+  ## scale distance and elevation values
+  s1$std_elev <- normalit(s1$elev)
+  s1$std_slope <- normalit(s1$slope)
+  s1$std_aspect <- normalit(s1$aspect)
+  
+  s1$Landcover<-as.factor(s1$Landcover)
+  s1$Huntable<-as.factor(s1$Huntable)
+  s1$HousingDensity<-as.factor(s1$HousingDensity)
+  s1$HousingDensity[s1$HousingDensity == "4"] <- "3"
+  s1$HousingDensity[s1$HousingDensity == "5"] <- "3"
+  s1$HousingDensity  <- droplevels(s1$HousingDensity)
+  
+  ## Re-level land cover
+  # s1$land_cover<-as.factor(s1$land_cover)
+  # s1$land_cover <- relevel(s1$land_cover, ref = "6")
+  # s1$land_cover[s1$land_cover == "10"] <- "9"
+  # s1$land_cover[s1$land_cover == "7"] <- "6"
+  # s1<-subset(s1, land_cover!= "0")
+  # s1$land_cover[s1$land_cover == "1"] <- "4"
+  # s1$land_cover<-factor(s1$land_cover)
+  # s1$land_cover<-factor(s1$land_cover, levels = c("6", "2", "3", "4", "5", "8","9","11"))
+  
+  season3.mod5 <- mclogit(cbind(case,id) ~ Landcover + Huntable + HousingDensity, 
+                          random=~1|bearID, start.theta=0.5, data=season3)
+  
+  ## Predict
+  pred_n<-predict(season3.mod5, newdata=s1)
+  #pred_h<-predict(sesaon3.mod1, newdata=s1)
+  
+  pred_n<-as.data.frame(pred_n)
+  pred_n$x<-s1$x
+  pred_n$y<-s1$y
+  colnames(pred_n)<-c("est", "x", "y")
+  pred_n$est_exp<-exp(pred_n$est)
+  
+  # pred_h<-as.data.frame(pred_h)
+  # pred_h$x<-s1$x
+  # pred_h$y<-s1$y
+  # colnames(pred_h)<-c("est", "x", "y")
+  # pred_h$est_exp<-exp(pred_h$est)
+  # 
+  F.prediction.classes <- function(raw.prediction, n.classes){
+    # raw.prediction = vector of raw (or scaled) RSF predictions
+    # n.classes = number of prediction classes.
+    pred.quantiles = quantile(raw.prediction, probs=seq(1/n.classes, 1-1/n.classes, 
+                                                        by=1/n.classes))
+    ans = rep(n.classes, length(raw.prediction))
+    for(i in (n.classes-1):1){
+      ans[raw.prediction < pred.quantiles[i]] = i
+    }
+    return(ans)
+  }
+  str(pred_n)
+  pred_n$prediction.class2 = F.prediction.classes(pred_n$est_exp, 5)
+  #attr should be column number for 'predictions'
+  table(pred_n$prediction.class)
+  
+  ##############################################
+  # create map of RSF prediction classes in R
+  m = SpatialPixelsDataFrame(points = pred_n[c("x", "y")], data=pred_n)
+  names(m)
+  par(mar=c(0,0,0,0))
+  image(m, attr=5, col=c("darkblue", "dodgerblue2", "yellow","orange", "red"))
+        #c("grey90", "grey70", "grey50", "grey30", "grey10")
+  par(lend=1)
+    legend("bottomright", col=rev(c("darkblue", "dodgerblue2", "yellow","orange", "red")), 
+           legend=c("High", "Medium-high", "Medium", "Medium-low", "Low"), title="Prediction Class",
+           pch=15, cex=1.0,bty != "n", bg="white")
+   
+#Or use ggplot package  
+library(ggplot2)
+
+    ggplot(pred_n, aes(x=x,y=y, fill = prediction.class2))+
+    geom_tile()+
+    theme_classic()+
+    scale_fill_gradientn(name="Selection", colours = c("darkblue","cyan", "yellow","orange",
+          "red"), guide="colourbar",labels=c("Low", "Medium-low","Medium","Medium-High","High"))+
+    theme(legend.title = element_text(size=12))
+    #ggtitle("Black bear SSF - Period 3")
+  
+  p1_n_pred<-rasterFromXYZ(pred_n[,c(2,3,5)])
+  
+  #writeRaster(p1_n_pred, "n_pred.tif", sep="", overwrite=T)
+  # writeRaster(p1_hr_pred, "hr_pred.tif", sep="", overwrite=T)
+  
+#}
+
+  # camhr <- readOGR(dsn = ".", "CambriaSite_1")
+  # plot(camhr,col="blue")
+  # camhr_prj <- spTransform(camhr, CRS=albers.crs)
+  # predsurface <- p1_n_pred
+  # proj4string(predsurface) <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+  # 
+  # #We can also plot the single bear used here
+  # areadf.coords<-data.frame(areadf$new_x, areadf$new_y)
+  # areaspecific.spdf<-SpatialPointsDataFrame(coords=areadf.coords, data=areadf, proj4string=albers.crs)
+  # 
+  # plot(predsurface)
+  # plot(camhr_prj, add=T, lty=3, lwd=3)
+  # points(areaspecific.spdf,pch=16,cex=0.5)
+```
+

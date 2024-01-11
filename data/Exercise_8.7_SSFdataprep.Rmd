@@ -1,0 +1,442 @@
+---
+title: "8.7 Step Selection Function"
+author: "Farshid Ahrestani for the Manual of Applied Spatial Ecology"
+date: "3/11/2021"
+output: 
+  pdf_document: default
+  html_document: default
+editor_options: 
+  chunk_output_type: console
+---
+The following code allows you to analyze resource selection of bears collared with GPS in suburban areas of Pennsylvania, USA. The location data of the bears were from GPS collars of American black bear to understand landownership patterns on harvest vulnerability to black bear in 3 urban/suburban settings.
+Covariate data were accessed from raster layers sourced mainly from the publically available U.S. National Land Cover Dataset
+
+1\. Exercise 8.7 - Download and extract zip folder into your preferred location
+
+2\. Set working directory to the extracted folder in R under Session - Set Working Directory...
+
+3\. Now open the script "Exercise_8.7_SSF.Rmd" and run code directly from the script
+
+4\. First we need to load the packages needed for the exercise. This requires the mclogit library, which is best sourced from the link provided below:
+```{r warning=FALSE, message=FALSE}
+library(rgdal)
+library(adehabitatHR)
+library(adehabitatLT)
+library(raster)
+```
+5\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+```{r}
+# Albers CRS
+albers.crs=CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
+ll.crs <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+```
+6\. We will again use the function to grab USED/AVAILABLE point data
+```{r}
+grab.values = function(layers, x, y){
+  z = NULL
+  for(i in 1:length(x)){
+    dist = sqrt((layers$x - x[i])^2 + (layers$y-y[i])^2) 
+    z = rbind(z, layers[dist == min(dist),][1,])
+  }
+  return(z)
+}
+```
+7\. Now read in locations and subset to the dates during our three seasons, in the single county study site
+```{r warning=FALSE, message=FALSE}
+locs1<-read.table("Alldataupdated4_16_13page1.txt", sep="\t",header=TRUE)
+locs2<-read.table("Alldataupdated4_16_13page2.txt", sep="\t",header=TRUE)
+locs3<-read.table("Alldataupdated4_16_13page3.txt", sep="\t",header=TRUE)
+locs<-rbind(locs1,locs2,locs3)
+
+####################################################################################
+# Subsetting the locations based on bear-related data
+####################################################################################
+### Change vector classes
+locs$Bear <- as.factor(locs$Bear)
+locs$Collar <- as.factor(locs$Collar)
+
+#Remove locs without GPS data (didn't get a fix)
+templocs1=subset(locs, locs$LATITUDE != "NA")
+locs=templocs1
+
+#Remove one loc that wasn't removed for some reason and caused an error when transforming
+templocs2=subset(locs, locs$Sort != "100182")
+locs=templocs2
+
+# Remove bears that were considered transients
+templocs3 <- subset(locs,locs$Bear != 16259 & locs$Bear != 26784 & locs$Bear != 31716)
+locs<-templocs3
+
+locs$UTC_DATE=NULL   # UTC will not be used, LMT is the local time
+locs$UTC_TIME=NULL
+
+####################################################################################
+# Subsetting the locations based on the seasons
+####################################################################################
+# Subset the locations to our three seasons
+locsdate<- as.Date(locs$LMT_DATE, "%m/%d/%Y")
+locs$LMT_DATE<-locsdate
+locstemp1 <- subset(locs, locs$LMT_DATE >= "2010-11-05" & locs$LMT_DATE <= "2010-12-04")
+locstemp2 <- subset(locs, locs$LMT_DATE >= "2011-11-04" & locs$LMT_DATE <= "2011-12-03")
+locstemp3 <- subset(locs, locs$LMT_DATE >= "2012-11-02" & locs$LMT_DATE <= "2012-12-01")
+
+# Add year to the Bear ID
+locstemp1$Bear<-paste(locstemp1$Bear,"10",sep="_")
+locstemp2$Bear<-paste(locstemp2$Bear,"11",sep="_")
+locstemp3$Bear<-paste(locstemp3$Bear,"12",sep="_")
+
+locs<-rbind(locstemp1,locstemp2,locstemp3)
+locs.noNA <- locs[complete.cases(locs),]
+
+# Create spatial points data frame
+coords<-data.frame(locs.noNA$LONGITUDE, locs.noNA$LATITUDE)
+locsll.spdf<-SpatialPointsDataFrame(coords=coords, data=locs.noNA, proj4string= ll.crs)
+locsAlb.spdf=spTransform(locsll.spdf, CRS=albers.crs)
+```
+8\. We also will need to subset the locations for the respective three study areas to use covariate data specific to those study areas
+```{r warning=FALSE, message=FALSE}
+  buffer <- readOGR(dsn=".",layer="Cambriabuff", verbose=FALSE)
+  
+# Subset locations to cambria county
+  camlocs<-crop(locsAlb.spdf,buffer)
+  ####################################################################################
+  # Removing bears that have <50 locations
+  ####################################################################################
+  # Remove Bears will < 50 locs
+  summary(as.factor(camlocs$Bear))
+  camlocs<- subset(camlocs, table(camlocs$Bear)[camlocs$Bear] > 50)
+  camlocs$Bear <- factor(camlocs$Bear)
+  camlocs
+  summary(camlocs$Bear)
+  
+  ####################################################################################
+  # Adding the season variable
+  ####################################################################################
+  #We need a "Season" variable for our 3 study periods.
+  #Prehunt = 1
+  #Hunt = 2
+  #Posthunt = 3
+  
+  #The 2010 pre-hunting season was considered to be Nov 05-14
+  #The 2011 pre-hunting season was considered to be Nov 04-13
+  #The 2012 pre-hunting seeason was considered to be Nov 02-11
+  
+  #The 2010 hunting seeason was considered to be Nov 15-24
+  #The 2011 hunting seeason was considered to be Nov 14-23
+  #The 2012 hunting seeason was considered to be Nov 12-21
+  
+  #The 2010 posthunting seeason was considered to be Nov 25 - Dec 04
+  #The 2011 posthunting seeason was considered to be Nov 24 - Dec 03
+  #The 2012 posthunting seeason was considered to be Nov 22 - Dec 01
+    #First define new variable called "Season" with all records defined as 1 or "prehunt"
+  camlocs@data$Season <- NULL
+  
+  #Now we need to subsample for "prehunt" time periods
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2010-11-05" & camlocs@data$LMT_DATE <= "2010-11-14"] <- 1
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2011-11-04" & camlocs@data$LMT_DATE <= "2011-11-13"] <- 1
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2012-11-02" & camlocs@data$LMT_DATE <= "2012-11-11"] <- 1
+  
+  #Now we need to subsample for "hunt" time periods
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2010-11-15" & camlocs@data$LMT_DATE <= "2010-11-24"] <- 2
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2011-11-14" & camlocs@data$LMT_DATE <= "2011-11-23"] <- 2
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2012-11-12" & camlocs@data$LMT_DATE <= "2012-12-01"] <- 2
+  
+  #Now we need to subsample for "posthunt" time periods
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2010-11-25" & camlocs@data$LMT_DATE <= "2010-12-04"] <- 3
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2011-11-24" & camlocs@data$LMT_DATE <= "2011-12-03"] <- 3
+  camlocs@data$Season[camlocs@data$LMT_DATE >= "2012-11-22" & camlocs@data$LMT_DATE <= "2012-12-01"] <- 3  
+  
+  ####################################################################################
+  # Removing bears that have <50 locations/season/year
+  ####################################################################################
+  #Now we need to remove bears with <50 locations per season per year
+  camlocs@data$Period <- paste(camlocs@data$Bear,camlocs@data$Season,sep="_")
+  camlocs@data$Period <- as.factor(camlocs@data$Period)
+  summary(as.factor(camlocs@data$Period))
+  camlocs<- subset(camlocs, table(camlocs@data$Period)[camlocs@data$Period] > 50)
+  camlocs$Period <- factor(camlocs$Period)
+  camlocs$Bear <- factor(camlocs$Bear)
+  summary(camlocs$Period)
+ 
+ ####################################################################################
+  # Choosing the AVAILABLE points
+ ####################################################################################
+  
+  camlocs$NewDate<-as.POSIXct(paste(camlocs$LMT_DATE, camlocs$LMT_TIME),format="%Y-%m-%d %H:%M:%S")
+  # Creating the ltraj object
+  bearLTR <- as.ltraj(coordinates(camlocs), date=camlocs$NewDate, id = camlocs$Bear) 
+  
+  # Selecting the AVAILABLE steps
+  source("rdSteps.R")#NOTE this needed to be done because hab package is outdated. So I copied the rdSteps function from hab github site
+  
+  bear.steps <- rdSteps(bearLTR, nrs=5)
+  # Installing the bear ID with AVAILABLE steps
+  bear.steps$bears <- row.names(bear.steps)
+  bear.steps$bears <- substr(bear.steps$bears,1,8)
+```
+
+```{r eval=FALSE}
+by(bear.steps, bear.steps$bears, summary)
+```
+
+```{r}
+# Needed to make the new points
+  camlocsdf <- as.data.frame(camlocs@data)
+
+  # Making sure only the AVAILABLE steps are created by adding dx & dy 
+  for (k in 1:nrow(bear.steps)) {
+    sub1 <- camlocsdf[camlocsdf$Bear == bear.steps$bears[k],]
+    sub2 <- sub1[sub1$NewDate == bear.steps$date[k],]
+    bear.steps$Season[k] <- sub2$Season
+    if (bear.steps$case[k] == 1){
+      bear.steps$new_x[k] <- bear.steps$x[k]
+      bear.steps$new_y[k] <- bear.steps$y[k]
+    } else {
+      bear.steps$new_x[k] <- bear.steps$x[k] + bear.steps$dx[k]
+      bear.steps$new_y[k] <- bear.steps$y[k] + bear.steps$dy[k]
+    }
+  }
+  bear.steps <- bear.steps[,c(3, 13:19)]
+  bear.steps$bears <- as.factor(bear.steps$bears)
+  bear.coords<-data.frame(bear.steps$new_x, bear.steps$new_y)
+  bear.spdf<-SpatialPointsDataFrame(coords=bear.coords, data=bear.steps, proj4string=albers.crs)
+```
+USE only for demonstration to show random points for each used location
+
+```{r}
+# step.example <- subset(bear.spdf, bear.spdf$strata == "3" | bear.spdf$strata == "17" | bear.spdf$strata == "37")
+# steptest <- as.data.frame(step.example)
+# steplocs <- data.frame(x=steptest$new_x,y=steptest$new_y)
+# step.spdf<-SpatialPointsDataFrame(coords=steplocs, data=steptest, proj4string=albers.crs)
+# step.avail <- subset(step.spdf, step.spdf$case == 0)
+# step.used <- subset(step.spdf, step.spdf$case == 1)
+# plot(step.spdf,col=as.factor(step.spdf$strata),pch=8,cex=2)
+# plot(step.avail, col=step.avail$strata,pch=17,cex=2)
+# points(step.used,pch=17,cex=1)
+  
+```
+Importing Layers For Step Selection Function
+```{r warning=FALSE, message=FALSE}
+  #######
+  #
+  #   LandCover
+  #
+  #######
+  
+  LC<- raster("Cambria_Landcover.tif")
+  
+  #Classes after reclassification: numbers in () are the classifications in the original raster layer.
+  # 1= (1)Water/Developed((2)open,(3)low,(3)medium,and (4)highintensity)/(5)Barren Land
+  # 2= (6)Forest/(7)Shrubland/(10)Wetlands
+  # 3= (8)Herbaceous/(9)Planted, Cultivated
+  # Reclassify LCprojected raster from above into 10 groups
+  
+  m <- c(-1, 5.5, 1, 5.5,7.5,2, 7.5,9.5,3,9.5,12,2) 
+  rclmat <- matrix(m, ncol=3, byrow=TRUE)
+  rc <- reclassify(LC, rclmat)
+  plot(rc)
+  LC<-rc
+
+  #######
+  #
+  #   Huntability
+  #
+  #######
+  
+  # 1= Huntable
+  # 2= Not Huntable
+  # 3= Unknown but surveyed
+  # 4= Unknown NOT surveyed
+  
+  # Load Shape File
+  huntable <- raster("Cambria_Huntable.tif")
+  hunt.albers<- projectRaster(huntable,LC,method="ngb", NAflag=0)
+  #writeRaster(hunt.albers,"Cambria_Hunting.tif",format="GTiff",overwrite=T)
+  
+  ###########################
+  #
+  #   Housing density
+  #
+  ###########################   
+  
+  #   Density was split into 15 categories of developement in the original dataset.
+  #   We will reclassify to the 5 main categories idenified in the original layer's metadata.
+  
+  #  Housing Density values:
+  # 1= Undeveloped
+  # 2= Rural
+  # 3= Exurban
+  # 4= Suburban
+  # 5= Urban
+  
+  HousDens <- raster("Cambria_HouseDensity.tif") #Already in Albers, no need to transform but need to resample to 30 m resolution
+  HousDens <- projectRaster(HousDens,LC,method='ngb')
+#writeRaster(elevation2,"Cambria_HouseDensity.tif",format="GTiff",overwrite=T)
+
+  mHD <- c(0,1.5,1,1.5,6.5,2,6.5,11.5,3,11.5,12.5,4,12.5,15.5,5)
+  rclmatHD <- matrix(mHD, ncol=3, byrow=TRUE)
+  HousDens <- reclassify(HousDens, rclmatHD)
+  
+  #Fix no data for Housing Density
+  HD2<-HousDens
+  HD2[is.na(HousDens[])] <- 1
+
+  ###########################
+  #
+  #   Elevation
+  #
+  ###########################
+  
+  elevation<-raster("Cambria_elev.tif")
+  
+  #projectRaster function is used so that rasters match exactly
+  elevation <-projectRaster(elevation, LC, method="ngb")
+  # writeRaster(elevation2,"Cambria_elev.tif",format="GTiff",overwrite=T)
+  # elevation <- raster("Cambria_elev.tif")
+  ####################################################################################
+  # Be sure raster projections match
+  ####################################################################################
+  proj4string(hunt.albers)
+  proj4string(HousDens)
+  proj4string(HD2)
+  proj4string(elevation)
+  proj4string(LC)
+  
+ ##############################################################################################
+  #     BEGIN ANALYSES OF RASTER LAYERS 
+ ##############################################################################################
+
+  # Create Slope and Aspect rasters.  contour created only for visualization
+  #image(elevation, col=terrain.colors(10))
+  #contour<-contour(elevation, add=TRUE)
+  slope = terrain(elevation,opt='slope', unit='degrees')
+  aspect = terrain(elevation,opt='aspect', unit='degrees')
+  
+  elevation
+  slope
+  aspect
+  hunt.albers
+  LC
+  HD2
+  ####################################################################################
+  # Fine-tuning the size of the raster layer(s)!!!
+  ####################################################################################
+  #Reduce size of all raster layers later 
+  ee2 <- (extent(bear.spdf) + 14000) 
+  box<-bbox(ee2)
+  bb1 <- cbind(x=c(box[1,1],box[1,1],box[1,2],box[1,2],box[1,1]), y=c(box[2,1],box[2,2],box[2,2],box[2,1],box[2,1]))
+  eepoly <- SpatialPolygons(list(Polygons(list(Polygon(bb1)),"1")), proj4string=albers.crs)
+  
+  elev2 <- crop(elevation, eepoly)
+  slope2 <- crop(slope, eepoly)
+  aspect2 <- crop(aspect, eepoly)
+  hunt <- crop(hunt.albers, eepoly)#;hunt.albers[is.na(hunt.albers[])] <- 4
+  LC2 <- crop(LC, eepoly)
+  HD3 <- crop(HD2, eepoly)
+  
+  # Check the dimensions after cropping on all rasters
+  # (nrow, ncol, ncell) should be the same!!!   
+  elev2
+  slope2
+  aspect2
+  hunt
+  LC2
+  HD3
+  
+  # Plot all the layers 
+  r <- stack(list(LC=LC2, elev=elev2, asp=aspect2, slo=slope2, huntable=hunt, House=HD3))
+  plot(r)
+  saveRDS(r, "r.stack.rds") 
+  r.stack <- readRDS("D:/OneDrive - The Pennsylvania State University/CourseExercises/Chapter8/Exercise_8.7_SSF/r.stack.rds")
+  #Create data frames for each raster in order to create raster stack
+  aspdf <- as.data.frame(as(aspect2,"SpatialGridDataFrame"))
+  slodf <- as.data.frame(as(slope2,"SpatialGridDataFrame"))
+  elvdf <- as.data.frame(as(elev2,"SpatialGridDataFrame"))
+  huntdf<- as.data.frame(as(hunt,"SpatialGridDataFrame")) 
+  LCdf <- as.data.frame(as(LC2,"SpatialGridDataFrame"))
+  HDdf <- as.data.frame(as(HD3,"SpatialGridDataFrame"))
+
+#NOTE: Only use code in loops below to fix number of rows to match the smallest dataset (hunt layer). Code adds xy together then matches all xy deleting those that don't match to get dataframe with the same number of observations for each raster
+ for (z in length(aspdf)){
+    aspdf$xy <- paste(aspdf$s1, aspdf$s2, sep="")
+  }
+  for (z in length(slodf)){
+    slodf$xy <- paste(slodf$s1, slodf$s2, sep="")
+  }
+  for (z in length(elvdf)){
+    elvdf$xy <- paste(elvdf$s1, elvdf$s2, sep="")
+  }
+  for (z in length(huntdf)){
+    huntdf$xy <- paste(huntdf$s1, huntdf$s2, sep="")
+  }
+  for (z in length(LCdf)){
+    LCdf$xy <- paste(LCdf$s1, LCdf$s2, sep="")
+  }
+  for (z in length(HDdf)){
+    HDdf$xy <- paste(HDdf$s1, HDdf$s2, sep="")
+  }
+
+    elvdf <- elvdf[elvdf$xy %in% huntdf$xy,]
+    slodf <- slodf[slodf$xy %in% huntdf$xy,]
+    aspdf <- aspdf[aspdf$xy %in% huntdf$xy,]
+    LCdf <- LCdf[LCdf$xy %in% huntdf$xy,]
+    HDdf <- HDdf[HDdf$xy %in% huntdf$xy,]
+##END code if rasters don't match up
+    
+  # Bind all raster dataframes
+  layers = cbind(slodf, aspdf, elvdf, huntdf, LCdf, HDdf)
+    head(layers)
+  layers = layers[,-c(2:4,6:8,10:12,14:16,18:20)]
+  head(layers)
+  names(layers) = c("Slope","Aspect","Elevation", "Huntable", "Landcover", "HousingDensity", "x", "y", "xy")
+  head(layers)
+  
+  #Need to grab Albers XY not UTM 
+  areadf <- as.data.frame(bear.spdf)
+  areadf <- areadf[,1:8]
+  areadf$case<-factor(areadf$case)
+  areadf$strata<-factor(areadf$strata)
+  areadf$bears<-factor(areadf$bears)
+  areadf$Season<-factor(areadf$Season)
+
+  #########################################################
+  #
+  # NOTE: This section selects a single animal to
+  #       increase processing time for demonstration
+  #       in class. This also provides an opportunity
+  #       to introduce Two-Step Estimation Methods
+  #       currently being recommended in the literature
+  table(areadf$bears)
+  areadf <- subset(areadf, areadf$bears == "33838_11")
+  
+  ##########################################################
+  # grab all values for USED points based on combined layer data set
+  used.points <- areadf[areadf$case ==1,]
+  used = grab.values(layers, used.points$new_x, used.points$new_y)
+  # Make use all the required data are captured
+  used$bear <- used.points$bears
+  used$case <- used.points$case
+  used$season <- used.points$Season
+  used$date <- used.points$date
+  used$area <- "Cambria"
+  used$id <- used.points$pkey
+  used$use <- 1
+
+  # grab all values for AVAILABLE points based on combined layer data set
+  available.points <- areadf[areadf$case ==0,]
+  available = grab.values(layers, available.points$new_x, available.points$new_y)
+  # Make use all the required data are captured
+  available$bear <- available.points$bears
+  available$case <- available.points$case
+  available$season <- available.points$Season
+  available$date <- available.points$date
+  available$area <- "Cambria"
+  available$id <- available.points$pkey
+  available$use <- 0
+  
+  all.locations <- rbind(used, available)
+  saveRDS(all.locations, "all.locations.df.rds")
+#write.csv(all.locations, file="nrs10.csv")
+  all.locations.df <- readRDS("D:/OneDrive - The Pennsylvania State University/CourseExercises/Chapter8/Exercise_8.7_SSF/all.locations.df.rds")
+```
+
