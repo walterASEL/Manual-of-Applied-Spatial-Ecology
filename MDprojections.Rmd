@@ -10,7 +10,7 @@ Transformations in ArcMap can be the most troublesome component of spatial analy
 
 1.  What coordinate system were the data collected in?
 
-It seems that every GPS collar, handheld GPS unit, GIS landcover layer, etc. has been created using a different coordinate system and it's not the one you have at your study site. Or perhaps NAD 1927 was used and you decided to be modern and want to use NAD 1983. Regardless, the coordinate systems must match even though ArcMap often overlays them with "on the fly projections". The "on the fly" component of ArcMap is great for visualization but not for spatial ecologists that need data analysis. We often can determine which coordinate system the data were created in using the metadata to define a coordinate system or project the data into a coordinate system for data analysis.
+It seems that every GPS collar, handheld GPS unit, GIS landcover layer, etc. has been created using a different coordinate system and it's not the one you have at your study site. Or perhaps NAD 1927 was used and you decided to use an updated reference system and want to use NAD 1983. Regardless, the coordinate systems must match even though ArcMap often overlays them with "on the fly projections". The "on the fly" component of ArcMap is great for visualization but not for spatial ecologists that need data analysis. We often can determine which coordinate system the data were created in using the metadata to define a coordinate system or project the data into a coordinate system for data analysis.
 
 2.  A Toolbox in ArcMap may not extract data or clip data properly
 
