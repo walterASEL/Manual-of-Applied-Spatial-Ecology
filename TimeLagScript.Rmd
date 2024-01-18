@@ -63,9 +63,9 @@ temp$timediff <- as.numeric(timediff)
 We may first need to create a SPDF and transform to Lat Long then return to a Data Frame You only need this section of code if you need to acquire Lat Long coordinates for dataset
 
 ```{r}
-ll.crs<-"+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+#ll.crs<-"+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 utm.crs <-"+proj=utm +zone=12 +datum=WGS84"
-dataspdf <- st_as_sf(temp, coords = c("UTMe", "UTMn"), crs = utm.crs)
+dataspdf <- st_as_sf(temp, coords = c("UTMe", "UTMn"), crs=utm.crs)
 
 datall <-st_transform(dataspdf, ll.crs)
 temp <- data.frame(datall)
@@ -99,7 +99,7 @@ suncalc <- function(d,Lat=39.14133,Long=-106.7722){
   ## a standard time meridian, so timing of sunrise and sunset should
   ## be made later.
   ##NOTE: If working with UTC times use timezone = -4*(abs(Long)%%15)*sign(Long)
-  timezone = -6*(abs(Long)%%15)*sign(Long)
+  timezone = -7*(abs(Long)%%15)*sign(Long)
 
   ## The earth's mean distance from the sun (km)
   r = 149598000
