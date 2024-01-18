@@ -55,7 +55,7 @@ muleys <-read.csv("data/muleysexample.csv",header=T)
 ```{r}
 coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
 plot(st_geometry(coords),axes=T)
-deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.3,ymax=39.0)
+deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)
 plot(st_geometry(deer.spdf),axes=T)
 ```
 
