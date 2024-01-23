@@ -63,8 +63,8 @@ mule <- read.csv("data/MDjitterclip.csv", header=T)
 crs<-"+proj=utm +zone=13 +datum=WGS84 +no_defs +towgs84=0,0,0"
 coords <- st_as_sf(mule, coords = c("x", "y"), crs = st_crs(soils))
 
-plot(st_geometry(coords), col="blue")
-#par(new=TRUE)
+plot(st_geometry(soils))
+plot(st_geometry(coords), col="blue",add=T)
 ```
 
 7\. Let's generate random points with the extent of the soil layer
