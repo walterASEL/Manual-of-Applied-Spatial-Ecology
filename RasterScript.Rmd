@@ -142,7 +142,7 @@ bvspdf <- st_as_sf(bv49, coords = c("x", "y"), crs = utm.crs)
 plot(st_geometry(bvspdf), col="red")
 #NOTE: Locations must be assigned to the UTM coordinate system prior to projection to Albers 
 #so won't overlay on veg layer at this point because veg is in Albers
-bv49Albers <- st_transform(bvspdf, albers.crs)
+bv49Albers <- st_transform(bvspdf, crs = st_crs(SCnlcd))
 plot(clip)
 plot(st_geometry(bv49Albers), col="blue",add=T)
 ```
@@ -179,7 +179,8 @@ samp.survey<-subset(samp.survey,!is.na(samp.survey$Class))
 
 ```{r eval=FALSE}
 library(mapview)
-mapview(clip)
+library(stars)
+mapview(st_as_stars(clip)) + mapview(run) + mapview(path)
 mapview(county) + mapview(bv49Albers, color="yellow")
 mapview(run) + bv49Albers + road
 ```
