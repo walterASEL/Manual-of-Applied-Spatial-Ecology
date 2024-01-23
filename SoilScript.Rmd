@@ -19,7 +19,7 @@ library(terra)
 
 ```{r , message=FALSE, warning=FALSE}
 soils<-st_read("data/Soil_Properties.shp")
-plot(soils)
+plot(st_geometry(soils))
 names(soils) #get attribute data
 
 #Rename original category headings to something more familiar
@@ -32,7 +32,7 @@ soils$CEC <- soils$SdvOutpu_3
 
 ```{r eval=FALSE}
 soils #a data frame with geometry type "polygon" associated with 10 features
-bbox(soils) #boundary box
+st_bbox(soils) #boundary box
 st_crs(soils) #projection information
 soils[1, ] #will bring up data associated with the first polygon
 ```
