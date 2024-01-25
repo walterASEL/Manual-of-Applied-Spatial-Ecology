@@ -154,8 +154,7 @@ bvspdf.df <- data.frame(st_coordinates(bv49Albers))
 bvspdf2 <- st_as_sf(bvspdf.df, coords= c("X", "Y"), crs = albers.crs)
 bvspdf.sv <- vect(bvspdf2)#Need SpatVector for extract function in terra
 veg.survey<-terra::extract(clip, bvspdf.sv)
-veg.survey<-subset(bv49Albers,!is.na(veg.survey$Class))
-plot(st_geometry(veg.survey), col="black")
+veg.survey<-subset(veg.survey,!is.na(veg.survey$Class))
 ```
 
 11\. We can also create some random points within the extent of the area to be considered as "available" habitat.
