@@ -134,13 +134,13 @@ ii <- st_area(GridPols2)#requires adehabitatMA package
 ii[1]
 ```
 
-12. We can extract the vegetation characteristics within each polygon of the grid and then tabulate area of each vegetation category within each polygon by extracting vegetation within each polygon by ID then appending the results back to the extracted table by running it twice but with different names. Summarizing the vegetation characteristics in each cell will be used in future resource selection analysis or disease epidemiology.
+12. We can extract the vegetation characteristics within each polygon of the grid and then tabulate area of each vegetation category within each polygon by extracting vegetation within each polygon by ID then summarizing the vegetation characteristics in each cell to be used in future resource selection analysis or disease epidemiology.
 
 ```{r}
-table = extract(bbclip,GridPols2)
-str(table[1])
-
-area = extract(bbclip,GridPols2)
-combine=lapply(area,table)
-combine
+library(exactextractr)
+area = exact_extract(bbclip,GridPols2)
+classes <- sort(unique(bbclip[]))
+combine <- lapply(area, FUN=function(x) { as.data.frame(prop.table(table(factor(x[,1],
+                          levels = classes))))} ) 
+head(combine)
 ```
