@@ -22,6 +22,7 @@ library(PBSmapping)
 library(move)
 library(sf)
 library(terra)
+library(wildlifeDI)#for sf2ltraj function in new BBMM code
 #library(ctmm)
 ```
 
@@ -221,6 +222,127 @@ panther$timelag <-as.numeric(abs(timediff))
 cat143<-subset(panther, panther$CatID == "143")
 cat143 <- cat143[-1,] #Remove first record with wrong timelag
 cat143$CatID <- factor(cat143$CatID)
+
+loc <- st_as_sf(x = cat143, coords = c("X","Y"),crs = utm.crs)
+
+cat143traj <- sf2ltraj(loc, date="DT",id="CatID")
+
+sig_df<-(liker(cat143traj, sig2 = 10, rangesig1 = c(1, 100)))
+
+sig1_value<-sig_df[[1]]$sig1
+
+BBMM = kernelbb(cat143traj, sig1 = sig1_value, sig2 = 10, grid = 100)
+
+image(BBMM)
+
+hr99<-getverticeshr(BBMM, 99, unout = "km2")
+hr99
+hr99_sf<-st_as_sf(hr99)
+
+hr95<-getverticeshr(BBMM, 95, unout="km2")
+hr95
+hr95_sf<-st_as_sf(hr95)
+
+hr90<-getverticeshr(BBMM, 90, unout="km2")
+hr90
+hr90_sf<-st_as_sf(hr90)
+
+hr80<-getverticeshr(BBMM, 80, unout="km2")
+hr80
+hr80_sf<-st_as_sf(hr80)
+
+hr50<-getverticeshr(BBMM, 50, unout="km2")
+hr50
+hr50_sf<-st_as_sf(hr50)
+
+```
+
+9. Plot BBMM
+
+```{r eval=FALSE}
+plot(st_geometry(hr99_sf,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T))
+plot(diss.map.p95, lty=6, add=TRUE)
+plot(diss.map.p90, add=TRUE)
+plot(diss.map.p80, add=TRUE)
+plot(diss.map.p50,col="red", add=TRUE)
+points(loc, pch=1, cex=0.5)
+```
+
+```{r}
+d<-ggplot(hr99_sf)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=hr95_sf, aes(fill="95%"))+ 
+  geom_sf(data=hr90_sf, aes(fill="90%"))+
+  geom_sf(data=hr80_sf, aes(fill="80%"))+
+  geom_sf(data=hr50_sf, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("BBMM")
+d
+
+```
+
+10. We can add 4 estimators to the plot window to compare across estimators
+
+```{r eval=FALSE}
+par(mfrow=c(2,2))
+
+plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(ver95, lty=6, add=TRUE)
+plot(ver90, add=TRUE)
+plot(ver80, add=TRUE)
+plot(ver50, col="red",add=TRUE)
+points(loc, pch=1, cex=0.5)
+
+plot(ver2_99,main="KDE-LSCV Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(ver2_95, lty=6, add=TRUE)
+plot(ver2_90, add=TRUE)
+plot(ver2_80, add=TRUE)
+plot(ver2_50, col="red",add=TRUE)
+points(loc, pch=1, cex=0.5)
+
+plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(hpikde.95vol, lty=6, add=TRUE)
+plot(hpikde.90vol, add=TRUE)
+plot(hpikde.80vol, add=TRUE)
+plot(hpikde.50vol,col="red", add=TRUE)
+points(loc, pch=1, cex=0.5)
+
+ggplot(hr99_sf)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=hr95_sf, aes(fill="95%"))+ 
+  geom_sf(data=hr90_sf, aes(fill="90%"))+
+  geom_sf(data=hr80_sf, aes(fill="80%"))+
+  geom_sf(data=hr50_sf, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("BBMM")
+```
+
+8a turned off
+
+```{r}
+{r eval=FALSE}
+#To run BBMM we first need to use the original dataset to calculate time between locations
+panther$NewTime <- str_pad(panther$TIMEET2,4, pad= "0")
+panther$NewDate <- paste(panther$DateET2,panther$NewTime)
+#Used to sort data in code below for all deer
+panther$DT <- as.POSIXct(strptime(panther$NewDate, format='%Y %m %d %H%M'))
+#Sort Data
+panther <- panther[order(panther$CatID, panther$DT),]
+#TIME DIFF NECESSARY IN BBMM CODE
+timediff <- diff(panther$DT)*60
+# remove first entry without any difference 
+panther <- panther[-1,] 
+panther$timelag <-as.numeric(abs(timediff))
+
+cat143<-subset(panther, panther$CatID == "143")
+cat143 <- cat143[-1,] #Remove first record with wrong timelag
+cat143$CatID <- factor(cat143$CatID)
+
+
 BBMM = brownian.bridge(x=cat143$X, y=cat143$Y, time.lag=cat143$timelag, location.error=34,
 cell.size=100)
 
@@ -340,51 +462,13 @@ diss.map.p99 <- SpatialPolygonsDataFrame(diss.map.p99, data = data99)
 #writeOGR(diss.map.p99, dsn = ".", layer="contour99", driver = "ESRI Shapefile")
 # map.99 <- readOGR(dsn=".", layer="contour99")
 # plot(map.99)
-```
 
-9. Plot BBMM
-
-```{r eval=FALSE}
 plot(diss.map.p99,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
 plot(diss.map.p95, lty=6, add=TRUE)
 plot(diss.map.p90, add=TRUE)
 plot(diss.map.p80, add=TRUE)
 plot(diss.map.p50,col="red", add=TRUE)
 points(loc, pch=1, cex=0.5)
-```
-
-10. We can add 4 estimators to the plot window to compare across estimators
-
-```{r eval=FALSE}
-par(mfrow=c(2,2))
-
-plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver95, lty=6, add=TRUE)
-plot(ver90, add=TRUE)
-plot(ver80, add=TRUE)
-plot(ver50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(ver2_99,main="KDE-LSCV Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver2_95, lty=6, add=TRUE)
-plot(ver2_90, add=TRUE)
-plot(ver2_80, add=TRUE)
-plot(ver2_50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(hpikde.95vol, lty=6, add=TRUE)
-plot(hpikde.90vol, add=TRUE)
-plot(hpikde.80vol, add=TRUE)
-plot(hpikde.50vol,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-# plot(diss.map.p99,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-# plot(diss.map.p95, lty=6, add=TRUE)
-# plot(diss.map.p90, add=TRUE)
-# plot(diss.map.p80, add=TRUE)
-# plot(diss.map.p50,col="red", add=TRUE)
-# points(loc, pch=1, cex=0.5)
 ```
 
 11. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.

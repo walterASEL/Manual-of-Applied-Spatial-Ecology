@@ -33,8 +33,6 @@ loc <- data.frame("x"=panther$X,"y"=panther$Y)
 pantherspdf <- SpatialPointsDataFrame(loc,panther)
 plot(pantherspdf, col=pantherspdf$CatID)
 proj4string(pantherspdf) <- "+proj=utm +zone=17 +ellps=WGS84"
-
-
 ```
 
 5.  Note that regardless of change hlim or extent, LSCV will not converge for these animals and defaults to href smoothing.
@@ -48,8 +46,8 @@ image(udbis2)
 6\. So we can try a trick here. I believe LSCV is a poor estimator with GPS locations being too numerous and very close together compared to traditional VHF datasets which LSCV were originally evaluated. So we will jitter locations 50 meters from their original location and try again.
 
 ```{r warning=FALSE, message=FALSE}
-panther$jitterX <- jitter(panther$X, factor=500)
-panther$jitterY <- jitter(panther$Y, factor=500)
+panther$jitterX <- jitter(panther$X, factor=50)
+panther$jitterY <- jitter(panther$Y, factor=50)
 locjitter <- data.frame("x"=panther$jitterX,"y"=panther$jitterY)
 jitterspdf <- SpatialPointsDataFrame(locjitter,panther)
 proj4string(jitterspdf) <- "+proj=utm +zone=17 +ellps=WGS84"
