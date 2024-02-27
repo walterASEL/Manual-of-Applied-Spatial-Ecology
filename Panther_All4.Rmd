@@ -59,6 +59,24 @@ ver90 <- getverticeshr(udbis, percent=90,unin = "m", unout = "km2", standardize=
 ver95 <- getverticeshr(udbis, percent=95,unin = "m", unout = "km2", standardize=TRUE)
 ver99 <- getverticeshr(udbis, percent=99,unin = "m", unout = "km2", standardize=TRUE)
 
+ver50vol <- st_as_sf(ver50)
+ver80vol <- st_as_sf(ver80)
+ver90vol <- st_as_sf(ver90)
+ver95vol <- st_as_sf(ver95)
+ver99vol <- st_as_sf(ver99)
+
+ggplot(ver99vol)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=ver95vol, aes(fill="95%"))+ 
+  geom_sf(data=ver90vol, aes(fill="90%"))+
+  geom_sf(data=ver80vol, aes(fill="80%"))+
+  geom_sf(data=ver50vol, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-HREF Bandwidth")
+
+
 plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
 plot(ver95, lty=6, add=TRUE)
 plot(ver90, add=TRUE)
@@ -91,6 +109,23 @@ ver2_80 <- getverticeshr(udbis3, percent=80,unin = "m", unout = "km2", standardi
 ver2_90 <- getverticeshr(udbis3, percent=90,unin = "m", unout = "km2", standardize=TRUE)
 ver2_95 <- getverticeshr(udbis3, percent=95,unin = "m", unout = "km2", standardize=TRUE)
 ver2_99 <- getverticeshr(udbis3, percent=99,unin = "m", unout = "km2", standardize=TRUE)
+
+ver2.50vol <- st_as_sf(ver2_50)
+ver2.80vol <- st_as_sf(ver2_80)
+ver2.90vol <- st_as_sf(ver2_90)
+ver2.95vol <- st_as_sf(ver2_95)
+ver2.99vol <- st_as_sf(ver2_99)
+
+ggplot(ver2.99vol)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=ver2.95vol, aes(fill="95%"))+ 
+  geom_sf(data=ver2.90vol, aes(fill="90%"))+
+  geom_sf(data=ver2.80vol, aes(fill="80%"))+
+  geom_sf(data=ver2.50vol, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-LSCV Bandwidth")
 
 plot(ver2_99,main="KDE-LSCV Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
 plot(ver2_95, lty=6, add=TRUE)
@@ -195,6 +230,23 @@ hpikde.90vol <- getverticeshr(hpikde.ud, percent = 90,unin = "m", unout = "km2")
 hpikde.95vol <- getverticeshr(hpikde.ud, percent = 95,unin = "m", unout = "km2")
 hpikde.99vol <- getverticeshr(hpikde.ud, percent = 99,unin = "m", unout = "km2")
 
+hpikde.50vol <- st_as_sf(hpikde.50vol)
+hpikde.80vol <- st_as_sf(hpikde.80vol)
+hpikde.90vol <- st_as_sf(hpikde.90vol)
+hpikde.95vol <- st_as_sf(hpikde.95vol)
+hpikde.99vol <- st_as_sf(hpikde.99vol)
+
+ggplot(hpikde.99vol)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=hpikde.95vol, aes(fill="95%"))+ 
+  geom_sf(data=hpikde.90vol, aes(fill="90%"))+
+  geom_sf(data=hpikde.80vol, aes(fill="80%"))+
+  geom_sf(data=hpikde.50vol, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-Plug-in Bandwidth")
+
 plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
 plot(hpikde.95vol, lty=6, add=TRUE)
 plot(hpikde.90vol, add=TRUE)
@@ -286,6 +338,69 @@ d
 10. We can add 4 estimators to the plot window to compare across estimators
 
 ```{r eval=FALSE}
+g1 <- ggplot(ver99vol)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=ver95vol, aes(fill="95%"))+ 
+  geom_sf(data=ver90vol, aes(fill="90%"))+
+  geom_sf(data=ver80vol, aes(fill="80%"))+
+  geom_sf(data=ver50vol, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-HREF Bandwidth")
+
+g2 <- ggplot(ver2.99vol)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=ver2.95vol, aes(fill="95%"))+ 
+  geom_sf(data=ver2.90vol, aes(fill="90%"))+
+  geom_sf(data=ver2.80vol, aes(fill="80%"))+
+  geom_sf(data=ver2.50vol, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-LSCV Bandwidth")
+
+g3 <- ggplot(hpikde.99vol)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=hpikde.95vol, aes(fill="95%"))+ 
+  geom_sf(data=hpikde.90vol, aes(fill="90%"))+
+  geom_sf(data=hpikde.80vol, aes(fill="80%"))+
+  geom_sf(data=hpikde.50vol, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-Plug-in Bandwidth")
+
+g4 <- ggplot(hr99_sf)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=hr95_sf, aes(fill="95%"))+ 
+  geom_sf(data=hr90_sf, aes(fill="90%"))+
+  geom_sf(data=hr80_sf, aes(fill="80%"))+
+  geom_sf(data=hr50_sf, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("BBMM")
+
+#library(magrittr)
+library(multipanelfigure)
+figure1 <- multi_panel_figure(columns = 2, rows = 2, panel_label_type = "none")
+
+# show the layout
+
+figure1
+
+figure1 %<>%
+  fill_panel(g1, column = 1, row = 1) %<>%
+  fill_panel(g2, column = 2, row = 1) %<>%
+  fill_panel(g3, column = 1, row = 2) %<>%
+  fill_panel(g4, column = 2, row = 2)
+figure1
+```
+
+8a turned off
+
+```{r eval=FALSE}
 par(mfrow=c(2,2))
 
 plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
@@ -308,23 +423,9 @@ plot(hpikde.90vol, add=TRUE)
 plot(hpikde.80vol, add=TRUE)
 plot(hpikde.50vol,col="red", add=TRUE)
 points(loc, pch=1, cex=0.5)
-
-ggplot(hr99_sf)+
-  geom_sf(aes(fill="99%"))+
-  geom_sf(data=hr95_sf, aes(fill="95%"))+ 
-  geom_sf(data=hr90_sf, aes(fill="90%"))+
-  geom_sf(data=hr80_sf, aes(fill="80%"))+
-  geom_sf(data=hr50_sf, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
-  theme_bw()+
-  theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("BBMM")
 ```
 
-8a turned off
-
-```{r}
-{r eval=FALSE}
+```{r eval=FALSE}
 #To run BBMM we first need to use the original dataset to calculate time between locations
 panther$NewTime <- str_pad(panther$TIMEET2,4, pad= "0")
 panther$NewDate <- paste(panther$DateET2,panther$NewTime)
