@@ -382,7 +382,7 @@ g4 <- ggplot(hr99_sf)+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("BBMM")
 
-#library(magrittr)
+library(magrittr)
 library(multipanelfigure)
 figure1 <- multi_panel_figure(columns = 2, rows = 2, panel_label_type = "none")
 
