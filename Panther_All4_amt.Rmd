@@ -1,0 +1,190 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## KDE with plug-in bandwidth selection (hplug-in)
+
+Here we will estimate home range using the previous estimators on the same animal. We will conclude with estimating home range using the hplug-in and Brownian Bridge Movement Models (BBMM) for comparison to kernel density estimators.
+
+1\. Open the script "Panther_All4.Rmd" and run code directly from the script
+
+2\. First we need to load the packages needed for the exercise
+
+```{r warning=FALSE, message=FALSE}
+#library(adehabitatHR)
+#library(ks)
+library(amt)
+library(stringr)
+library(PBSmapping)
+#library(move)
+library(sf)
+library(terra)
+library(wildlifeDI)#for sf2ltraj function in new BBMM code
+#library(ctmm)
+```
+
+3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+
+```{r warning=FALSE, message=FALSE}
+ll.crs <- st_crs(4269)
+utm.crs <- st_crs(26917)
+albers.crs <- st_crs(5070)
+```
+
+4\. We will use an abbreviated dataset to save processing time and the code will also output shapefiles of home ranges
+
+```{r}
+panther<-read.csv("data/pantherjitter.csv",header=T)
+panther$CatID <- as.factor(panther$CatID)
+panther$NewTime <- str_pad(panther$TIMEET2,4, pad= "0")
+panther$NewDate <- paste(panther$DateET2,panther$NewTime)
+#Used to sort data in code below for all deer
+panther$DT <- as.POSIXct(strptime(panther$NewDate, format='%Y %m %d %H%M'))
+#Sort Data
+panther <- panther[order(panther$CatID, panther$DT),]
+#TIME DIFF NECESSARY IN BBMM CODE
+timediff <- diff(panther$DT)*60
+# remove first entry without any difference 
+panther <- panther[-1,] 
+panther$timelag <-as.numeric(abs(timediff))
+
+cat143 <- subset(panther, panther$CatID == "143")
+cat143$CatID <- droplevels(cat143$CatID)
+
+cat143track <- make_track(tbl=cat143, .x=X, .y=Y, .t=DT, id=CatID, crs=26917)
+
+```
+
+5\. We will start by running KDE with href similar to exercise 4.1.
+
+```{r warning=FALSE, message=FALSE}
+## If we want to see what bandwidth the model will be using, we can use the following
+hr_kde_ref(cat143track)
+
+## To estimate the kde, we'll use the hr_kde function and specify that h is the reference bandwidth (h=hr_kde_ref). For this exercise, we are going to calculate 50%, 80%, 90%, 95% and 99% home ranges, so we'll specify those using the levels argument (although you can calculate any level of home range)
+
+cat143.href <- hr_kde(cat143track, h=hr_kde_ref(cat143track), levels=c(0.5,0.80,0.90,0.95,0.99))
+
+image(cat143.href$ud)
+
+## The heatmap above isn't really useful - what we are really interested in are the home range isopleths (i.e. the boundaries of our different home range percentages) and the sizes of those boundaries.
+cat143.href.iso<-hr_isopleths(cat143.href, levels=c(0.5,0.80,0.90,0.95,0.99))
+
+## The previous line of code creates an sf dataframe which included the level, the area estimate, and the geometry (to be used for plotting). The default area measurement is m^2, but we are going to change it to km2 to make it easier to interpret
+library(units)
+cat143.href.iso$area<-set_units(cat143.href.iso$area, km^2)
+
+g1 <- ggplot(cat143.href.iso)+
+  geom_sf(aes(fill=as.factor(level)))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"), labels=c("50%", "80", "90", "95%", "99%"))+ ## This addes a legend title, changes the colors of the isopleths and changes the labels
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-HREF Bandwidth")
+g1
+```
+
+6\. Next we will run KDE with hplug-in similar to exercise 4.3.
+
+```{r  warning=FALSE, message=FALSE}
+## We will use the same elk track that we used before and can see what h values are estimated with the plug-in approach
+hr_kde_pi(cat143track)
+
+## The function to estimate the home range is the same as for href, except we change the h argument to hr_kde_pi().
+cat143.plugin<-hr_kde(cat143track, h=hr_kde_pi(cat143track), levels=c(0.5,0.80,0.90,0.95,0.99))
+image(cat143.plugin$ud)
+
+cat143.plugin.iso<-hr_isopleths(cat143.plugin, levels=c(0.5,0.80,0.90,0.95,0.99))
+
+cat143.plugin.iso$area<-set_units(cat143.plugin.iso$area, km^2)
+
+g2 <- ggplot(cat143.plugin.iso)+
+  geom_sf(aes(fill=as.factor(level)))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"), labels=c("50%", "80", "90", "95%", "99%"))+ ## This addes a legend title, changes the colors of the isopleths and changes the labels
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("KDE-Plug-in Bandwidth")
+g2
+```
+
+7\. We will finish by running BBMM. Because BBMM package is no longer maintained on CRAN, we will use the function provided by adehabitatHR package with plotting adapted to sf and ggplot2 packages
+
+```{r eval=FALSE}
+loc <- st_as_sf(x = cat143, coords = c("X","Y"),crs = utm.crs)
+
+cat143traj <- sf2ltraj(loc, date="DT",id="CatID")
+
+sig_df<-(liker(cat143traj, sig2 = 10, rangesig1 = c(1, 100)))
+
+sig1_value<-sig_df[[1]]$sig1
+
+BBMM = kernelbb(cat143traj, sig1 = sig1_value, sig2 = 10, grid = 100)
+
+image(BBMM)
+
+hr99<-getverticeshr(BBMM, 99, unout = "km2")
+hr99
+hr99_sf<-st_as_sf(hr99)
+
+hr95<-getverticeshr(BBMM, 95, unout="km2")
+hr95
+hr95_sf<-st_as_sf(hr95)
+
+hr90<-getverticeshr(BBMM, 90, unout="km2")
+hr90
+hr90_sf<-st_as_sf(hr90)
+
+hr80<-getverticeshr(BBMM, 80, unout="km2")
+hr80
+hr80_sf<-st_as_sf(hr80)
+
+hr50<-getverticeshr(BBMM, 50, unout="km2")
+hr50
+hr50_sf<-st_as_sf(hr50)
+
+g3 <- ggplot(hr99_sf)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=hr95_sf, aes(fill="95%"))+ 
+  geom_sf(data=hr90_sf, aes(fill="90%"))+
+  geom_sf(data=hr80_sf, aes(fill="80%"))+
+  geom_sf(data=hr50_sf, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("BBMM")
+g3
+```
+
+8. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.
+
+```{r eval=FALSE}
+cat143.akde <- hr_akde(cat143track, model=fit_ctmm(cat143track, "auto"), levels=c(0.5,0.80,0.90,0.95,0.99))
+
+cat143.akde.iso<-hr_isopleths(cat143.akde, levels=c(0.5,0.80,0.90,0.95,0.99))
+
+plot(cat143.akde.iso$ud)
+
+cat143_akde_iso$area<-set_units(cat143_akde_iso$area, km^2)
+
+g4 <- ggplot(cat143_akde_iso)+
+  geom_sf(aes(fill=as.factor(level)))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"), labels=c("50%", "80", "90", "95%", "99%"))+ ## This addes a legend title, changes the colors of the isopleths and changes the labels
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("AKDE-Plug-in Bandwidth")
+g4
+```
+
+11. We can then plot akde along with other estimators to compare
+
+```{r eval=FALSE}
+g1+g3+g4+g5+plot_layout(ncol=2)
+```
+
+9. We can add 4 estimators to the plot window to compare across estimators using the patchwork package
+
+```{r}
+library(patchwork)
+g1+g2+g3+g4+plot_layout(ncol=2)
+```
