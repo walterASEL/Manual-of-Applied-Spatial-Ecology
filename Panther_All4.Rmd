@@ -59,6 +59,14 @@ ver90 <- getverticeshr(udbis, percent=90,unin = "m", unout = "km2", standardize=
 ver95 <- getverticeshr(udbis, percent=95,unin = "m", unout = "km2", standardize=TRUE)
 ver99 <- getverticeshr(udbis, percent=99,unin = "m", unout = "km2", standardize=TRUE)
 
+plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(ver95, lty=6, add=TRUE)
+plot(ver90, add=TRUE)
+plot(ver80, add=TRUE)
+plot(ver50, col="red",add=TRUE)
+points(loc, pch=1, cex=0.5)
+
+#Code to plot sf form in ggplot which is necessary to compare all 4 estimators due to removal of BBMM package from CRAN.
 ver50vol <- st_as_sf(ver50)
 ver80vol <- st_as_sf(ver80)
 ver90vol <- st_as_sf(ver90)
@@ -77,12 +85,6 @@ ggplot(ver99vol)+
   ggtitle("KDE-HREF Bandwidth")
 
 
-plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver95, lty=6, add=TRUE)
-plot(ver90, add=TRUE)
-plot(ver80, add=TRUE)
-plot(ver50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
 ```
 
 6\. Next we will run KDE with hlscv similar to exercise 4.2.
@@ -110,6 +112,14 @@ ver2_90 <- getverticeshr(udbis3, percent=90,unin = "m", unout = "km2", standardi
 ver2_95 <- getverticeshr(udbis3, percent=95,unin = "m", unout = "km2", standardize=TRUE)
 ver2_99 <- getverticeshr(udbis3, percent=99,unin = "m", unout = "km2", standardize=TRUE)
 
+plot(ver2_99,main="KDE-LSCV Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(ver2_95, lty=6, add=TRUE)
+plot(ver2_90, add=TRUE)
+plot(ver2_80, add=TRUE)
+plot(ver2_50, col="red",add=TRUE)
+points(loc, pch=1, cex=0.5)
+
+
 ver2.50vol <- st_as_sf(ver2_50)
 ver2.80vol <- st_as_sf(ver2_80)
 ver2.90vol <- st_as_sf(ver2_90)
@@ -126,13 +136,6 @@ ggplot(ver2.99vol)+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-LSCV Bandwidth")
-
-plot(ver2_99,main="KDE-LSCV Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver2_95, lty=6, add=TRUE)
-plot(ver2_90, add=TRUE)
-plot(ver2_80, add=TRUE)
-plot(ver2_50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
 ```
 
 7\. Then we will run KDE with hplug-in similar to exercise 4.3.
@@ -230,6 +233,13 @@ hpikde.90vol <- getverticeshr(hpikde.ud, percent = 90,unin = "m", unout = "km2")
 hpikde.95vol <- getverticeshr(hpikde.ud, percent = 95,unin = "m", unout = "km2")
 hpikde.99vol <- getverticeshr(hpikde.ud, percent = 99,unin = "m", unout = "km2")
 
+plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(hpikde.95vol, lty=6, add=TRUE)
+plot(hpikde.90vol, add=TRUE)
+plot(hpikde.80vol, add=TRUE)
+plot(hpikde.50vol,col="red", add=TRUE)
+points(loc, pch=1, cex=0.5)
+
 hpikde.50vol <- st_as_sf(hpikde.50vol)
 hpikde.80vol <- st_as_sf(hpikde.80vol)
 hpikde.90vol <- st_as_sf(hpikde.90vol)
@@ -246,16 +256,9 @@ ggplot(hpikde.99vol)+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-Plug-in Bandwidth")
-
-plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(hpikde.95vol, lty=6, add=TRUE)
-plot(hpikde.90vol, add=TRUE)
-plot(hpikde.80vol, add=TRUE)
-plot(hpikde.50vol,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
 ```
 
-8\. We will finish by running BBMM.
+8\. We will finish by running BBMM. Because BBMM package is no longer maintained on CRAN, we will use the function provided by adehabitatHR package with plotting adapted to sf and ggplot2 packages
 
 ```{r eval=FALSE}
 #To run BBMM we first need to use the original dataset to calculate time between locations
@@ -306,19 +309,9 @@ hr80_sf<-st_as_sf(hr80)
 hr50<-getverticeshr(BBMM, 50, unout="km2")
 hr50
 hr50_sf<-st_as_sf(hr50)
-
 ```
 
 9. Plot BBMM
-
-```{r eval=FALSE}
-plot(st_geometry(hr99_sf,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T))
-plot(diss.map.p95, lty=6, add=TRUE)
-plot(diss.map.p90, add=TRUE)
-plot(diss.map.p80, add=TRUE)
-plot(diss.map.p50,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-```
 
 ```{r}
 d<-ggplot(hr99_sf)+
@@ -335,7 +328,13 @@ d
 
 ```
 
-10. We can add 4 estimators to the plot window to compare across estimators
+10. We can add 4 estimators to the plot window to compare across estimators using the patchwork package
+
+```{r}
+g1+g2+g3+g4+plot_layout(ncol=2)
+```
+
+Or using ggplot2 package
 
 ```{r eval=FALSE}
 g1 <- ggplot(ver99vol)+
