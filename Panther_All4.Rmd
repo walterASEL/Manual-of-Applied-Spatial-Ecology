@@ -16,14 +16,12 @@ Here we will estimate home range using the previous estimators on the same anima
 library(adehabitatHR)
 library(ks)
 library(stringr)
-#library(BBMM)
-#library(maptools)
 library(PBSmapping)
 library(move)
 library(sf)
 library(terra)
 library(wildlifeDI)#for sf2ltraj function in new BBMM code
-#library(ctmm)
+library(ctmm)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -398,201 +396,45 @@ figure1 %<>%
 figure1
 ```
 
-8a turned off
-
-```{r eval=FALSE}
-par(mfrow=c(2,2))
-
-plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver95, lty=6, add=TRUE)
-plot(ver90, add=TRUE)
-plot(ver80, add=TRUE)
-plot(ver50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(ver2_99,main="KDE-LSCV Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver2_95, lty=6, add=TRUE)
-plot(ver2_90, add=TRUE)
-plot(ver2_80, add=TRUE)
-plot(ver2_50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(hpikde.95vol, lty=6, add=TRUE)
-plot(hpikde.90vol, add=TRUE)
-plot(hpikde.80vol, add=TRUE)
-plot(hpikde.50vol,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-```
-
-```{r eval=FALSE}
-#To run BBMM we first need to use the original dataset to calculate time between locations
-panther$NewTime <- str_pad(panther$TIMEET2,4, pad= "0")
-panther$NewDate <- paste(panther$DateET2,panther$NewTime)
-#Used to sort data in code below for all deer
-panther$DT <- as.POSIXct(strptime(panther$NewDate, format='%Y %m %d %H%M'))
-#Sort Data
-panther <- panther[order(panther$CatID, panther$DT),]
-#TIME DIFF NECESSARY IN BBMM CODE
-timediff <- diff(panther$DT)*60
-# remove first entry without any difference 
-panther <- panther[-1,] 
-panther$timelag <-as.numeric(abs(timediff))
-
-cat143<-subset(panther, panther$CatID == "143")
-cat143 <- cat143[-1,] #Remove first record with wrong timelag
-cat143$CatID <- factor(cat143$CatID)
-
-
-BBMM = brownian.bridge(x=cat143$X, y=cat143$Y, time.lag=cat143$timelag, location.error=34,
-cell.size=100)
-
-bbmm.summary(BBMM)
-
-contours = bbmm.contour(BBMM, levels=c(seq(50, 90, by=10), 95, 99), locations=cat143, plot=FALSE)
-
-#Create a new data frame for all contours
-bbmm.contour = data.frame(x = BBMM$x, y = BBMM$y, probability = BBMM$probability)
-
-# Pick a contour for export as Ascii
-bbmm.50 = bbmm.contour[bbmm.contour$probability >= contours$Z[1],]
-bbmm.50$in.out <- 1 
-
-bbmm.50 <-bbmm.50[,-3]
-# Output ascii file for cells within specified contour.
-m50 = SpatialPixelsDataFrame(points = bbmm.50[c("x", "y")], data=bbmm.50)
-#m50.g = as(m50, "SpatialGridDataFrame")
-#writeAsciiGrid(m50.g, "50ContourInOut.asc", attr=ncol(bbmm.50))
-
-# Convert to SpatialPolygonsDataFrame and export as ESRI Shapefile
-shp.50 <- as(m50, "SpatialPolygonsDataFrame")
-map.ps50 <- SpatialPolygons2PolySet(shp.50)
-diss.map.50 <- joinPolys(map.ps50, operation = 'UNION')
-diss.map.50 <- as.PolySet(diss.map.50, projection = 'UTM', zone = '17')
-diss.map.p50 <- PolySet2SpatialPolygons(diss.map.50, close_polys = TRUE)
-data50 <- data.frame(PID = 1)
-diss.map.p50 <- SpatialPolygonsDataFrame(diss.map.p50, data = data50)
-# writeOGR(diss.map.p50, dsn = ".", layer="contour50", driver = "ESRI Shapefile")
-# map.50 <- readOGR(dsn=".", layer="contour50")
-# plot(map.50)
-
-# Pick a contour for export as Ascii
-bbmm.80 = bbmm.contour[bbmm.contour$probability >= contours$Z[4],]
-bbmm.80$in.out <- 1 
-
-bbmm.80 <-bbmm.80[,-3]
-# Output ascii file for cells within specified contour.
-m80 = SpatialPixelsDataFrame(points = bbmm.80[c("x", "y")], data=bbmm.80)
-m80.g = as(m80, "SpatialGridDataFrame")
-#writeAsciiGrid(m80.g, "80ContourInOut.asc", attr=ncol(bbmm.80))
-
-# Convert to SpatialPolygonsDataFrame and export as ESRI Shapefile
-shp.80 <- as(m80, "SpatialPolygonsDataFrame")
-map.ps80 <- SpatialPolygons2PolySet(shp.80)
-diss.map.80 <- joinPolys(map.ps80, operation = 'UNION')
-diss.map.80 <- as.PolySet(diss.map.80, projection = 'UTM', zone = '17')
-diss.map.p80 <- PolySet2SpatialPolygons(diss.map.80, close_polys = TRUE)
-data80 <- data.frame(PID = 1)
-diss.map.p80 <- SpatialPolygonsDataFrame(diss.map.p80, data = data80)
-# writeOGR(diss.map.p80, dsn = ".", layer="contour80", driver = "ESRI Shapefile")
-# map.80 <- readOGR(dsn=".", layer="contour80")
-# plot(map.80)
-
-# Pick a contour for export as Ascii
-bbmm.90 = bbmm.contour[bbmm.contour$probability >= contours$Z[5],]
-bbmm.90$in.out <- 1 
-
-bbmm.90 <-bbmm.90[,-3]
-# Output ascii file for cells within specified contour.
-m90 = SpatialPixelsDataFrame(points = bbmm.90[c("x", "y")], data=bbmm.90)
-#m90.g = as(m90, "SpatialGridDataFrame")
-#writeAsciiGrid(m90.g, "90ContourInOut.asc", attr=ncol(bbmm.90))
-
-# Convert to SpatialPolygonsDataFrame and export as ESRI Shapefile
-shp.90 <- as(m90, "SpatialPolygonsDataFrame")
-map.ps90 <- SpatialPolygons2PolySet(shp.90)
-diss.map.90 <- joinPolys(map.ps90, operation = 'UNION')
-diss.map.90 <- as.PolySet(diss.map.90, projection = 'UTM', zone = '17')
-diss.map.p90 <- PolySet2SpatialPolygons(diss.map.90, close_polys = TRUE)
-data90 <- data.frame(PID = 1)
-diss.map.p90 <- SpatialPolygonsDataFrame(diss.map.p90, data = data90)
-# writeOGR(diss.map.p90, dsn = ".", layer="contour90", driver = "ESRI Shapefile")
-# map.90 <- readOGR(dsn=".", layer="contour90")
-# plot(map.90)
-
-# Pick a contour for export as Ascii
-bbmm.95 = bbmm.contour[bbmm.contour$probability >= contours$Z[6],]
-bbmm.95$in.out <- 1 
-
-bbmm.95 <-bbmm.95[,-3]
-# Output ascii file for cells within specified contour.
-m95 = SpatialPixelsDataFrame(points = bbmm.95[c("x", "y")], data=bbmm.95)
-#m95.g = as(m95, "SpatialGridDataFrame")
-#writeAsciiGrid(m95.g, "95ContourInOut.asc", attr=ncol(bbmm.95))
-
-# Convert to SpatialPolygonsDataFrame and export as ESRI Shapefile
-shp.95 <- as(m95, "SpatialPolygonsDataFrame")
-map.ps95 <- SpatialPolygons2PolySet(shp.95)
-diss.map.95 <- joinPolys(map.ps95, operation = 'UNION')
-diss.map.95 <- as.PolySet(diss.map.95, projection = 'UTM', zone = '17')
-diss.map.p95 <- PolySet2SpatialPolygons(diss.map.95, close_polys = TRUE)
-data95 <- data.frame(PID = 1)
-diss.map.p95 <- SpatialPolygonsDataFrame(diss.map.p95, data = data95)
-# writeOGR(diss.map.p95, dsn = ".", layer="contour95", driver = "ESRI Shapefile")
-# map.95 <- readOGR(dsn=".", layer="contour95")
-# plot(map.95)
-
-# Pick a contour for export as Ascii
-bbmm.99 = bbmm.contour[bbmm.contour$probability >= contours$Z[7],]
-bbmm.99$in.out <- 1 
-
-bbmm.99 <-bbmm.99[,-3]
-# Output ascii file for cells within specified contour.
-m99 = SpatialPixelsDataFrame(points = bbmm.99[c("x", "y")], data=bbmm.99)
-# m99.g = as(m99, "SpatialGridDataFrame")
-# writeAsciiGrid(m99.g, "99ContourInOut.asc", attr=ncol(bbmm.99))
-
-# Convert to SpatialPolygonsDataFrame and export as ESRI Shapefile
-shp.99 <- as(m99, "SpatialPolygonsDataFrame")
-map.ps99 <- SpatialPolygons2PolySet(shp.99)
-diss.map.99 <- joinPolys(map.ps99, operation = 'UNION')
-diss.map.99 <- as.PolySet(diss.map.99, projection = 'UTM', zone = '17')
-diss.map.p99 <- PolySet2SpatialPolygons(diss.map.99, close_polys = TRUE)
-data99 <- data.frame(PID = 1)
-diss.map.p99 <- SpatialPolygonsDataFrame(diss.map.p99, data = data99)
-#writeOGR(diss.map.p99, dsn = ".", layer="contour99", driver = "ESRI Shapefile")
-# map.99 <- readOGR(dsn=".", layer="contour99")
-# plot(map.99)
-
-plot(diss.map.p99,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(diss.map.p95, lty=6, add=TRUE)
-plot(diss.map.p90, add=TRUE)
-plot(diss.map.p80, add=TRUE)
-plot(diss.map.p50,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-```
-
 11. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.
 
 ```{r eval=FALSE}
-cat.move <- move(x=cat143$X, y=cat143$Y, time=as.POSIXct(cat143$NewDate,
-     format='%Y %m %d %H%M'), proj=utm.crs,data=cat143,
-     animal=cat143$CatID)
-#
-# cat143$timestamp <- cat143$DT
-# cat143$x <- cat143$X
-# cat143$y <- cat143$Y
+cat143traj <- as.ltraj(st_coordinates(loc),loc$DT,id=loc$CatID)
+#cat143traj <- sf2ltraj(loc, date="DT",id="CatID")
+cat.move <- move(x=cat143$X, y= cat143$Y,time=cat143$DT,data=cat143,proj=CRS("+proj=utm +zone=17 +ellps=WGS84"),animal=cat143$CatID)
+cat.telem <- as.telemetry(cat.move,timeformat="auto", timezone = "EST", projection=NULL, datum= "North American Datum 1983", na.rm="row",mark.rm=FALSE,keep=FALSE, drop=TRUE)
 
-# cat143$Date.lt <- as.POSIXlt(strptime(cat143$NewDate, format='%Y %m %d %H%M'),tz="EDT")
-#cat143 <- cat143[c(22,23,20,24:25)]
-cat.telem <- as.telemetry(cat.move,timeformat=timestamp, timezone="UTC",projection=utm.crs, na.rm="row",mark.rm=FALSE,keep=FALSE, drop=TRUE)
 GUESS <- ctmm.guess(cat.telem,interactive=FALSE)
 GUESS2 <- ctmm(tau=1)
 FIT <- ctmm.fit(cat.telem,GUESS)
 FIT2 <- ctmm.fit(cat.telem,GUESS2)
 UD <- akde(cat.telem,FIT)
 UD2 <- akde(cat.telem,FIT2)
-plot(cat.telem,UD=UD2)
+g5 <-plot(cat.telem,UD=UD,level.UD = 0.99)
+
+UD.sf1 <- as.sf(UD2,level.UD = 0.99)
+UD.sf2 <- as.sf(UD2,level.UD = 0.95)
+UD.sf3 <- as.sf(UD2,level.UD = 0.90)
+UD.sf4 <- as.sf(UD2,level.UD = 0.80)
+UD.sf5 <- as.sf(UD2,level.UD = 0.50)
+
+plot(cat.telem,UD=UD2,level.UD = 0.99,main="AKDE",font=1, cex=0.8, axes=T)
+plot(cat.telem,UD=UD2,level.UD = 0.95, lty=6, add=TRUE)
+plot(cat.telem,UD=UD2,level.UD = 0.90, lty=5, add=TRUE)
+plot(cat.telem,UD=UD2,level.UD = 0.80, lty=4, add=TRUE)
+plot(cat.telem,UD=UD2,level.UD = 0.50, add=TRUE)
+
+g5 <- ggplot(UD.sf1)+
+  geom_sf(aes(fill="99%"))+
+  geom_sf(data=UD.sf2, aes(fill="95%"))+ 
+  geom_sf(data=UD.sf3, aes(fill="90%"))+
+  geom_sf(data=UD.sf4, aes(fill="80%"))+
+  geom_sf(data=UD.sf5, aes(fill="50%"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
+  theme_bw()+
+  theme(panel.grid = element_blank(), axis.text = element_blank())+
+  ggtitle("autocorrelated KDE tau=1")
+
 ```
 
 12. We can then plot them along with other estimators to compare
@@ -621,29 +463,12 @@ plot(diss.map.p80, add=TRUE)
 plot(diss.map.p50,col="red", add=TRUE)
 points(loc, pch=1, cex=0.5)
 
-plot(cat.telem,UD=UD,main="autocorrelated KDE Best")
+plot(cat.telem,UD=UD2,main="autocorrelated KDE Best")
 ```
 
 13. Or a few other options for autcorrelated KDE
 
 ```{r eval=FALSE}
-par(mfrow=c(2,2))
 
-plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver95, lty=6, add=TRUE)
-plot(ver90, add=TRUE)
-plot(ver80, add=TRUE)
-plot(ver50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(diss.map.p99,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(diss.map.p95, lty=6, add=TRUE)
-plot(diss.map.p90, add=TRUE)
-plot(diss.map.p80, add=TRUE)
-plot(diss.map.p50,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(cat.telem,UD=UD,main="autocorrelated KDE Best")
-
-plot(cat.telem,UD=UD2,main="autocorrelated KDE tau=1")
+g1+g3+g4+g5+plot_layout(ncol=2)
 ```
