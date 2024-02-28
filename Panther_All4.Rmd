@@ -71,7 +71,7 @@ ver90vol <- st_as_sf(ver90)
 ver95vol <- st_as_sf(ver95)
 ver99vol <- st_as_sf(ver99)
 
-ggplot(ver99vol)+
+g12 <- ggplot(ver99vol)+
   geom_sf(aes(fill="99%"))+
   geom_sf(data=ver95vol, aes(fill="95%"))+ 
   geom_sf(data=ver90vol, aes(fill="90%"))+
@@ -81,8 +81,7 @@ ggplot(ver99vol)+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-HREF Bandwidth")
-
-
+g1
 ```
 
 6\. Next we will run KDE with hlscv similar to exercise 4.2.
@@ -124,7 +123,7 @@ ver2.90vol <- st_as_sf(ver2_90)
 ver2.95vol <- st_as_sf(ver2_95)
 ver2.99vol <- st_as_sf(ver2_99)
 
-ggplot(ver2.99vol)+
+g2 <- ggplot(ver2.99vol)+
   geom_sf(aes(fill="99%"))+
   geom_sf(data=ver2.95vol, aes(fill="95%"))+ 
   geom_sf(data=ver2.90vol, aes(fill="90%"))+
@@ -134,6 +133,7 @@ ggplot(ver2.99vol)+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-LSCV Bandwidth")
+g2
 ```
 
 7\. Then we will run KDE with hplug-in similar to exercise 4.3.
@@ -244,7 +244,7 @@ hpikde.90vol <- st_as_sf(hpikde.90vol)
 hpikde.95vol <- st_as_sf(hpikde.95vol)
 hpikde.99vol <- st_as_sf(hpikde.99vol)
 
-ggplot(hpikde.99vol)+
+g3 <- ggplot(hpikde.99vol)+
   geom_sf(aes(fill="99%"))+
   geom_sf(data=hpikde.95vol, aes(fill="95%"))+ 
   geom_sf(data=hpikde.90vol, aes(fill="90%"))+
@@ -254,6 +254,7 @@ ggplot(hpikde.99vol)+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-Plug-in Bandwidth")
+g3
 ```
 
 8\. We will finish by running BBMM. Because BBMM package is no longer maintained on CRAN, we will use the function provided by adehabitatHR package with plotting adapted to sf and ggplot2 packages
@@ -307,12 +308,8 @@ hr80_sf<-st_as_sf(hr80)
 hr50<-getverticeshr(BBMM, 50, unout="km2")
 hr50
 hr50_sf<-st_as_sf(hr50)
-```
 
-9. Plot BBMM
-
-```{r}
-d<-ggplot(hr99_sf)+
+g4 <- ggplot(hr99_sf)+
   geom_sf(aes(fill="99%"))+
   geom_sf(data=hr95_sf, aes(fill="95%"))+ 
   geom_sf(data=hr90_sf, aes(fill="90%"))+
@@ -322,70 +319,23 @@ d<-ggplot(hr99_sf)+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("BBMM")
-d
-
+g4
 ```
 
-10. We can add 4 estimators to the plot window to compare across estimators using the patchwork package
+9. We can add 4 estimators to the plot window to compare across estimators using the patchwork package
 
 ```{r}
 library(patchwork)
 g1+g2+g3+g4+plot_layout(ncol=2)
 ```
 
-Or using ggplot2 package
+Or using ggplot2 package and a few other packages
 
 ```{r eval=FALSE}
-g1 <- ggplot(ver99vol)+
-  geom_sf(aes(fill="99%"))+
-  geom_sf(data=ver95vol, aes(fill="95%"))+ 
-  geom_sf(data=ver90vol, aes(fill="90%"))+
-  geom_sf(data=ver80vol, aes(fill="80%"))+
-  geom_sf(data=ver50vol, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
-  theme_bw()+
-  theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("KDE-HREF Bandwidth")
-
-g2 <- ggplot(ver2.99vol)+
-  geom_sf(aes(fill="99%"))+
-  geom_sf(data=ver2.95vol, aes(fill="95%"))+ 
-  geom_sf(data=ver2.90vol, aes(fill="90%"))+
-  geom_sf(data=ver2.80vol, aes(fill="80%"))+
-  geom_sf(data=ver2.50vol, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
-  theme_bw()+
-  theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("KDE-LSCV Bandwidth")
-
-g3 <- ggplot(hpikde.99vol)+
-  geom_sf(aes(fill="99%"))+
-  geom_sf(data=hpikde.95vol, aes(fill="95%"))+ 
-  geom_sf(data=hpikde.90vol, aes(fill="90%"))+
-  geom_sf(data=hpikde.80vol, aes(fill="80%"))+
-  geom_sf(data=hpikde.50vol, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
-  theme_bw()+
-  theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("KDE-Plug-in Bandwidth")
-
-g4 <- ggplot(hr99_sf)+
-  geom_sf(aes(fill="99%"))+
-  geom_sf(data=hr95_sf, aes(fill="95%"))+ 
-  geom_sf(data=hr90_sf, aes(fill="90%"))+
-  geom_sf(data=hr80_sf, aes(fill="80%"))+
-  geom_sf(data=hr50_sf, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
-  theme_bw()+
-  theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("BBMM")
-
 library(magrittr)
 library(multipanelfigure)
 figure1 <- multi_panel_figure(columns = 2, rows = 2, panel_label_type = "none")
-
 # show the layout
-
 figure1
 
 figure1 %<>%
@@ -396,7 +346,7 @@ figure1 %<>%
 figure1
 ```
 
-11. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.
+10. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.
 
 ```{r eval=FALSE}
 cat143traj <- as.ltraj(st_coordinates(loc),loc$DT,id=loc$CatID)
@@ -410,7 +360,7 @@ FIT <- ctmm.fit(cat.telem,GUESS)
 FIT2 <- ctmm.fit(cat.telem,GUESS2)
 UD <- akde(cat.telem,FIT)
 UD2 <- akde(cat.telem,FIT2)
-g5 <-plot(cat.telem,UD=UD,level.UD = 0.99)
+plot(cat.telem,UD=UD)
 
 UD.sf1 <- as.sf(UD2,level.UD = 0.99)
 UD.sf2 <- as.sf(UD2,level.UD = 0.95)
@@ -433,42 +383,12 @@ g5 <- ggplot(UD.sf1)+
   scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("autocorrelated KDE tau=1")
-
+  ggtitle("autocorrelated KDE-tau=1")
+g5
 ```
 
-12. We can then plot them along with other estimators to compare
+11. We can then plot akde along with other estimators to compare
 
 ```{r eval=FALSE}
-par(mfrow=c(2,2))
-
-plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(ver95, lty=6, add=TRUE)
-plot(ver90, add=TRUE)
-plot(ver80, add=TRUE)
-plot(ver50, col="red",add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(hpikde.99vol,main="KDE-Plug-in Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(hpikde.95vol, lty=6, add=TRUE)
-plot(hpikde.90vol, add=TRUE)
-plot(hpikde.80vol, add=TRUE)
-plot(hpikde.50vol,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(diss.map.p99,main="Brownian Bridge Movement Model",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
-plot(diss.map.p95, lty=6, add=TRUE)
-plot(diss.map.p90, add=TRUE)
-plot(diss.map.p80, add=TRUE)
-plot(diss.map.p50,col="red", add=TRUE)
-points(loc, pch=1, cex=0.5)
-
-plot(cat.telem,UD=UD2,main="autocorrelated KDE Best")
-```
-
-13. Or a few other options for autcorrelated KDE
-
-```{r eval=FALSE}
-
 g1+g3+g4+g5+plot_layout(ncol=2)
 ```
