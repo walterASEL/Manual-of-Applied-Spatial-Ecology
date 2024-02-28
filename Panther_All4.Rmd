@@ -331,6 +331,7 @@ d
 10. We can add 4 estimators to the plot window to compare across estimators using the patchwork package
 
 ```{r}
+library(patchwork)
 g1+g2+g3+g4+plot_layout(ncol=2)
 ```
 
