@@ -156,8 +156,7 @@ Hpi1
 loc.pts <- SpatialPoints(loc)
 proj4string(loc.pts) <- "+proj=utm +zone=17 +ellps=WGS84"
 
-##For home range calculations, ##some packages require evaluation points (ks) while others
-##require grid as spatial pixels (adehabitatHR).
+##For home range calculations, ##some packages require evaluation points (ks) while others require grid as spatial pixels (adehabitatHR).
 
 ##Set the expansion value for the grid and get the bbox from the SpatialPointsDataFrame
 expandValue <- 5000 #This value is the amount to add on each side of the bbox.
