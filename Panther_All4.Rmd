@@ -58,6 +58,7 @@ ver90 <- getverticeshr(udbis, percent=90,unin = "m", unout = "km2", standardize=
 ver95 <- getverticeshr(udbis, percent=95,unin = "m", unout = "km2", standardize=TRUE)
 ver99 <- getverticeshr(udbis, percent=99,unin = "m", unout = "km2", standardize=TRUE)
 
+#NOTE: loading package ctmm here prevents plotting these for some reason 
 plot(ver99,main="KDE-HREF Bandwidth", font=1, cex=0.8, axes=T)
 plot(ver95, lty=6, add=TRUE)
 plot(ver90, add=TRUE)
