@@ -6,9 +6,9 @@ editor_options:
 
 ## KDE with plug-in bandwidth selection (hplug-in)
 
-Here we will estimate home range using the previous estimators on the same animal. We will conclude with estimating home range using the hplug-in and Brownian Bridge Movement Models (BBMM) for comparison to kernel density estimators.
+Here we will estimate home range using several kernel density estimators on the same animal. We will conclude with estimating home range using Brownian Bridge Movement Models (BBMM) and autocorrelated kernel density estimator developed for autocorrelated global positioning system datasets for comparison to traditional kernel density estimators.
 
-1\. Open the script "Panther_All4.Rmd" and run code directly from the script
+1\. Open the script "Panther_All4.Rmd" and run code directly from the script. Take note here that this script uses the adehabitatHR package for traditional kernel density estimators that uses SpatialPointsDataFrames. Until adehabitatHR is updated to the sf package, no further changes will made to this script. For use of package amt for all home range estimators, see the new script added to "Panther_All4_amt.Rmd"
 
 2\. First we need to load the packages needed for the exercise
 
