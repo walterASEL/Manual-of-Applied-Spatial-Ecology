@@ -29,7 +29,7 @@ library(ggplot2)
 
 ```{r warning=FALSE, message=FALSE}
 ll.crs <- st_crs(4269)
-utm.crs <- st_crs(9001)
+utm.crs <- st_crs(26917)
 albers.crs <- st_crs(5070)
 ```
 
@@ -42,7 +42,7 @@ cat143 <- subset(panther, panther$CatID == "143")
 cat143$CatID <- droplevels(cat143$CatID)
 ```
 
-5\. We will start by running KDE with href similar to exercise 4.1.
+5\. We will start by running KDE with href similar to the href exercise.
 
 ```{r warning=FALSE, message=FALSE}
 loc <- data.frame("x"=cat143$X,"y"=cat143$Y)
@@ -85,7 +85,7 @@ g1 <- ggplot(ver99vol)+
 g1
 ```
 
-6\. Next we will run KDE with hlscv similar to exercise 4.2.
+6\. Next we will run KDE with hlscv similar to hlscv exercise.
 
 ```{r warning=FALSE, message=FALSE}
 udbis2 <- kernelUD(cats[,1], h = "LSCV")
@@ -130,14 +130,14 @@ g2 <- ggplot(ver2.99vol)+
   geom_sf(data=ver2.90vol, aes(fill="90%"))+
   geom_sf(data=ver2.80vol, aes(fill="80%"))+
   geom_sf(data=ver2.50vol, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-LSCV Bandwidth")
 g2
 ```
 
-7\. Then we will run KDE with hplug-in similar to exercise 4.3.
+7\. Then we will run KDE with hplug-in similar to hplug-in exercise.
 
 ```{r  warning=FALSE, message=FALSE}
 ##Get only the coordinates
@@ -250,7 +250,7 @@ g3 <- ggplot(hpikde.99vol)+
   geom_sf(data=hpikde.90vol, aes(fill="90%"))+
   geom_sf(data=hpikde.80vol, aes(fill="80%"))+
   geom_sf(data=hpikde.50vol, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-Plug-in Bandwidth")
@@ -315,7 +315,7 @@ g4 <- ggplot(hr99_sf)+
   geom_sf(data=hr90_sf, aes(fill="90%"))+
   geom_sf(data=hr80_sf, aes(fill="80%"))+
   geom_sf(data=hr50_sf, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("BBMM")
