@@ -56,7 +56,7 @@ cat143track <- make_track(tbl=cat143, .x=X, .y=Y, .t=DT, id=CatID, crs=26917)
 
 ```
 
-5\. We will start by running KDE with href similar to exercise 4.1.
+5\. We will start by running KDE with href similar to previous href exercise.
 
 ```{r warning=FALSE, message=FALSE}
 ## If we want to see what bandwidth the model will be using, we can use the following
@@ -83,7 +83,7 @@ g1 <- ggplot(cat143.href.iso)+
 g1
 ```
 
-6\. Next we will run KDE with hplug-in similar to exercise 4.3.
+6\. Next we will run KDE with hplug-in similar to previous hplug-in exercise.
 
 ```{r  warning=FALSE, message=FALSE}
 ## We will use the same elk track that we used before and can see what h values are estimated with the plug-in approach
@@ -154,9 +154,9 @@ g3 <- ggplot(hr99_sf)+
 g3
 ```
 
-8. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.
+8. We will quickly explore autocorrelated kernel density estimator which uses the "auto" option to choose the best movement model to estimate home range.
 
-```{r eval=FALSE}
+```{r}
 cat143.akde <- hr_akde(cat143track, model=fit_ctmm(cat143track, "auto"), levels=c(0.5,0.80,0.90,0.95,0.99))
 
 cat143.akde.iso<-hr_isopleths(cat143.akde, levels=c(0.5,0.80,0.90,0.95,0.99))
@@ -179,4 +179,50 @@ g4
 ```{r}
 library(patchwork)
 g1+g2+g3+g4+plot_layout(ncol=2)
+```
+
+```{r}
+## We also want to make a plot showing how the area differs by estimator. We'll first add labels to the href and hpi dataframes
+cat143.href.iso$estimator<-"H Ref"
+cat143.plugin.iso$estimator<-"H Plug-in"
+
+## The akde dataframe also includes confidence interval values for the area estimates. We aren't going to include those for this plot, so we will filter out only the estimate values, and also add a label column
+cat143.akde.iso2<-filter(cat143.akde.iso, what=="estimate")
+cat143.akde.iso2$estimator<-"AKDE"
+
+## The bbmm output was stored differently, so we need to make a dataframe that matches we we have for the other estimators. We'll first use the rbind function to store the area associated with the 3 area measurements
+bbmm.area<-as.data.frame(rbind(hr50$area, hr80$area, hr90$area, hr95$area, hr99$area))
+
+## Name the column the same as it is in the other estimators' dataframes ("area")
+colnames(bbmm.area)<-"area"
+
+## Add a new column that specifies the level of each measurement, and a label column 
+bbmm.area<-bbmm.area%>%mutate(level=c(0.50,0.80,0.90,0.95,0.99))
+bbmm.area$estimator<-"bbmm"
+
+## Bind together the href, hpi, and akde dataframes, drop the geometry and units from the resulting dataframe
+hr.area<-rbind(cat143.href.iso,cat143.plugin.iso, cat143.akde.iso2)
+hr.area<-st_drop_geometry(hr.area)
+hr.area$area<-drop_units(hr.area$area)
+
+## Rearrange the columns so that they match what is in the bbmm data frame(area, level, estimator)
+hr.area<-hr.area[,c(3,1,4)]
+
+## Bind all the estimators' dataframes together and store level as a factor
+hr.area.all<-rbind(hr.area, bbmm.area)
+hr.area.all$level<-as.factor(hr.area.all$level)
+
+## For graphing purposes, we want to order the estimators from highest estimate to lowest estimate. There are better ways to do this, but for the sake of time we are going to look at the values and manually re-order them
+hr.area.all$estimator<-factor(hr.area.all$estimator, levels=c("AKDE", "H Ref", "bbmm", "H Plug-in"))
+
+
+ggplot(hr.area.all, aes(y=area, x=level, color=estimator, fill=estimator))+
+  geom_bar(stat="identity",position=position_dodge())+
+  scale_x_discrete(labels=c("50%", "95%", "99%"))+
+  scale_color_discrete(name="Estimator")+
+  scale_fill_discrete(name="Estimator")+
+  scale_y_continuous(expand=c(0,0))+ ## This forces the bar to start at 0. ggplot normally has a space before 0 which I find annoying
+  xlab("Home range isopleth")+
+  ylab(bquote("Average home range size  " (km^2)))+
+  theme_classic()
 ```
