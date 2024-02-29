@@ -79,7 +79,7 @@ g1 <- ggplot(ver99vol)+
   geom_sf(data=ver90vol, aes(fill="90%"))+
   geom_sf(data=ver80vol, aes(fill="80%"))+
   geom_sf(data=ver50vol, aes(fill="50%"))+
-  scale_fill_manual(name="Isopleth", values=c("rosybrown","tomato2","tan1", "lightgoldenrod4","lightgoldenrod4"))+
+  scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"))+
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
   ggtitle("KDE-HREF Bandwidth")
