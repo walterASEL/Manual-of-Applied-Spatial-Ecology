@@ -161,7 +161,7 @@ cat143.akde <- hr_akde(cat143track, model=fit_ctmm(cat143track, "auto"), levels=
 
 cat143.akde.iso<-hr_isopleths(cat143.akde, levels=c(0.5,0.80,0.90,0.95,0.99))
 
-plot(cat143.akde$ud)
+plot(cat143.akde)
 
 cat143.akde.iso$area<-set_units(cat143.akde.iso$area, km^2)
 
@@ -170,7 +170,7 @@ g4 <- ggplot(cat143.akde.iso)+
   scale_fill_manual(name="Isopleth", values=c("blue4","royalblue2","steelblue2", "turquoise2","yellow1"), labels=c("50%", "80", "90", "95%", "99%"))+ ## This addes a legend title, changes the colors of the isopleths and changes the labels
   theme_bw()+
   theme(panel.grid = element_blank(), axis.text = element_blank())+
-  ggtitle("AKDE-Plug-in Bandwidth")
+  ggtitle("AKDE")
 g4
 ```
 

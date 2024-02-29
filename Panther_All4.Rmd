@@ -22,6 +22,7 @@ library(sf)
 library(terra)
 library(wildlifeDI)#for sf2ltraj function in new BBMM code
 library(ctmm)
+library(ggplot2)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -57,7 +58,7 @@ ver90 <- getverticeshr(udbis, percent=90,unin = "m", unout = "km2", standardize=
 ver95 <- getverticeshr(udbis, percent=95,unin = "m", unout = "km2", standardize=TRUE)
 ver99 <- getverticeshr(udbis, percent=99,unin = "m", unout = "km2", standardize=TRUE)
 
-plot(ver99,main="KDE-HREF Bandwidth",xlab="X", ylab="Y", font=1, cex=0.8, axes=T)
+plot(ver99,main="KDE-HREF Bandwidth", font=1, cex=0.8, axes=T)
 plot(ver95, lty=6, add=TRUE)
 plot(ver90, add=TRUE)
 plot(ver80, add=TRUE)
@@ -71,7 +72,7 @@ ver90vol <- st_as_sf(ver90)
 ver95vol <- st_as_sf(ver95)
 ver99vol <- st_as_sf(ver99)
 
-g12 <- ggplot(ver99vol)+
+g1 <- ggplot(ver99vol)+
   geom_sf(aes(fill="99%"))+
   geom_sf(data=ver95vol, aes(fill="95%"))+ 
   geom_sf(data=ver90vol, aes(fill="90%"))+
