@@ -51,7 +51,7 @@ albers.crs <- st_crs(5070)
 
 4\. We will use the tigris package to downloaded statewide layers for state and county outlines
 
-```{r}
+```{r eval=FALSE}
 st <- tigris::states() %>%
   dplyr::filter(GEOID < "60") %>% 
   tigris::shift_geometry()
@@ -67,7 +67,7 @@ SCcounties <- st_transform(SCcounties, albers.crs)
 
 5\. Now let's add some shapefiles to our raster specific to the military base of interest
 
-```{r warning=FALSE, message=FALSE, hide=TRUE}
+```{r  eval=FALSE, warning=FALSE, message=FALSE, hide=TRUE}
 #Load county shapefile
 county<- subset(SCcounties, SCcounties$NAME == "Beaufort")
 
@@ -98,19 +98,16 @@ plot(SCnlcd)
 plot(st_geometry(SCcounties), add=T, lwd=3)
 ```
 
-\newline
-
 7\. Plot out all the shapefiles overlayed on each other with and without the raster.
 
-```{r}
+```{r eval=FALSE}
 plot(st_geometry(county))
 plot(st_geometry(road), add=T)
 plot(st_geometry(run), col="red",add=T)
 plot(st_geometry(path), col="blue",add=T)
 ```
 
-\newline
-8. Let's reclassify NLCD layer to get fewer land cover categories to make it easier to work with the raster.
+8\. Let's reclassify NLCD layer to get fewer land cover categories to make it easier to work with the raster.
 
 ```{r eval=FALSE}
 # reclassify the values into 7 groups all values between 0 and 20 equal 1, etc. while removing water (11)
@@ -128,10 +125,9 @@ plot(st_geometry(path),add=T,lty="62", col="blue")
 plot(st_geometry(road),add=T,lty="22", col="yellow")
 ```
 
-\newline
-9. We can load some vulture locations to extract landcover that each location occurs in that will be considered "used" habitat in resource selection analysis.
+9\. We can load some vulture locations to extract landcover that each location occurs in that will be considered "used" habitat in resource selection analysis.
 
-```{r}
+```{r eval=FALSE}
 #Import bird 49 locations to R
 bv49 <-read.csv("data/Bird49.csv", header=T)#How many bird locations?
 
