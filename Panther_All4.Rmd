@@ -4,7 +4,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-## KDE with plug-in bandwidth selection (hplug-in)
+## Kernel density estimators (KDE) with various bandwidth selection
 
 Here we will estimate home range using several kernel density estimators on the same animal. We will conclude with estimating home range using Brownian Bridge Movement Models (BBMM) and autocorrelated kernel density estimator developed for autocorrelated global positioning system datasets for comparison to traditional kernel density estimators.
 
