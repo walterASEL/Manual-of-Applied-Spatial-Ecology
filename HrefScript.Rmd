@@ -4,8 +4,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Home Range Estimation
-
 ## Kernel Density Estimation (KDE) with reference bandwidth selection (href)
 
 In KDE, a kernel distribution (i.e. a three-dimensional hill or kernel) is placed on each telemetry location. The height of the hill is determined by the bandwidth of the distribution, and many distributions and methods are available (e.g. fixed versus adaptive, univariate versus bivariate bandwidth). We will focus here on "fixed kernel" but will alter the bandwidth selection. Datasets for avian and mammalian species can include as many as 10,000 locations and only the reference or default bandwidth (href) was able to produce KDE in both Home Range Tools and adehabitat or adehabitatHR (Calenge 2007, 2011). Estimation with (href) typically is not reliable for use on multimodal datasets because it results in over-smoothing of home ranges and multimodal distribution of locations is typical for most species (Worton 1995, Seaman et al. 1999).

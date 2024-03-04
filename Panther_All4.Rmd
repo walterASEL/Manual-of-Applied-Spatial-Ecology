@@ -21,7 +21,6 @@ library(move)
 library(sf)
 library(terra)
 library(wildlifeDI)#for sf2ltraj function in new BBMM code
-library(ctmm)
 library(ggplot2)
 ```
 
@@ -260,7 +259,7 @@ g3
 
 8\. We will finish by running BBMM. Because BBMM package is no longer maintained on CRAN, we will use the function provided by adehabitatHR package with plotting adapted to sf and ggplot2 packages
 
-```{r eval=FALSE}
+```{r}
 #To run BBMM we first need to use the original dataset to calculate time between locations
 panther$NewTime <- str_pad(panther$TIMEET2,4, pad= "0")
 panther$NewDate <- paste(panther$DateET2,panther$NewTime)
@@ -350,6 +349,7 @@ figure1
 10. We will quickly explore autocorrelated kernel density estimator. It was easier to convert our dataframe to a move object prior to creating a telemetry object required by package ctmm.
 
 ```{r eval=FALSE}
+library(ctmm)
 cat143traj <- as.ltraj(st_coordinates(loc),loc$DT,id=loc$CatID)
 #cat143traj <- sf2ltraj(loc, date="DT",id="CatID")
 cat.move <- move(x=cat143$X, y= cat143$Y,time=cat143$DT,data=cat143,proj=CRS("+proj=utm +zone=17 +ellps=WGS84"),animal=cat143$CatID)

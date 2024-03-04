@@ -5,7 +5,7 @@
 <meta name="generator" content="quarto-1.3.450">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="W. David Walter">
-<title>Manual-Applied-Spatial-Ecology - 28&nbsp; Landscape Metrics</title>
+<title>Manual-Applied-Spatial-Ecology - 15&nbsp; Movement Methods</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -61,8 +61,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./PatchAnalystScript.html" rel="next">
-<link href="./Landscape-Metrics.html" rel="prev">
+<link href="./MovementScript.html" rel="next">
+<link href="./Movement-Methods.html" rel="prev">
 <link href="./CoverSlide2.jpg" rel="icon" type="image/jpeg">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Landscape-Metrics.html">Landscape Metrics</a></li><li class="breadcrumb-item"><a href="./Frag_Auto.html"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Landscape Metrics</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Movement-Methods.html">Movement Methods</a></li><li class="breadcrumb-item"><a href="./DMAdeerMovebank.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Movement Methods</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -245,7 +245,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./DMAdeerMovebank.html" class="sidebar-item-text sidebar-link">
+  <a href="./DMAdeerMovebank.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Movement Methods</span></span></a>
   </div>
 </li>
@@ -299,7 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./HrefScript.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Home Range Estimation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Kernel Density Estimation (KDE) with reference bandwidth selection (href)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -311,25 +311,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Panther_All4.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">KDE with plug-in bandwidth selection (hplug-in)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Kernel density estimators (KDE) with various bandwidth selection</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Panther_All4_amt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Kernel density estimators (KDE) with various bandwidth selection using package amt</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./BBMMscript.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Brownian Bridge Movement Models (BBMM)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Brownian Bridge Movement Models (BBMM)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./MKDEcat_script.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Movement-based Kernel Density Estimation (MKDE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Movement-based Kernel Density Estimation (MKDE)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./CatdBBMM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Dynamic Brownian Bridge Movement Models (dBBMM)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Dynamic Brownian Bridge Movement Models (dBBMM)</span></span></a>
   </div>
 </li>
       </ul>
@@ -345,14 +351,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Frag_Auto.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Landscape Metrics</span></span></a>
+  <a href="./Frag_Auto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Landscape Metrics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./PatchAnalystScript.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Fragstats Metrics within Buffers</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Fragstats Metrics within Buffers</span></span></a>
   </div>
 </li>
       </ul>
@@ -369,37 +375,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./MCPscript.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Resource Selection</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Resource Selection</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./LinearDistScript.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Preparing Linear Measures</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Preparing Linear Measures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./MD_DataPrep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Preparing Additional Covariates</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Preparing Additional Covariates</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./MuledeerSR.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Selection Ratios</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Selection Ratios</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./LogisticRSF.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Logistic Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Logistic Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./NegBinomial.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Negative Binomial</span></span></a>
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Negative Binomial</span></span></a>
   </div>
 </li>
       </ul>
@@ -412,13 +418,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
    
   <ul>
-<li><a href="#and-7.2-fragstats-metrics-within-polygons" id="toc-and-7.2-fragstats-metrics-within-polygons" class="nav-link active" data-scroll-target="#and-7.2-fragstats-metrics-within-polygons"><span class="header-section-number">28.1</span> 7.1 and 7.2 Fragstats Metrics within Polygons</a></li>
+<li><a href="#importing-datasets-from-a-web-source" id="toc-importing-datasets-from-a-web-source" class="nav-link active" data-scroll-target="#importing-datasets-from-a-web-source"><span class="header-section-number">15.1</span> Importing datasets from a web source</a></li>
   </ul></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">
-<span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Landscape Metrics</span>
+<span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Movement Methods</span>
 </h1>
 </div>
 
@@ -432,114 +438,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
-</header><section id="and-7.2-fragstats-metrics-within-polygons" class="level2" data-number="28.1"><h2 data-number="28.1" class="anchored" data-anchor-id="and-7.2-fragstats-metrics-within-polygons">
-<span class="header-section-number">28.1</span> 7.1 and 7.2 Fragstats Metrics within Polygons</h2>
-<p>Some research designs may just need landscape metrics for a single area or several study areas and that is what the SDMToolsl package is able to estimate in the code that follows. While the single area can be defined by the extent of the raster we imported as in previous chapters, the ability of the SDMToolsl package to determine patch and class statistics depends on the area defined by the user from that could be study site, within polygons such as counties or townships, or within buffers around locations.</p>
-<p>1. Open the script “Frag_Auto.Rmd” and run code directly from the script</p>
+</header><section id="importing-datasets-from-a-web-source" class="level2" data-number="15.1"><h2 data-number="15.1" class="anchored" data-anchor-id="importing-datasets-from-a-web-source">
+<span class="header-section-number">15.1</span> Importing datasets from a web source</h2>
+<p>Movebank.org is a cloud-based repository for relocation data from GPS-collared or VHF-collared animals. It provides a storage facility in the cloud that can serve as a backup for your data or a transfer portal to share data among colleagues or interested researchers. Similar to any email account, each user has a Movebank account that has a login and password to gain access to your data. Administration privileges can be given to anyone with an account for viewing and downloading data.</p>
+<p>1. Open the script “DMAdeerMovebank.Rmd” and run code directly from the script</p>
 <p>2. First we need to load the packages needed for the exercise</p>
 <div class="cell">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#library(SDMTools)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://had.co.nz/plyr">plyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/FedData/">FedData</a></span><span class="op">)</span></span>
-<span><span class="co">#install.packages("landscapemetrics")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatialecology.github.io/landscapemetrics/">landscapemetrics</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bartk.gitlab.io/move/">move</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RCurl</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">circular</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>3. Now let’s have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code</p>
+<p>3. Next we are going to the <a href="https://www.movebank.org/">Movebank</a> home page and explore what it has to offer. Need to create an account or select a dataset that does not require permission to use.</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ll.crs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="fl">4269</span><span class="op">)</span></span>
-<span><span class="va">utm.crs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="fl">9001</span><span class="op">)</span></span>
-<span><span class="va">albers.crs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="fl">5070</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">login</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bartk.gitlab.io/move/reference/movebankLogin.html">movebankLogin</a></span><span class="op">(</span>username<span class="op">=</span><span class="st">"wdwalter"</span>, password<span class="op">=</span><span class="st">"XXXXX"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>4. Load vegetation raster layer clipped in ArcMap</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">crops</span> <span class="op">&lt;-</span><span class="fu">rast</span><span class="op">(</span><span class="st">"data/crop2012utm12.tif"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">crops</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">crops</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bartk.gitlab.io/move/reference/getMovebankData.html">getMovebankData</a></span><span class="op">(</span>study<span class="op">=</span><span class="st">"DMA White-tailed Deer 2018 Pennsylvania USA"</span>,</span>
+<span>                        login<span class="op">=</span><span class="va">login</span>, moveObject<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://bartk.gitlab.io/move/reference/n.indiv.html">n.indiv</a></span><span class="op">(</span><span class="va">deer</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://bartk.gitlab.io/move/reference/n.locs.html">n.locs</a></span><span class="op">(</span><span class="va">deer</span><span class="op">)</span></span>
+<span><span class="co">#Plot the first deer in the stack</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="va">deer</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># reclassify the values into 9 groups</span></span>
-<span><span class="co"># all values between 0 and 20 equal 1, etc.</span></span>
-<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>,<span class="fl">0</span>,<span class="cn">NA</span>,<span class="fl">2</span>, <span class="fl">7</span>, <span class="fl">2</span>, <span class="fl">20</span>, <span class="fl">60</span>, <span class="fl">3</span>, <span class="fl">60</span>, <span class="fl">70</span>, <span class="fl">4</span>, <span class="fl">110</span>, <span class="fl">132</span>, <span class="fl">5</span>, <span class="fl">133</span>, <span class="fl">150</span>, <span class="fl">6</span>, <span class="fl">151</span>, <span class="fl">191</span>, <span class="fl">7</span>, </span>
-<span>  <span class="fl">192</span>,<span class="cn">Inf</span>,<span class="cn">NA</span><span class="op">)</span></span>
-<span><span class="va">rclmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">m</span>, ncol<span class="op">=</span><span class="fl">3</span>, byrow<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">rc</span> <span class="op">&lt;-</span> <span class="fu">classify</span><span class="op">(</span><span class="va">crops</span>, <span class="va">rclmat</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">rc</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="fu">values</span><span class="op">(</span><span class="va">rc</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#Now we will select a single deer to explore more</span></span>
+<span><span class="va">deer1</span> <span class="op">&lt;-</span> <span class="va">deer</span><span class="op">[[</span><span class="st">'X20212_20242F'</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="va">deer1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://r-spatialecology.github.io/landscapemetrics/reference/check_landscape.html">check_landscape</a></span><span class="op">(</span><span class="va">rc</span><span class="op">)</span></span>
-<span><span class="co">#Now we get into Landscape Metrics with the SDTM Tool</span></span>
-<span><span class="co">#Calculate the Patch statistics</span></span>
-<span><span class="va">ps.data</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatialecology.github.io/landscapemetrics/reference/lsm_p_enn.html">lsm_p_enn</a></span><span class="op">(</span><span class="va">rc</span><span class="op">)</span></span>
-<span><span class="va">ps.data</span></span>
-<span></span>
-<span><span class="co">#Calculate the Class statistics</span></span>
-<span><span class="va">cl.data</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatialecology.github.io/landscapemetrics/reference/calculate_lsm.html">calculate_lsm</a></span><span class="op">(</span><span class="va">rc</span><span class="op">)</span></span>
-<span><span class="va">cl.data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>5. Some research designs may need landscape metrics for several areas that may be available as a shapefile or some other polygon layer.</p>
-<div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#Load raster file into R</span></span>
-<span><span class="co">#raster &lt;- rast("data/county_hab")</span></span>
-<span></span>
-<span><span class="co">#Load PA shapefile into R</span></span>
-<span><span class="va">HareCounties</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="st">"data/Hare_Counties.shp"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">county_hab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nlcd.html">get_nlcd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">HareCounties</span>, year <span class="op">=</span> <span class="fl">2006</span>, label <span class="op">=</span> <span class="st">'HareCounties'</span>,dataset <span class="op">=</span> <span class="st">"landcover"</span>, force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">county_hab</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">HareCounties</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#Let's project Counties to the same projection as the habitat raster</span></span>
-<span><span class="va">county</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">HareCounties</span>, <span class="va">albers.crs</span><span class="op">)</span></span>
-<span><span class="va">HareCounties</span> <span class="op">&lt;-</span> <span class="va">county</span></span>
-<span><span class="co">#Matching projections successful!</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">county_hab</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">HareCounties</span>, add<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#Now add labels to each hexagon for unique ID</span></span>
-<span><span class="va">county.centroids</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_point_on_surface</a></span><span class="op">(</span><span class="va">HareCounties</span><span class="op">)</span></span>
-<span><span class="va">county.coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">county.centroids</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">county.coords</span><span class="op">$</span><span class="va">NAME</span> <span class="op">&lt;-</span> <span class="va">HareCounties</span><span class="op">$</span><span class="va">COUNTY_NAM</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">HareCounties</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_text</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">county.coords</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">Y</span>, label <span class="op">=</span> <span class="va">NAME</span><span class="op">)</span>, colour <span class="op">=</span><span class="st">"black"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>6. Now we want to export by County name (i.e., COUNTY_NAM) as individual shapefiles. We will only select the first 2 counties for processing to save time</p>
-<div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">indata</span> <span class="op">&lt;-</span> <span class="va">HareCounties</span></span>
-<span><span class="va">innames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">HareCounties</span><span class="op">$</span><span class="va">COUNTY_NAM</span><span class="op">)</span></span>
-<span><span class="va">innames</span> <span class="op">&lt;-</span> <span class="va">innames</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="co">#Place the number of unique polygons in your shapefile here</span></span>
-<span><span class="va">outnames</span> <span class="op">&lt;-</span> <span class="va">innames</span></span>
-<span></span>
-<span><span class="co"># set up output table</span></span>
-<span><span class="co">#output &lt;- as.data.frame(matrix(0,nrow=length(innames),ncol=38))</span></span>
-<span></span>
-<span><span class="co"># begin loop to create separate county shapefiles </span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">innames</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="va">indata</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">indata</span><span class="op">$</span><span class="va">COUNTY_NAM</span><span class="op">==</span><span class="va">innames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,<span class="op">]</span></span>
-<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html">st_write</a></span><span class="op">(</span><span class="va">data</span>, dsn <span class="op">=</span> <span class="st">"."</span>, layer<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">outnames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,<span class="st">".shp"</span>,sep<span class="op">=</span><span class="st">"/"</span><span class="op">)</span>, driver <span class="op">=</span> <span class="st">"ESRI Shapefile"</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">innames</span>, <span class="st">"List.txt"</span>, col.names<span class="op">=</span><span class="cn">FALSE</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, </span>
-<span>  row.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co">#Read in a list of shapefiles files from above</span></span>
-<span><span class="va">Listshps</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">"List.txt"</span>,sep<span class="op">=</span><span class="st">"\t"</span>,header<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
-<span><span class="va">Listshps</span></span>
-<span></span>
-<span><span class="va">shape</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Listshps</span><span class="op">)</span> <span class="op">{</span></span>
-<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">Listshps</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>,<span class="st">".shp"</span><span class="op">)</span></span>
-<span><span class="va">shp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn<span class="op">=</span><span class="st">"."</span>, layer<span class="op">=</span><span class="va">file</span><span class="op">)</span></span>
-<span><span class="va">mask</span> <span class="op">&lt;-</span> <span class="fu">mask</span><span class="op">(</span><span class="va">raster</span>,<span class="va">shp</span><span class="op">)</span></span>
-<span><span class="co">### Calculate the Class statistics in each county</span></span>
-<span><span class="va">cl.data</span> <span class="op">&lt;-</span> <span class="fu">lsm_c_enn</span><span class="op">(</span><span class="va">mask</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/ddply.html">ddply</a></span><span class="op">(</span><span class="va">Listshps</span>, <span class="fl">1</span>, <span class="va">shape</span><span class="op">)</span></span>
-<span><span class="va">results</span></span>
-<span><span class="co">#write.table(results, "FragCounty.txt")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#Select and plot locations of the initial 2 deer in your list</span></span>
+<span><span class="va">deer2</span> <span class="op">&lt;-</span> <span class="va">deer</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="va">deer2</span><span class="op">)</span></span>
+<span><span class="co">#Determine names of initial 2 deer selected above</span></span>
+<span><span class="fu"><a href="https://bartk.gitlab.io/move/reference/namesIndiv.html">namesIndiv</a></span><span class="op">(</span><span class="va">deer2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
@@ -776,13 +705,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./Landscape-Metrics.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Landscape Metrics</span>
+      <a href="./Movement-Methods.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Movement Methods</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./PatchAnalystScript.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Fragstats Metrics within Buffers</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./MovementScript.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Movement Trajectories</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

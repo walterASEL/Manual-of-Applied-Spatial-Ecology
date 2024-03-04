@@ -53,6 +53,7 @@ book:
         - HrefScript.Rmd
         - HlscvScript.Rmd
         - Panther_All4.Rmd
+        - Panther_All4_amt.Rmd
         - BBMMscript.Rmd
         - MKDEcat_script.Rmd
         - CatdBBMM.Rmd
