@@ -113,6 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Manual-Applied-Spatial-Ecology</a> 
         <div class="sidebar-tools-main">
+    <a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
   <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
   <div class="quarto-reader-toggle-btn">
   <i class="bi"></i>
@@ -484,80 +485,9 @@ loaded via a namespace (and not attached):
 </div>
 <p>4. We will use the tigris package to downloaded statewide layers for state and county outlines</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">st</span> <span class="op">&lt;-</span> <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">GEOID</span> <span class="op">&lt;</span> <span class="st">"60"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>    <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/shift_geometry.html">shift_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="co">#GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Retrieving data for the year 2021</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |                                                                      |   1%
-  |                                                                            
-  |=                                                                     |   1%
-  |                                                                            
-  |=                                                                     |   2%
-  |                                                                            
-  |==                                                                    |   2%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |===                                                                   |   4%
-  |                                                                            
-  |===                                                                   |   5%
-  |                                                                            
-  |====                                                                  |   5%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
-  |=====                                                                 |   7%
-  |                                                                            
-  |=====                                                                 |   8%
-  |                                                                            
-  |======                                                                |   8%
-  |                                                                            
-  |======                                                                |   9%
-  |                                                                            
-  |=======                                                               |  10%
-  |                                                                            
-  |========                                                              |  11%
-  |                                                                            
-  |========                                                              |  12%
-  |                                                                            
-  |=========                                                             |  13%
-  |                                                                            
-  |==========                                                            |  14%
-  |                                                                            
-  |===========                                                           |  15%
-  |                                                                            
-  |===========                                                           |  16%
-  |                                                                            
-  |============                                                          |  17%
-  |                                                                            
-  |=============                                                         |  18%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |================                                                      |  23%
-  |                                                                            
-  |============================                                          |  40%
-  |                                                                            
-  |========================================                              |  57%
-  |                                                                            
-  |===================================================                   |  74%
-  |                                                                            
-  |========================================================              |  80%
-  |                                                                            
-  |====================================================================  |  96%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-</div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">st</span><span class="op">)</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="MidAtlantic_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">st</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">st</span>, <span class="va">albers.crs</span><span class="op">)</span> </span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">st</span> <span class="op">&lt;-</span> <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">GEOID</span> <span class="op">&lt;</span> <span class="st">"60"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>    <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/shift_geometry.html">shift_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="co">#GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling </span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">st</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="va">st</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">st</span>, <span class="va">albers.crs</span><span class="op">)</span> </span>
 <span><span class="va">PA.outline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/subset.html">subset</a></span><span class="op">(</span><span class="va">st</span>, <span class="va">st</span><span class="op">$</span><span class="va">NAME</span> <span class="op">==</span> <span class="st">"Pennsylvania"</span><span class="op">)</span>  </span>
 <span><span class="co">#PAcounties &lt;- counties("Pennsylvania", cb = TRUE) </span></span>
 <span><span class="co">#PAcounties &lt;- st_transform(PAcounties, albers.crs)</span></span>
@@ -567,121 +497,25 @@ loaded via a namespace (and not attached):
 </div>
 <p>5. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site.</p>
 <div class="cell">
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">PAnlcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nlcd.html">get_nlcd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PA.outline</span>, label <span class="op">=</span> <span class="st">'Pennsylvania'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">PAnlcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nlcd.html">get_nlcd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PA.outline</span>, label <span class="op">=</span> <span class="st">'Pennsylvania'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">MDnlcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nlcd.html">get_nlcd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">MD.outline</span>, label <span class="op">=</span> <span class="st">'Maryland'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">nlcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/mosaic.html">mosaic</a></span><span class="op">(</span><span class="va">PAnlcd</span>, <span class="va">MDnlcd</span>, fun<span class="op">=</span><span class="va">min</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">nlcd</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="MidAtlantic_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#writeRaster(nlcd,"mosaic_nlcd.tif",format="GTiff",datatype = 'INT4U',overwrite=T)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">nlcd</span><span class="op">)</span></span>
+<span><span class="co">#writeRaster(nlcd,"mosaic_nlcd.tif",format="GTiff",datatype = 'INT4U',overwrite=T)</span></span>
 <span></span>
 <span><span class="co">#nlcd &lt;- rast("mosaic_nlcd.tif")</span></span>
 <span></span>
-<span><span class="va">PADEM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_ned.html">get_ned</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PA.outline</span>, label <span class="op">=</span> <span class="st">'PAdem'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Area of interest includes 28 NED tiles.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 75W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 75W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 75W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 75W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 76W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 76W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 76W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 76W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 77W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 77W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 77W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 77W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 78W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 78W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 78W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 78W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 79W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 79W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 79W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 79W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 80W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 80W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 80W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 80W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 40N and 81W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 41N and 81W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 42N and 81W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>(Down)Loading NED tile for 43N and 81W.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Mosaicking NED tiles.</code></pre>
-</div>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">PADEM.proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html">project</a></span><span class="op">(</span><span class="va">PADEM</span>,<span class="va">PAnlcd</span>,method<span class="op">=</span><span class="st">'near'</span><span class="op">)</span></span>
+<span><span class="va">PADEM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_ned.html">get_ned</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PA.outline</span>, label <span class="op">=</span> <span class="st">'PAdem'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">PADEM.proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html">project</a></span><span class="op">(</span><span class="va">PADEM</span>,<span class="va">PAnlcd</span>,method<span class="op">=</span><span class="st">'near'</span><span class="op">)</span></span>
 <span><span class="co">#writeRaster(PADEM.proj,"PA_elev.tif",format="GTiff",datatype = 'INT4U',overwrite=T)</span></span>
 <span></span>
 <span><span class="co">#Or read in raster from above</span></span>
 <span><span class="co">#PADEM.proj &lt;- rast("PA_elev.tif")</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">PADEM.proj</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">PA.outline</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="MidAtlantic_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
-</div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">DMA2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="st">"data/PGC_CWDManagementUnits2020.shp"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">DMA2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="st">"data/PGC_CWDManagementUnits2020.shp"</span><span class="op">)</span></span>
 <span><span class="va">DMA2.proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">DMA2</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">PAnlcd</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">DMA_DAYMET</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_daymet.html">get_daymet</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">DMA2.proj</span>,label <span class="op">=</span> <span class="st">'PAdaymet'</span>,elements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'prcp'</span>,<span class="st">'tmin'</span>,<span class="st">'tmax'</span><span class="op">)</span>,</span>
 <span>                     years <span class="op">=</span> <span class="fl">2010</span><span class="op">:</span><span class="fl">2011</span><span class="op">)</span></span>
@@ -697,10 +531,10 @@ loaded via a namespace (and not attached):
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">'topright'</span>, pch<span class="op">=</span><span class="fl">1</span>, legend<span class="op">=</span><span class="st">'GHCN Precipitation Records'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">DMAsoil</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_ssurgo.html">get_ssurgo</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PAstate</span>, label <span class="op">=</span> <span class="st">'DMA_SSURGO'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">DMAsoil</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_ssurgo.html">get_ssurgo</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PAstate</span>, label <span class="op">=</span> <span class="st">'DMA_SSURGO'</span>,force.redo <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">NHD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nhd.html">get_nhd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PAstate</span>, label<span class="op">=</span><span class="st">'PAnhd'</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">NHD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nhd.html">get_nhd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PAstate</span>, label<span class="op">=</span><span class="st">'PAnhd'</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/plot_nhd.html">plot_nhd</a></span><span class="op">(</span>template <span class="op">=</span> <span class="va">PAstate</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nhd.html">get_nhd</a></span><span class="op">(</span>template<span class="op">=</span><span class="va">PAstate</span>, label<span class="op">=</span><span class="st">'PAnhd'</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/plot_nhd.html">plot_nhd</a></span><span class="op">(</span>template <span class="op">=</span> <span class="va">PAstate</span><span class="op">)</span></span>
@@ -961,7 +795,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">R for Data Science (2e) was written by Hadley Wickham, Mine Çetinkaya-Rundel, and Garrett Grolemund.</div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/edit/main/MidAtlantic.Rmd" class="toc-action">Edit this page</a></p></div></div></div>
     <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
   </div>
 </footer>

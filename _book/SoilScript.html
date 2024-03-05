@@ -113,6 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Manual-Applied-Spatial-Ecology</a> 
         <div class="sidebar-tools-main">
+    <a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
   <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
   <div class="quarto-reader-toggle-btn">
   <i class="bi"></i>
@@ -533,10 +534,10 @@ Projected CRS: NAD83 / UTM zone 13N</code></pre>
 <span><span class="va">obs.tbl</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-   0  8.5  9.7 10.9 11.5 11.7 12.4 12.6 13.1 14.5 16.5 19.8 20.5 20.7 24.3 24.7 
- 137   27   35  133  161    8   21   60    6   17   20   86   21   28    4   79 
-26.7 36.8 37.2   39   40 
-  35   18    7    8   30 </code></pre>
+ 8.7 10.3 11.5 11.7 12.4 12.6 16.5 18.5 19.8 20.1   21 21.1 21.5 24.3 24.7 25.8 
+  29    6   21  102  151   67    4   34   21    2   92   20    5  137   84   38 
+26.5 26.7 27.1 
+  42   90    3 </code></pre>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#Also tally soil types for each mule deer sampled</span></span>
 <span><span class="va">obs.tbl2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">soils.locs</span><span class="op">[</span><span class="va">soils.locs</span><span class="op">]</span><span class="op">)</span></span>
@@ -553,14 +554,14 @@ Projected CRS: NAD83 / UTM zone 13N</code></pre>
 <span><span class="va">obs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-          0         8.5         9.7        10.9        11.5        11.7 
-0.145589798 0.028692880 0.037194474 0.141339001 0.171094580 0.008501594 
-       12.4        12.6        13.1        14.5        16.5        19.8 
-0.022316684 0.063761955 0.006376196 0.018065887 0.021253985 0.091392136 
-       20.5        20.7        24.3        24.7        26.7        36.8 
-0.022316684 0.029755579 0.004250797 0.083953241 0.037194474 0.019128587 
-       37.2          39          40 
-0.007438895 0.008501594 0.031880978 </code></pre>
+        8.7        10.3        11.5        11.7        12.4        12.6 
+0.030590717 0.006329114 0.022151899 0.107594937 0.159282700 0.070675105 
+       16.5        18.5        19.8        20.1          21        21.1 
+0.004219409 0.035864979 0.022151899 0.002109705 0.097046414 0.021097046 
+       21.5        24.3        24.7        25.8        26.5        26.7 
+0.005274262 0.144514768 0.088607595 0.040084388 0.044303797 0.094936709 
+       27.1 
+0.003164557 </code></pre>
 </div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">obs2</span> <span class="op">&lt;-</span> <span class="va">obs.tbl2</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">obs.tbl2</span><span class="op">)</span></span>
 <span><span class="va">obs2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -825,7 +826,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">R for Data Science (2e) was written by Hadley Wickham, Mine Çetinkaya-Rundel, and Garrett Grolemund.</div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/edit/main/SoilScript.Rmd" class="toc-action">Edit this page</a></p></div></div></div>
     <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
   </div>
 </footer>
