@@ -108,7 +108,7 @@ g2
 
 7\. Next we will run BBMM. Because BBMM package is no longer maintained on CRAN, we will use the function provided by adehabitatHR package with plotting adapted to sf and ggplot2 packages
 
-```{r eval=FALSE}
+```{r}
 loc <- st_as_sf(x = cat143, coords = c("X","Y"),crs = utm.crs)
 
 cat143traj <- sf2ltraj(loc, date="DT",id="CatID")

@@ -29,7 +29,7 @@ albers.crs <- st_crs(5070)
 
 4\. Load in a mule deer dataset we have used in previous exercises
 
-```{r}
+```{r eval=FALSE}
 muleys <-read.csv("data/muleysexample.csv", header=T)
 
 #Remove outlier locations
@@ -38,6 +38,7 @@ plot(st_geometry(coords),axes=T)
 deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
 plot(st_geometry(deer.spdf),axes=T)
 muleys <- as.data.frame(deer.spdf)
+#Need a class SpatialPointsDataFrame to use mcp function in adehabitatHR package
 loc <- data.frame("x"=deer.spdf$X,"y"=deer.spdf$Y)
 deer.spdf <- SpatialPointsDataFrame(loc,muleys)
 proj4string(deer.spdf) <- "+proj=utm +zone=17 +ellps=WGS84"
@@ -45,7 +46,7 @@ proj4string(deer.spdf) <- "+proj=utm +zone=17 +ellps=WGS84"
 
 5\. We are now ready to create MCPs for our new dataset "merge" by individual animal ID (Fig. 8.1).
 
-```{r}
+```{r eval=FALSE}
 cp <- mcp(deer.spdf[,2], percent=95)#(95% is the default)
 ## The size of the bounding polygon
 as.data.frame(cp)
@@ -55,7 +56,7 @@ plot(cp)
 plot(deer.spdf, add=TRUE)
 ```
 
-6\. Use sf package to write to a shapefile
+6\. Use sf package to write to a shapefile if needed
 
 ```{r eval=FALSE}
 cp <- as(cp,"sf")
@@ -64,7 +65,7 @@ st_write(cp, "MCPhomerange.shp")
 
 7\. We have chosen to exclude 5% of the most extreme relocations, but we could have made another choice. We may compute the MCP for various choices of the number of extreme relocations to be excluded, using the function mcp.area:
 
-```{r}
+```{r eval=FALSE}
 hrs <- mcp.area(deer.spdf[,2], percent=seq(50, 100, by = 5))
 hrs
 ```

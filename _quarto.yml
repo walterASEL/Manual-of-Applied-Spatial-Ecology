@@ -14,8 +14,10 @@ book:
       This book was built with <a href="https://quarto.org/">Quarto</a>.
   cover-image: CoverSlide2.jpg
   favicon: CoverSlide2.jpg
+  site-url: https://MASPE.walterASEL/
+  repo-url: https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology
   repo-branch: main
-  repo-actions: [edit, issue]
+  repo-actions: [edit]
   chapters:
     - index.Rmd
     - Preface.qmd
@@ -72,7 +74,6 @@ book:
         - LogisticRSF.Rmd
         - NegBinomial.Rmd
         
-
 format:
   html:
     theme:
@@ -82,5 +83,8 @@ format:
 
     author-meta: "W. David Walter"
     callout-appearance: simple
-
+  
+  pdf: 
+    documentclass: scrbook
+    
 editor: visual

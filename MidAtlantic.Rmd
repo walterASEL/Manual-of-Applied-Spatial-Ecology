@@ -27,7 +27,7 @@ albers.crs <- st_crs(5070) #CRS of shapefile layers #crs <- CRS("+proj=aea +lat_
 
 4\. We will use the tigris package to downloaded statewide layers for state and county outlines
 
-```{r}
+```{r eval=FALSE}
 st <- tigris::states() %>%   dplyr::filter(GEOID < "60") %>%    tigris::shift_geometry() #GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling 
 plot(st_geometry(st)) 
 st <- st_transform(st, albers.crs) 
@@ -41,7 +41,7 @@ MD.outline <- subset(st, st$NAME == "Maryland")
 
 5\. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site.
 
-```{r}
+```{r eval=FALSE}
 PAnlcd <- get_nlcd(template=PA.outline, label = 'Pennsylvania',force.redo = T)
 MDnlcd <- get_nlcd(template=MD.outline, label = 'Maryland',force.redo = T)
 nlcd <- mosaic(PAnlcd, MDnlcd, fun=min)
