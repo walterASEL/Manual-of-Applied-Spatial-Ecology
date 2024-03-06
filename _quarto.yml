@@ -1,7 +1,6 @@
 project:
   type: book
-  output-dir: _book
-
+  
 book:
   title: "Manual-Applied-Spatial-Ecology"
   author: "W. David Walter"
