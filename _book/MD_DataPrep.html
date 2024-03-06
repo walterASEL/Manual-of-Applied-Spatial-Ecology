@@ -520,12 +520,12 @@ all geometries</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>    [,1]
 1      5
-2   1135
-3  22200
-4  10213
-5   2255
-6  21926
-7  61187
+2   1052
+3  21750
+4   9733
+5   2133
+6  16290
+7  58264
 9      9
 10    14</code></pre>
 </div>
@@ -567,31 +567,31 @@ all geometries</code></pre>
 <span><span class="co">#next step of combining layers.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">nlcd</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   118944 obs. of  3 variables:
+<pre><code>'data.frame':   109250 obs. of  3 variables:
  $ x         : num  -1128960 -1128930 -1128900 -1128870 -1128840 ...
- $ y         : num  1725120 1725120 1725120 1725120 1725120 ...
- $ CLASS_NAME: num  6 6 7 5 7 7 7 7 7 7 ...</code></pre>
+ $ y         : num  1725360 1725360 1725360 1725360 1725360 ...
+ $ CLASS_NAME: num  7 7 7 7 5 7 7 7 6 7 ...</code></pre>
 </div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">elev</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   118944 obs. of  3 variables:
+<pre><code>'data.frame':   109250 obs. of  3 variables:
  $ x             : num  -1128960 -1128930 -1128900 -1128870 -1128840 ...
- $ y             : num  1725120 1725120 1725120 1725120 1725120 ...
- $ USGS_1_n38w109: num  2066 2066 2066 2066 2066 ...</code></pre>
+ $ y             : num  1725360 1725360 1725360 1725360 1725360 ...
+ $ USGS_1_n38w109: num  2075 2075 2077 2080 2082 ...</code></pre>
 </div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">slo</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   118938 obs. of  3 variables:
- $ x    : num  -1128930 -1128900 -1128870 -1128840 -1128810 ...
- $ y    : num  1725120 1725120 1725120 1725120 1725120 ...
- $ slope: num  2.77 2.92 2.93 2.81 2.52 ...</code></pre>
+<pre><code>'data.frame':   109250 obs. of  3 variables:
+ $ x    : num  -1128960 -1128930 -1128900 -1128870 -1128840 ...
+ $ y    : num  1725360 1725360 1725360 1725360 1725360 ...
+ $ slope: num  2.29 2.9 4.54 5.08 4.7 ...</code></pre>
 </div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">asp</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   118938 obs. of  3 variables:
- $ x     : num  -1128930 -1128900 -1128870 -1128840 -1128810 ...
- $ y     : num  1725120 1725120 1725120 1725120 1725120 ...
- $ aspect: num  187 170 169 179 201 ...</code></pre>
+<pre><code>'data.frame':   109250 obs. of  3 variables:
+ $ x     : num  -1128960 -1128930 -1128900 -1128870 -1128840 ...
+ $ y     : num  1725360 1725360 1725360 1725360 1725360 ...
+ $ aspect: num  178 213 237 234 222 ...</code></pre>
 </div>
 </div>
 <ol start="10" type="1">
@@ -621,26 +621,26 @@ all geometries</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html">head</a></span><span class="op">(</span><span class="va">layers</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         x       y CLASS_NAME              xy        x       y USGS_1_n38w109
-2 -1128930 1725120          6 -11289301725120 -1128930 1725120       2066.208
-3 -1128900 1725120          7 -11289001725120 -1128900 1725120       2066.122
-4 -1128870 1725120          5 -11288701725120 -1128870 1725120       2065.845
-5 -1128840 1725120          7 -11288401725120 -1128840 1725120       2065.617
-6 -1128810 1725120          7 -11288101725120 -1128810 1725120       2065.518
-7 -1128780 1725120          7 -11287801725120 -1128780 1725120       2065.893
+1 -1128960 1725360          7 -11289601725360 -1128960 1725360       2074.788
+2 -1128930 1725360          7 -11289301725360 -1128930 1725360       2074.990
+3 -1128900 1725360          7 -11289001725360 -1128900 1725360       2076.914
+4 -1128870 1725360          7 -11288701725360 -1128870 1725360       2079.564
+5 -1128840 1725360          5 -11288401725360 -1128840 1725360       2081.792
+6 -1128810 1725360          7 -11288101725360 -1128810 1725360       2083.144
                xy        x       y   aspect              xy        x       y
-2 -11289301725120 -1128930 1725120 186.6083 -11289301725120 -1128930 1725120
-3 -11289001725120 -1128900 1725120 169.6972 -11289001725120 -1128900 1725120
-4 -11288701725120 -1128870 1725120 168.8511 -11288701725120 -1128870 1725120
-5 -11288401725120 -1128840 1725120 179.2484 -11288401725120 -1128840 1725120
-6 -11288101725120 -1128810 1725120 200.8592 -11288101725120 -1128810 1725120
-7 -11287801725120 -1128780 1725120 224.8529 -11287801725120 -1128780 1725120
+1 -11289601725360 -1128960 1725360 177.7081 -11289601725360 -1128960 1725360
+2 -11289301725360 -1128930 1725360 212.5121 -11289301725360 -1128930 1725360
+3 -11289001725360 -1128900 1725360 237.0969 -11289001725360 -1128900 1725360
+4 -11288701725360 -1128870 1725360 233.5645 -11288701725360 -1128870 1725360
+5 -11288401725360 -1128840 1725360 222.2563 -11288401725360 -1128840 1725360
+6 -11288101725360 -1128810 1725360 206.8798 -11288101725360 -1128810 1725360
      slope              xy
-2 2.767000 -11289301725120
-3 2.924113 -11289001725120
-4 2.929363 -11288701725120
-5 2.805838 -11288401725120
-6 2.517983 -11288101725120
-7 1.946136 -11287801725120</code></pre>
+1 2.285503 -11289601725360
+2 2.902969 -11289301725360
+3 4.543044 -11289001725360
+4 5.080888 -11288701725360
+5 4.701881 -11288401725360
+6 4.078935 -11288101725360</code></pre>
 </div>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#Remove xys that are repeated in each layer</span></span>
 <span><span class="va">layers</span> <span class="op">=</span> <span class="va">layers</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">7</span>,<span class="fl">11</span>,<span class="fl">15</span>,<span class="fl">13</span><span class="op">:</span><span class="fl">14</span><span class="op">)</span><span class="op">]</span></span>
@@ -656,24 +656,24 @@ all geometries</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>aspect_categorical
     E     N     S     W 
- 7702  8355 33361 69520 </code></pre>
+ 6527  7899 30876 63948 </code></pre>
 </div>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">aspect_categorical</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  FALSE 
-118938 </code></pre>
+109250 </code></pre>
 </div>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">layers</span><span class="op">$</span><span class="va">aspect_categorical</span> <span class="op">=</span> <span class="va">aspect_categorical</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html">head</a></span><span class="op">(</span><span class="va">layers</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  nlcd elevation   aspect    slope        x       y aspect_categorical
-2    6  2066.208 186.6083 2.767000 -1128930 1725120                  S
-3    7  2066.122 169.6972 2.924113 -1128900 1725120                  S
-4    5  2065.845 168.8511 2.929363 -1128870 1725120                  S
-5    7  2065.617 179.2484 2.805838 -1128840 1725120                  S
-6    7  2065.518 200.8592 2.517983 -1128810 1725120                  S
-7    7  2065.893 224.8529 1.946136 -1128780 1725120                  S</code></pre>
+1    7  2074.788 177.7081 2.285503 -1128960 1725360                  S
+2    7  2074.990 212.5121 2.902969 -1128930 1725360                  S
+3    7  2076.914 237.0969 4.543044 -1128900 1725360                  W
+4    7  2079.564 233.5645 5.080888 -1128870 1725360                  W
+5    5  2081.792 222.2563 4.701881 -1128840 1725360                  S
+6    7  2083.144 206.8798 4.078935 -1128810 1725360                  S</code></pre>
 </div>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#write.table(layers,"layer1.txt",sep=",",col.names=TRUE, quote=FALSE)</span></span>
 <span></span>
@@ -704,13 +704,13 @@ all geometries</code></pre>
 <span><span class="va">test</span> <span class="op">=</span> <span class="fu">grab.values</span><span class="op">(</span><span class="va">layers2</span>, <span class="va">muleys</span><span class="op">$</span><span class="va">X</span>, <span class="va">muleys</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html">head</a></span><span class="op">(</span><span class="va">test</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     nlcd elevation  aspect    slope        x       y aspect_categorical
-471     6  2416.838 118.283 23.83838 -1114860 1725120                  E
-4711    6  2416.838 118.283 23.83838 -1114860 1725120                  E
-4712    6  2416.838 118.283 23.83838 -1114860 1725120                  E
-4713    6  2416.838 118.283 23.83838 -1114860 1725120                  E
-4714    6  2416.838 118.283 23.83838 -1114860 1725120                  E
-4715    6  2416.838 118.283 23.83838 -1114860 1725120                  E</code></pre>
+<pre><code>     nlcd elevation   aspect    slope        x       y aspect_categorical
+437     6  2395.623 280.6483 2.295674 -1115880 1725360                  W
+4371    6  2395.623 280.6483 2.295674 -1115880 1725360                  W
+4372    6  2395.623 280.6483 2.295674 -1115880 1725360                  W
+4373    6  2395.623 280.6483 2.295674 -1115880 1725360                  W
+4374    6  2395.623 280.6483 2.295674 -1115880 1725360                  W
+4375    6  2395.623 280.6483 2.295674 -1115880 1725360                  W</code></pre>
 </div>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">##NOTE that all values are the same but this is not correct.</span></span>
 <span><span class="co">##What is the problem here and how do we fix it?</span></span>
@@ -727,13 +727,13 @@ all geometries</code></pre>
 <span><span class="va">used</span><span class="op">$</span><span class="va">use</span> <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html">head</a></span><span class="op">(</span><span class="va">used</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      nlcd elevation   aspect    slope        x       y aspect_categorical use
-71176    7  2319.678 279.2745 3.335822 -1117710 1720620                  W   1
-45711    7  2351.774 216.1926 2.682197 -1117020 1722240                  S   1
-79169    6  2280.329 293.9049 3.794633 -1118640 1720110                  W   1
-84812    6  2259.534 294.1198 6.261055 -1119270 1719750                  W   1
-90948    3  2258.673 246.0630 2.609612 -1119270 1719360                  W   1
-78672    7  2253.320 288.7855 4.975383 -1119390 1720140                  W   1</code></pre>
+<pre><code>       nlcd elevation   aspect    slope        x       y aspect_categorical use
+49782     6  2353.957 263.8254 4.252453 -1116960 1721970                  W   1
+86836     6  2217.750 312.5775 6.662394 -1119690 1719420                  W   1
+77667     7  2248.726 241.1956 6.642384 -1119450 1720050                  W   1
+45847     7  2351.774 216.2095 2.682055 -1117020 1722240                  S   1
+458471    7  2351.774 216.2095 2.682055 -1117020 1722240                  S   1
+67683     7  2329.548 264.6193 2.048619 -1117440 1720740                  W   1</code></pre>
 </div>
 </div>
 <p>13. We also need to get some measure of what is available for our mule deer population (2nd order selection) or for each mule deer (3rd order selection). We really do not understand the need for 2nd order selection unless you are looking at deer across different landscapes but hardly seems necessary for deer occupying similar areas such as our mule deer in southwestern Colorado. Below we will focus on 3rd order selection with used locations for each deer being compared to available locations randomly determined within each deer’s MCP.</p>
@@ -1100,10 +1100,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </nav>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
-    <div class="nav-footer-left">R for Data Science (2e) was written by Hadley Wickham, Mine Çetinkaya-Rundel, and Garrett Grolemund.</div>   
+    <div class="nav-footer-left">Manual of Applied Spatial Ecology was written by W. David Walter.</div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/edit/main/MD_DataPrep.Rmd" class="toc-action">Edit this page</a></p></div></div></div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/edit/main/MD_DataPrep.Rmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
     <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
   </div>
 </footer>

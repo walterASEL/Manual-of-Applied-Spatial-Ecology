@@ -534,10 +534,10 @@ Projected CRS: NAD83 / UTM zone 13N</code></pre>
 <span><span class="va">obs.tbl</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
- 9.7 11.5 11.7 12.4 12.6 16.5 18.5 19.8 20.1 20.7   21 24.7 25.8 26.2 26.7 27.2 
-   6   89   35  142  232    6  166   22   34   34   49   25   14    8   13   25 
+   0  5.1 10.9 11.5 11.7 12.6 12.8 16.5 18.5 20.1 21.1 23.7 26.1 26.2   40 40.6 
+   7   26   12   40  149  108   20  133   67   34    2    6   41  158   46   80 
   42 
-  54 </code></pre>
+   2 </code></pre>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#Also tally soil types for each mule deer sampled</span></span>
 <span><span class="va">obs.tbl2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">soils.locs</span><span class="op">[</span><span class="va">soils.locs</span><span class="op">]</span><span class="op">)</span></span>
@@ -554,12 +554,12 @@ Projected CRS: NAD83 / UTM zone 13N</code></pre>
 <span><span class="va">obs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-        9.7        11.5        11.7        12.4        12.6        16.5 
-0.006289308 0.093291405 0.036687631 0.148846960 0.243186583 0.006289308 
-       18.5        19.8        20.1        20.7          21        24.7 
-0.174004193 0.023060797 0.035639413 0.035639413 0.051362683 0.026205451 
-       25.8        26.2        26.7        27.2          42 
-0.014675052 0.008385744 0.013626834 0.026205451 0.056603774 </code></pre>
+          0         5.1        10.9        11.5        11.7        12.6 
+0.007518797 0.027926960 0.012889366 0.042964554 0.160042965 0.116004296 
+       12.8        16.5        18.5        20.1        21.1        23.7 
+0.021482277 0.142857143 0.071965628 0.036519871 0.002148228 0.006444683 
+       26.1        26.2          40        40.6          42 
+0.044038668 0.169709989 0.049409237 0.085929108 0.002148228 </code></pre>
 </div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">obs2</span> <span class="op">&lt;-</span> <span class="va">obs.tbl2</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">obs.tbl2</span><span class="op">)</span></span>
 <span><span class="va">obs2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -821,10 +821,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </nav>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
-    <div class="nav-footer-left">R for Data Science (2e) was written by Hadley Wickham, Mine Çetinkaya-Rundel, and Garrett Grolemund.</div>   
+    <div class="nav-footer-left">Manual of Applied Spatial Ecology was written by W. David Walter.</div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/edit/main/SoilScript.Rmd" class="toc-action">Edit this page</a></p></div></div></div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/edit/main/SoilScript.Rmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
     <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
   </div>
 </footer>
