@@ -534,10 +534,10 @@ Projected CRS: NAD83 / UTM zone 13N</code></pre>
 <span><span class="va">obs.tbl</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
- 8.7 10.3 11.5 11.7 12.4 12.6 16.5 18.5 19.8 20.1   21 21.1 21.5 24.3 24.7 25.8 
-  29    6   21  102  151   67    4   34   21    2   92   20    5  137   84   38 
-26.5 26.7 27.1 
-  42   90    3 </code></pre>
+ 9.7 11.5 11.7 12.4 12.6 16.5 18.5 19.8 20.1 20.7   21 24.7 25.8 26.2 26.7 27.2 
+   6   89   35  142  232    6  166   22   34   34   49   25   14    8   13   25 
+  42 
+  54 </code></pre>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#Also tally soil types for each mule deer sampled</span></span>
 <span><span class="va">obs.tbl2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">soils.locs</span><span class="op">[</span><span class="va">soils.locs</span><span class="op">]</span><span class="op">)</span></span>
@@ -554,14 +554,12 @@ Projected CRS: NAD83 / UTM zone 13N</code></pre>
 <span><span class="va">obs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-        8.7        10.3        11.5        11.7        12.4        12.6 
-0.030590717 0.006329114 0.022151899 0.107594937 0.159282700 0.070675105 
-       16.5        18.5        19.8        20.1          21        21.1 
-0.004219409 0.035864979 0.022151899 0.002109705 0.097046414 0.021097046 
-       21.5        24.3        24.7        25.8        26.5        26.7 
-0.005274262 0.144514768 0.088607595 0.040084388 0.044303797 0.094936709 
-       27.1 
-0.003164557 </code></pre>
+        9.7        11.5        11.7        12.4        12.6        16.5 
+0.006289308 0.093291405 0.036687631 0.148846960 0.243186583 0.006289308 
+       18.5        19.8        20.1        20.7          21        24.7 
+0.174004193 0.023060797 0.035639413 0.035639413 0.051362683 0.026205451 
+       25.8        26.2        26.7        27.2          42 
+0.014675052 0.008385744 0.013626834 0.026205451 0.056603774 </code></pre>
 </div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">obs2</span> <span class="op">&lt;-</span> <span class="va">obs.tbl2</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">obs.tbl2</span><span class="op">)</span></span>
 <span><span class="va">obs2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

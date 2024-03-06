@@ -4,20 +4,21 @@ project:
 
 book:
   title: "Manual-Applied-Spatial-Ecology"
+  author: "W. David Walter"
+  date: last-modified
   reader-mode: true
 
   page-footer:
     left: |
-      R for Data Science (2e) was written by Hadley Wickham, Mine
-      Çetinkaya-Rundel, and Garrett Grolemund.
+      Manual of Applied Spatial Ecology was written by W. David Walter.
     right: |
       This book was built with <a href="https://quarto.org/">Quarto</a>.
   cover-image: CoverSlide2.jpg
   favicon: CoverSlide2.jpg
-  site-url: https://MASPE.walterASEL/
+  site-url: https://MASE.walterASEL/
   repo-url: https://github.com/walterASEL/Manual-of-Applied-Spatial-Ecology
   repo-branch: main
-  repo-actions: [edit]
+  repo-actions: [edit,issue]
   chapters:
     - index.Rmd
     - Preface.qmd
@@ -84,7 +85,7 @@ format:
     author-meta: "W. David Walter"
     callout-appearance: simple
   
-  pdf: 
-    documentclass: scrbook
+  #pdf: 
+    #documentclass: scrbook
     
 editor: visual
