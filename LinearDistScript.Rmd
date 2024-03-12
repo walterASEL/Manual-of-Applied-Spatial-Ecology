@@ -141,53 +141,50 @@ plot(st_geometry(cliprivers), col="blue",add=T)
 13\. We will start with the road layer by converting a single line to a set of segments packaged as a function.
 
 ```{r warning=FALSE,message=FALSE, eval=FALSE}
-foo <- function(cliproads){
-x <- cliproads@Lines[[1]]@coords
-cbind(
-head(x,-1),
-tail(x,-1))}
+# foo <- function(cliproads){
+# x <- cliproads@Lines[[1]]@coords
+# cbind(
+# head(x,-1),
+# tail(x,-1))}
 #The function can be applied successively to each line in the list we extracted from roads. 
 #Results are output as a list, then converted to a matrix.
 
-segs.lst <- lapply(cliproads@lines,foo)
-segs <- do.call(rbind,segs.lst)
-
-segs.x <- c(segs[,c(1,3)])
-segs.y <- c(segs[,c(2,4)])
-segs.owin <- as.owin(c(range(segs.x),range(segs.y)))#create a new "owin" class because 
+# segs.lst <- lapply(cliproads@lines,foo)
+# segs <- do.call(rbind,segs.lst)
+# 
+# segs.x <- c(segs[,c(1,3)])
+# segs.y <- c(segs[,c(2,4)])
+#segs.owin <- as.owin(c(range(segs.x),range(segs.y)))#create a new "owin" class because 
 #roads occur outside our bdy.owin created above
 
-roadSegs <- as(cliproads, "Spatial")
-roadSegs <- lapply(1:length(roadSegs), function(x) roadSegs[x,])
-roadSplit <- lapply(roadSegs[1:219], splitLines, dist = 50)
-
-
+# roadSegs <- as(cliproads, "Spatial")
+# roadSegs <- lapply(1:length(roadSegs), function(x) roadSegs[x,])
+# roadSplit <- lapply(roadSegs[1:219], splitLines, dist = 50)
 segs <- st_segments(cliproads,units::set_units(50,m))
-new_lines <- segs %>%
+segs_lines <- segs %>%
   st_as_sf(coords = c("x", "y"), crs = 5070) %>%
   group_by(LINEARID) %>%
   dplyr::summarize() %>%  # do_union=FALSE doesn't work as well
   filter(st_is_empty(.) == FALSE) %>%
   st_cast("MULTILINESTRING") 
 
-plot(st_geometry(new_lines))
-segs.owin <- as.owin(new_lines)
+plot(st_geometry(segs_lines))
+segs.psp <- as.psp(segs_lines, window=bdy.owin)
 #The segments as a planar segment pattern:
-segs.psp <- as.psp(segs, window=segs.owin)
+#segs.psp <- as.psp(segs, window=segs.owin)
 plot(segs.psp)
 points(deer.albers)
 segs.psp[1:5]
 #lengths.psp(segs.psp[1:10])
 
 #We can cut road segments into distances we control
-dist <- pointsOnLines(segs.psp, eps=1000)
+#dist <- pointsOnLines(segs.psp, eps=1000)
 ```
 
 14\. We first need to handle the mule deer locations. We need to make mule deer xy coordinates a planar point pattern (i.e., ppp) for use in package spatstat.
 
 ```{r warning=FALSE,message=FALSE, eval=FALSE}
-deer2 <-as.data.frame(deer.albers)
-newdeer <-cbind(deer2$x,deer2$y)
+newdeer <- data.frame(st_coordinates(deer.albers))
 xy.ppp <- as.ppp(newdeer,W=bdy.owin)
 plot(xy.ppp)
 ```
@@ -199,47 +196,54 @@ roaddist <- nncross(xy.ppp, segs.psp)$dist
 #Or identify segment number closest to each point
 v <- nearestsegment(xy.ppp,segs.psp)#Identifies segment number not a distance
 plot(segs.psp)
-plot(xy.ppp[101], add=TRUE, col="red")
-plot(segs.psp[v[101]], add=TRUE, lwd=5, col="red")
+plot(xy.ppp[11], add=TRUE, col="red")
+plot(segs.psp[v[11]], add=TRUE, lwd=8,col="blue")
 ```
 
 16\. Now we do the same to a river layer by converting a single line to a set of segments packaged as a function.
 
 ```{r eval=FALSE}
-foo <- function(cliprivers){
-x <- cliprivers@Lines[[1]]@coords
-cbind(
-head(x,-1),
-tail(x,-1))}
+# foo <- function(cliprivers){
+# x <- cliprivers@Lines[[1]]@coords
+# cbind(
+# head(x,-1),
+# tail(x,-1))}
 #The function can be applied successively to each line in the list we extracted from roads. 
 #Results are output as a list, then converted to a matrix.
-rivs.lst <- lapply(cliprivers@lines,foo)
-rivs <- do.call(rbind,rivs.lst)
-rivs.x <- c(rivs[,c(1,3)])
-rivs.y <- c(rivs[,c(2,4)])
-rivs.owin <- as.owin(c(range(rivs.x),range(rivs.y)))
+# rivs.lst <- lapply(cliprivers@lines,foo)
+# rivs <- do.call(rbind,rivs.lst)
+# rivs.x <- c(rivs[,c(1,3)])
+# rivs.y <- c(rivs[,c(2,4)])
+# rivs.owin <- as.owin(c(range(rivs.x),range(rivs.y)))
+segs2 <- st_segments(cliprivers,units::set_units(50,m))
+segs2_lines <- segs2 %>%
+  st_as_sf(coords = c("x", "y"), crs = 5070) %>%
+  group_by(LINEARID) %>%
+  dplyr::summarize() %>%  # do_union=FALSE doesn't work as well
+  filter(st_is_empty(.) == FALSE) %>%
+  st_cast("MULTILINESTRING") 
 
+plot(st_geometry(segs2_lines))
+segs2.psp <- as.psp(segs2_lines, window=bdy.owin)
 #The segments as a planar segment pattern:
-rivs.psp <- as.psp(rivs, window=rivs.owin)
-plot(rivs.psp)
+plot(segs2.psp)
 points(deer.albers)
-is.psp(rivs.psp)
+is.psp(segs2.psp)
 #All is TRUE so now we can move forward with the analysis
 ```
 
 17\. Now we can determine the distance from mule deer locations (xy.ppp) to the nearest river.
 
 ```{r eval=FALSE}
-rivdist <- nncross(xy.ppp, rivs.psp)$dist
+rivdist <- nncross(xy.ppp, segs2.psp)$dist
 
 #Or identify segment number closest to each point
-riv <- nearestsegment(xy.ppp,rivs.psp)
-plot(rivs.psp, lwd=1)
+riv <- nearestsegment(xy.ppp,segs2.psp)
+plot(segs2.psp, lwd=1)
 plot(xy.ppp[1], add=TRUE, col="red")
-plot(rivs.psp[riv[1]], add=TRUE, lwd=5, col="red")
-plot(xy.ppp[290], add=TRUE, col="blue")
-plot(rivs.psp[riv[290]], add=TRUE, lwd=5, col="blue")
-points(deer.albers)
+plot(segs2.psp[riv[1]], add=TRUE, lwd=5)
+plot(xy.ppp[10], add=TRUE, col="blue")
+plot(segs2.psp[riv[10]], add=TRUE, lwd=5, col="blue")
 ```
 
 18\. We can then summarize the distances in some meaningful way for analysis. Instead of representing distance to road as individual numerical values we can bin the distances in some categories we determine appropriate for our research objective.
