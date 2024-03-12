@@ -1,3 +1,9 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
 ## Selection Ratios
 
 We are going to focus the remainder of this chapter on Selection Ratios and Resource Selection Functions (RSFs) because Selection Ratios identify a general use of habitat given what is available that can be further explored and studied through use of RSFs. Resource Selection Functions are spatially-explicit models that predict the (relative) probability of use by an animal at a given area/location during a given time, based on the environmental conditions that influence or account for selection. There are numerous types of RSFs that can be performed based on the availability of data collected during the study and there are volumes of literature devoted to the topic of resource selection and sampling designs for radiotelemetry studies (Manly et al. 2002, Cooper and Millspaugh 2001, Erickson et al. 2001, Leban et al. 2001).
@@ -28,12 +34,12 @@ MDsr <- read.csv("data/MD_winter12.csv",header=T)
 MDsr <- subset(MDsr,MDsr$animal_id !="647579A")
 MDsr$animal_id <- factor(MDsr$animal_id)
 used <- subset(MDsr, MDsr$use == 1)
-used <- used[c(-2,-3,-5:-6,-8:-15)]
+used <- used[c(-1,-3,-5:-6,-8:-15)]
 used <- xtabs(~used$animal_id + used$crop, used)
 used <- as.data.frame.matrix(used[1:13, 1:5])
 
 rand <- subset(MDsr, MDsr$use == 0)
-rand <- rand[c(-2,-3,-5:-6,-8:-15)]
+rand <- rand[c(-1,-3,-5:-6,-8:-15)]
 rand <- xtabs(~rand$animal_id + rand$crop, rand)
 rand <- as.data.frame.matrix(rand[1:13, 1:5])
 
@@ -47,12 +53,11 @@ Next we will run on distance to road binned into 10 categories
 
 ```{r eval=FALSE}
 #Now run on distance to roads binned into 10 categories
-MDsr_road <- read.csv("MD_winter12.csv",header=T)
+MDsr_road <- read.csv("data/MD_winter12.csv",header=T)
 #Delete deer that have limited data and will result in errors in code below
 MDsr_road <- subset(MDsr_road,MDsr_road$animal_id !="647582A" & MDsr_road$animal_id 
 !="647584A" & MDsr_road$animal_id !="647572A" & MDsr_road$animal_id !="647574A" &
 MDsr_road$animal_id !="647593A" )
-MDsr_road$animal_id <- factor(MDsr_road$animal_id)
 
 #Bin roads into 4 categories instead of 10
 MDsr_road$NewRoad <- as.factor(MDsr_road$BinRoad)
