@@ -19,6 +19,7 @@ library(polyCub)#replaces gpclib function
 library(OneR)#bin function
 library(sf)
 library(terra)
+library(dplyr)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -156,6 +157,21 @@ segs.y <- c(segs[,c(2,4)])
 segs.owin <- as.owin(c(range(segs.x),range(segs.y)))#create a new "owin" class because 
 #roads occur outside our bdy.owin created above
 
+roadSegs <- as(cliproads, "Spatial")
+roadSegs <- lapply(1:length(roadSegs), function(x) roadSegs[x,])
+roadSplit <- lapply(roadSegs[1:219], splitLines, dist = 50)
+
+
+segs <- st_segments(cliproads,units::set_units(50,m))
+new_lines <- segs %>%
+  st_as_sf(coords = c("x", "y"), crs = 5070) %>%
+  group_by(LINEARID) %>%
+  dplyr::summarize() %>%  # do_union=FALSE doesn't work as well
+  filter(st_is_empty(.) == FALSE) %>%
+  st_cast("MULTILINESTRING") 
+
+plot(st_geometry(new_lines))
+segs.owin <- as.owin(new_lines)
 #The segments as a planar segment pattern:
 segs.psp <- as.psp(segs, window=segs.owin)
 plot(segs.psp)
