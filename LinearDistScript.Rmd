@@ -20,6 +20,7 @@ library(OneR)#bin function
 library(sf)
 library(terra)
 library(dplyr)
+library(nngeo)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -276,6 +277,25 @@ BinRivers <- cut(rivdist, 5, method='intervals', include.lowest=TRUE, labels=c('
 table(BinRivers)
 
 #Now use cbind function to add binned distances to muleys dataset.
+#First I had to find a function to easily convert sf dataframe with geometry to dataframe that includes all data and columns for x and y:
+#https://github.com/r-spatial/sf/issues/231
+sfc_as_cols <- function(x, geometry, names = c("x","y")) {
+  if (missing(geometry)) {
+    geometry <- sf::st_geometry(x)
+  } else {
+    geometry <- rlang::eval_tidy(enquo(geometry), x)
+  }
+  stopifnot(inherits(x,"sf") && inherits(geometry,"sfc_POINT"))
+  ret <- sf::st_coordinates(geometry)
+  ret <- tibble::as_tibble(ret)
+  stopifnot(length(names) == ncol(ret))
+  x <- x[ , !names(x) %in% names]
+  ret <- setNames(ret,names)
+  dplyr::bind_cols(x,ret)
+}
+
+muleys2 <- sfc_as_cols(deer.albers, st_centroid(geometry))
+
 Dist <- cbind(BinRoad,BinRivers)
-muleys <- cbind(muleys, Dist)
+muleys <- cbind(muleys2, Dist)
 ```
