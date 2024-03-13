@@ -20,6 +20,7 @@ library(sf)
 library(terra)
 library(dplyr)
 library(nngeo)
+library(rlang)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
