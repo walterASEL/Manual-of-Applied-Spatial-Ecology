@@ -292,79 +292,73 @@ stacked_sf <- bind_rows(list(observed = deer.albers, random = sample_sf), .id = 
 
 stacked_sf
 
-settbuff.df=st_buffer(deer.albers,500)
-settbuff.sf=st_buffer(deer.albers,500) %>% st_as_sfc()
-
-#Determine the habitat available using all code below
-#First create random sample of points in each polygon
-
-ranbuff <- st_sample(settbuff.df,size=c(3,3),exact = T, type="random", by_polygon = TRUE)
+# settbuff.df=st_buffer(deer.albers,500)
+# settbuff.sf=st_buffer(deer.albers,500) %>% st_as_sfc()
+# 
+# #Determine the habitat available using all code below
+# #First create random sample of points in each polygon
+# 
+# ranbuff <- st_sample(settbuff.df,size=c(3,3),exact = T, type="random", by_polygon = TRUE)
 #ranbuff <- st_sample(settbuff,size=c(3,3), type="random", by_polygon = TRUE)
 plot(st_geometry(settbuff.sf)) ; plot(st_geometry(stacked_sf),add=T,col='red', pch=3, cex=.5)
 
 
-buffpt_id <- as.data.frame(ranbuff)
+#buffpt_id <- as.data.frame(ranbuff)
 
-p1_sf = st_sf(ranbuff)
-p1_joined = st_intersects(ranbuff, settbuff.df)
+#p1_sf = st_sf(ranbuff)
+#p1_joined = st_intersects(ranbuff, settbuff.df)
 #Now to assign IDs, we needed help (https://github.com/r-spatial/sf/issues/1014) so thank you @edzer!
 #n = c(1,1,1)
 #ranbuffwIDs <- st_sf(id = rep(seq_along(n), n), geom = ranbuff)
 
-xrand <- rep(c(1,2,3),length(settbuff))
-xrand$id <- 
+#xrand <- rep(c(1,2,3),length(settbuff))
+#xrand$id <- 
 
 #ranbuff.merged <- do.call('rbind', ranbuff)
 
 # generate a reconstituted vector of animal IDs
-deer_id <- nrow(ranbuff.merged, deer.albers$id)
+#deer_id <- nrow(ranbuff.merged, deer.albers$id)
 
-buffpt_id <- paste(substr(deer_id, ranbuffwIDs), sep="_")
+#buffpt_id <- paste(substr(deer_id, ranbuffwIDs), sep="_")
 
-st_sf(id= rep(seq_along(ranbuff.merged),ranbuff.merged), geom = randbuff)
+#st_sf(id= rep(seq_along(ranbuff.merged),ranbuff.merged), geom = randbuff)
 
-points_sf_joined <- 
-  st_join(ranbuff, settbuff) %>%  # spatial join to get intersection of points and poly
-  filter(!is.na(num)) # 'rgn_name'num' just one col from the polygon data that I chose to filter on, could use any. The idea is to get only the points that fall in the polygon
+#points_sf_joined <- 
+  #st_join(ranbuff, settbuff) %>%  # spatial join to get intersection of points and poly
+  #filter(!is.na(num)) # 'rgn_name'num' just one col from the polygon data that I chose to filter on, could use any. The idea is to get only the points that fall in the polygon
 
-buff_ids <- sf::st_join(settbuff,ranbuff.merged)
+#buff_ids <- sf::st_join(settbuff,ranbuff.merged)
 #Extract the original IDs
-buff_ids <- rownames(ranbuff.merged) #sapply(slot(settbuff, 'polygons'), function(i) slot(i, 'ID'))
-buff_ids <- paste(settbuff.df$id, buff_ids, sep="_")
+#buff_ids <- rownames(ranbuff.merged) #sapply(slot(settbuff, 'polygons'), function(i) slot(i, 'ID'))
+#buff_ids <- paste(settbuff.df$id, buff_ids, sep="_")
 #Determine the number of ACTUAL sample points generated for each polygon
-buffpts <- sapply(ranbuff, function(i) nrow(i@coords))
-buffpts[1:20] #Nice check of how many points generated per polygon 
+#buffpts <- sapply(ranbuff, function(i) nrow(i@coords))
+#buffpts[1:20] #Nice check of how many points generated per polygon 
 # generate a reconstituted vector of point IDs
-buffpt_id <- rep(buff_ids, buffpts)
+#buffpt_id <- rep(buff_ids, buffpts)
  
 # promote to SpatialPointsDataFrame
-buff.final <- SpatialPointsDataFrame(ranbuff.merged, data=data.frame(poly_id=buffpt_id))
+#buff.final <- SpatialPointsDataFrame(ranbuff.merged, data=data.frame(poly_id=buffpt_id))
  
 #Plot buff.final on buffered circles
-plot(settbuff) ; points(buff.final, col="red",pch=3, cex=0.5)
-
+#plot(settbuff) ; points(buff.final, col="red",pch=3, cex=0.5)
+#Grab coordinates of all points
+availxys <- st_coordinates(stacked_sf)
+availxys <- data.frame(availxys)
 # make 'buff.final' a data.frame
-buffer.df = as.data.frame(buff.final)
+buffer.df = as.data.frame(stacked_sf)
 names(buffer.df) = c("ID","x", "y")
 head(buffer.df)
 str(random.df)
 str(buffer.df)
 
 # can take 5+ minutes
-buff_avail = grab.values(layers2, buffer.df$x, buffer.df$y)
-buff_avail$x = buffer.df$x
-buff_avail$y = buffer.df$y
-buff_avail$animal_id = buffpt_id
-buff_avail$use = 0
-
-data2 = rbind(buff_avail, used)
-
-#Save workspace so all analysis are available
-save.image("RSF_dataprep.RData")
-
-#Before closing, let's save the "used" and available data set to use in the next exercise
-write.table(used, "MD_used.txt")
-write.table(available, "MD_avail.txt")
+buff_avail = grab.values(layers2, availxys$X, availxys$Y)
+buff_avail <- cbind(stacked_sf,buff_avail)
+buff_avail <- st_drop_geometry(buff_avail)
+buff_avail$use = buff_avail$type
+buff_avail$use[buff_avail$type == "observed"] <- 1
+buff_avail$use[buff_avail$type == "random"] <- 0
 ```
 
 16\. We are going to focus the remainder of this chapter on Selection Ratios and Resource Selection Functions (RSFs) because Selection Ratios identify a general use of habitat given what is available that can be further explored and studied through use of RSFs. Resource Selection Functions are spatially-explicit models that predict the (relative) probability of use by an animal at a given area/location during a given time, based on the environmental conditions that influence or account for selection. There are numerous types of RSFs that can be performed based on the availability of data collected during the study and there are volumes of literature devoted to the topic of resource selection and sampling designs for radiotelemetry studies (Manly et al. 2002, Cooper and Millspaugh 2001, Erickson et al. 2001, Leban et al. 2001).
