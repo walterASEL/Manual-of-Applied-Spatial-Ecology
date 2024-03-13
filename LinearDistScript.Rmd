@@ -14,7 +14,6 @@ First we will begin with determining the distance between several features. In o
 
 ```{r warning=FALSE, message=FALSE}
 library(spatstat)
-#library(maptools)#Needed for spatstat class "owin"
 library(polyCub)#replaces gpclib function
 library(OneR)#bin function
 library(sf)
@@ -142,44 +141,20 @@ plot(st_geometry(cliprivers), col="blue",add=T)
 13\. We will start with the road layer by converting a single line to a set of segments packaged as a function.
 
 ```{r warning=FALSE,message=FALSE, eval=FALSE}
-# foo <- function(cliproads){
-# x <- cliproads@Lines[[1]]@coords
-# cbind(
-# head(x,-1),
-# tail(x,-1))}
-#The function can be applied successively to each line in the list we extracted from roads. 
-#Results are output as a list, then converted to a matrix.
-
-# segs.lst <- lapply(cliproads@lines,foo)
-# segs <- do.call(rbind,segs.lst)
-# 
-# segs.x <- c(segs[,c(1,3)])
-# segs.y <- c(segs[,c(2,4)])
-#segs.owin <- as.owin(c(range(segs.x),range(segs.y)))#create a new "owin" class because 
-#roads occur outside our bdy.owin created above
-
-# roadSegs <- as(cliproads, "Spatial")
-# roadSegs <- lapply(1:length(roadSegs), function(x) roadSegs[x,])
-# roadSplit <- lapply(roadSegs[1:219], splitLines, dist = 50)
 segs <- st_segments(cliproads,units::set_units(50,m))
 segs_lines <- segs %>%
   st_as_sf(coords = c("x", "y"), crs = 5070) %>%
   group_by(LINEARID) %>%
-  dplyr::summarize() %>%  # do_union=FALSE doesn't work as well
+  dplyr::summarize() %>%  
   filter(st_is_empty(.) == FALSE) %>%
   st_cast("MULTILINESTRING") 
 
 plot(st_geometry(segs_lines))
 segs.psp <- as.psp(segs_lines, window=bdy.owin)
 #The segments as a planar segment pattern:
-#segs.psp <- as.psp(segs, window=segs.owin)
 plot(segs.psp)
 points(deer.albers)
 segs.psp[1:5]
-#lengths.psp(segs.psp[1:10])
-
-#We can cut road segments into distances we control
-#dist <- pointsOnLines(segs.psp, eps=1000)
 ```
 
 14\. We first need to handle the mule deer locations. We need to make mule deer xy coordinates a planar point pattern (i.e., ppp) for use in package spatstat.
@@ -204,23 +179,11 @@ plot(segs.psp[v[11]], add=TRUE, lwd=8,col="blue")
 16\. Now we do the same to a river layer by converting a single line to a set of segments packaged as a function.
 
 ```{r eval=FALSE}
-# foo <- function(cliprivers){
-# x <- cliprivers@Lines[[1]]@coords
-# cbind(
-# head(x,-1),
-# tail(x,-1))}
-#The function can be applied successively to each line in the list we extracted from roads. 
-#Results are output as a list, then converted to a matrix.
-# rivs.lst <- lapply(cliprivers@lines,foo)
-# rivs <- do.call(rbind,rivs.lst)
-# rivs.x <- c(rivs[,c(1,3)])
-# rivs.y <- c(rivs[,c(2,4)])
-# rivs.owin <- as.owin(c(range(rivs.x),range(rivs.y)))
 segs2 <- st_segments(cliprivers,units::set_units(50,m))
 segs2_lines <- segs2 %>%
   st_as_sf(coords = c("x", "y"), crs = 5070) %>%
   group_by(LINEARID) %>%
-  dplyr::summarize() %>%  # do_union=FALSE doesn't work as well
+  dplyr::summarize() %>%  
   filter(st_is_empty(.) == FALSE) %>%
   st_cast("MULTILINESTRING") 
 

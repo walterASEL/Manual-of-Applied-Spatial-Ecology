@@ -17,6 +17,8 @@ library(adehabitatHR)
 library(FedData)
 library(sf)
 library(terra)
+library(rlang)
+library(dplyr)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -278,22 +280,49 @@ data = rbind(available, used)
 15\. The above code is for 3rd order selection within home range of each deer. We could also look at 3rd order selection within a buffered circle around each mule deer location that is common in Discrete Choice Models. The code is similar except the initial steps of creating buffered polygons and obviously includes a lot more polygons than simply MCPs for each deer. Determining the daily distance moved was done in Chapter 3 but new code is available to estimate for each deer or all deer combined.
 
 ```{r eval=FALSE}
-settbuff=st_buffer(deer.albers,500) %>% st_as_sfc()
+
+sample_sf <- deer.albers %>% 
+  rowwise() %>% 
+  mutate(geometry = st_buffer(geometry, 500) %>% st_sample(3) %>% st_union()) %>% 
+  ungroup() %>% 
+  st_cast("POINT")
+
+# bind together, name ("observed" / "random") will be used for a type column
+stacked_sf <- bind_rows(list(observed = deer.albers, random = sample_sf), .id = "type") 
+
+stacked_sf
+
+settbuff.df=st_buffer(deer.albers,500)
+settbuff.sf=st_buffer(deer.albers,500) %>% st_as_sfc()
 
 #Determine the habitat available using all code below
 #First create random sample of points in each polygon
 
-ranbuff <- st_sample(settbuff,size=c(3,3),exact = T, type="random", by_polygon = TRUE)
+ranbuff <- st_sample(settbuff.df,size=c(3,3),exact = T, type="random", by_polygon = TRUE)
 #ranbuff <- st_sample(settbuff,size=c(3,3), type="random", by_polygon = TRUE)
-plot(st_geometry(settbuff)) ; plot(st_geometry(ranbuff),add=T,col='red', pch=3, cex=.5)
+plot(st_geometry(settbuff.sf)) ; plot(st_geometry(stacked_sf),add=T,col='red', pch=3, cex=.5)
 
+
+buffpt_id <- as.data.frame(ranbuff)
+
+p1_sf = st_sf(ranbuff)
+p1_joined = st_intersects(ranbuff, settbuff.df)
 #Now to assign IDs, we needed help (https://github.com/r-spatial/sf/issues/1014) so thank you @edzer!
-n = c(1,2,3)
-ranbuffwIDs <- st_sf(id = rep(seq_along(n), n), geom = ranbuff)
+#n = c(1,1,1)
+#ranbuffwIDs <- st_sf(id = rep(seq_along(n), n), geom = ranbuff)
 
-ranbuff.merged <- do.call('rbind', ranbuffwIDs)
+xrand <- rep(c(1,2,3),length(settbuff))
+xrand$id <- 
+
+#ranbuff.merged <- do.call('rbind', ranbuff)
+
+# generate a reconstituted vector of animal IDs
+deer_id <- nrow(ranbuff.merged, deer.albers$id)
+
+buffpt_id <- paste(substr(deer_id, ranbuffwIDs), sep="_")
 
 st_sf(id= rep(seq_along(ranbuff.merged),ranbuff.merged), geom = randbuff)
+
 points_sf_joined <- 
   st_join(ranbuff, settbuff) %>%  # spatial join to get intersection of points and poly
   filter(!is.na(num)) # 'rgn_name'num' just one col from the polygon data that I chose to filter on, could use any. The idea is to get only the points that fall in the polygon
@@ -301,7 +330,7 @@ points_sf_joined <-
 buff_ids <- sf::st_join(settbuff,ranbuff.merged)
 #Extract the original IDs
 buff_ids <- rownames(ranbuff.merged) #sapply(slot(settbuff, 'polygons'), function(i) slot(i, 'ID'))
-buff_ids <- paste(settbuff$id, buff_ids, sep="_")
+buff_ids <- paste(settbuff.df$id, buff_ids, sep="_")
 #Determine the number of ACTUAL sample points generated for each polygon
 buffpts <- sapply(ranbuff, function(i) nrow(i@coords))
 buffpts[1:20] #Nice check of how many points generated per polygon 
