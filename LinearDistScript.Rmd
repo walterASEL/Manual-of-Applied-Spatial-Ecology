@@ -109,7 +109,7 @@ plot(st_geometry(deer.albers),add=T, col="red")
 11\. Then we need to expand the bounding polygon so all locations are included. We can then make the bounding polygon (AlbersSP) a class owin in order to proceed with functions in package spatstat.
 
 ```{r warning=FALSE,message=FALSE}
-buffSP <- st_buffer(AlbersSP,1000)
+buffSP <- st_buffer(AlbersSP,1500)
 plot(st_geometry(buffSP))
 plot(st_geometry(deer.albers),add=T,col="red")
 ```
@@ -261,5 +261,5 @@ sfc_as_cols <- function(x, geometry, names = c("x","y")) {
 muleys2 <- sfc_as_cols(deer.albers, st_centroid(geometry))
 
 Dist <- cbind(BinRoad,BinRivers)
-muleys <- cbind(muleys2, Dist)
+muleys <- cbind(muleys2, roaddist, rivdist,Dist)
 ```
