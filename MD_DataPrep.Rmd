@@ -97,8 +97,7 @@ crops <-rast("data/crop12clip.tif")
 
 # Reclassify crops raster from above into 9 groups
 # all values between 0 and 20 equal 1, etc.
-m <- c(-Inf,0,NA,2, 7, 2, 20, 60, 3, 60, 70, 4, 110, 132, 5, 133, 150, 6, 151, 172, 7, 
-       180, 183, 8, 189, 191, 9,192,205,10)
+m <- c(-Inf,0,NA,1, 60, 2, 60, 70, 3, 110, 132, 4, 133, 150, 5, 151, 205,6)
 rclmat <- matrix(m, ncol=3, byrow=TRUE)
 rc <- classify(crops, rclmat)
 plot(rc)

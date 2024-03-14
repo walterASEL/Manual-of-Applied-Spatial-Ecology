@@ -29,18 +29,19 @@ data_1 <- read.csv("data/MD_winter12sub.csv",header=T)
 ###################### MODELING #########################
 data_1$crop <- data_1$nlcd
 data_1$crop=as.factor(data_1$crop)
+data_1$aspect_categorical=as.factor(data_1$aspect_categorical)
 ```
 
 4\. We may need to use code that changes Reference Categories of our data. For our analysis we are going to define reference category of \emph{used} habitat as crop= 1. Crop category 1 is sunflower which was the crop of interest but was not selected for based on Selection Ratios in Exercise 8.4.
 
 ```{r eval=FALSE}
-fit1 = glmer(use ~ relevel(crop,"5")+(1|animal_id), data=data_1, family=binomial(link=
+fit1 = glmer(use ~ crop+(1|animal_id), data=data_1, family=binomial(link=
   "logit"),nAGQ = 0)#Sunflower and cover model
-fit2 = glmer(use ~ elevation+(1|animal_id), data=data_1, family=binomial(link="logit"),nAGQ
+fit2 = glmer(use ~ slope+(1|animal_id), data=data_1, family=binomial(link="logit"),nAGQ
   = 0)#Distance to cover only model
 fit3 = glmer(use ~ crop+slope+(1|animal_id), data=data_1, family=binomial(link="logit"),nAGQ
   = 0)#Distance to roads only model
-fit4 = glmer(use ~ crop+elevation+(1|animal_id), data=data_1, family=binomial(link="logit"),
+fit4 = glmer(use ~ crop+aspect_categorical+(1|animal_id), data=data_1, family=binomial(link="logit"),
   nAGQ = 0)#Distance to cover and roads model
 fit5 = glmer(use ~ 1|animal_id, data=data_1, family=binomial(link="logit"),nAGQ = 0)#Intercept model
 ```
