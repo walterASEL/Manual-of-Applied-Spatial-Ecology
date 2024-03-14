@@ -43,11 +43,32 @@ plot(st_geometry(deer.spdf),axes=T)
 5.  Only use code in this section for example exercise so fewer locations are used.
 
 ```{r}
-deer.spdf <- deer.spdf[sample(nrow(deer.spdf),100),]
+#deer.spdf <- deer.spdf[sample(nrow(deer.spdf),2000),]
 
 #Project deer.spdf to Albers as in previous exercise
 deer.albers <-st_transform(deer.spdf, crs=albers.crs)
 plot(st_geometry(deer.albers),axes=T)
+
+#Need to grab the data for the cropped dataset for use later
+#First I had to find a function to easily convert sf dataframe with geometry to dataframe that includes all data and columns for x and y:
+#https://github.com/r-spatial/sf/issues/231
+sfc_as_cols <- function(x, geometry, names = c("x","y")) {
+  if (missing(geometry)) {
+    geometry <- sf::st_geometry(x)
+  } else {
+    geometry <- rlang::eval_tidy(enquo(geometry), x)
+  }
+  stopifnot(inherits(x,"sf") && inherits(geometry,"sfc_POINT"))
+  ret <- sf::st_coordinates(geometry)
+  ret <- tibble::as_tibble(ret)
+  stopifnot(length(names) == ncol(ret))
+  x <- x[ , !names(x) %in% names]
+  ret <- setNames(ret,names)
+  dplyr::bind_cols(x,ret)
+}
+
+muleys <- sfc_as_cols(deer.albers, st_centroid(geometry))
+
 ```
 
 6\. If we get some NA errors because our grid does not encompass our panther locations then we can expand the grid size extending beyond our locations using methods in an earlier exercise.
@@ -147,7 +168,6 @@ for (z in length(asp)){
   elev <- elev[elev$xy %in% slo$xy,]
   asp <- asp[asp$xy %in% asp$xy,]
   nlcd <- nlcd[nlcd$xy %in% asp$xy,]
-  
 ```
 
 11\. Combine elevation, slope, and aspect into one layer.
@@ -169,7 +189,7 @@ table(aspect_categorical)
 table(is.na(aspect_categorical))
 layers$aspect_categorical = aspect_categorical
 head(layers)
-write.table(layers,"data/layer1.txt",sep=",",col.names=TRUE, quote=FALSE)
+#write.table(layers,"data/layer1.txt",sep=",",col.names=TRUE, quote=FALSE)
 
 layers2 <- layers #change to layers2 simply to avoid confusion with "layer" term in function 
 #below
@@ -206,14 +226,14 @@ head(test)
 ##What is the problem here and how do we fix it?
 
 #Need to grab Albers XY not UTM as in muleys above
-muleys <- as.data.frame(sf::st_coordinates(deer.albers))
+muleys2 <- as.data.frame(sf::st_coordinates(deer.albers))
 
 # grab all values for used and available points based on combined layer data set
 # can take 5+ minutes
-used = grab.values(layers2, muleys$X, muleys$Y)
+used = grab.values(layers2, muleys2$X, muleys2$Y)
 # used$x = muleys$X
 # used$y = muleys$Y
-# used$animal_id = muleys$id
+used$animal_id = muleys$id
 used$use = 1
 head(used)
 ```
@@ -223,15 +243,15 @@ head(used)
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
 #Create MCP for all locations for each deer by ID (3nd order selection).
 #3 lines below needed for mcp function to work
-muleys2 <- as.data.frame(deer.albers)
-deer.spdf <- SpatialPointsDataFrame(muleys,muleys2)
+muleys <- st_drop_geometry(muleys)
+deer.spdf <- SpatialPointsDataFrame(muleys2,muleys)
 
 cp = mcp(deer.spdf[,2],percent=100)
 as.data.frame(cp)
 
 #Determine the habitat available using all code below
 #First create random sample of points in each polygon
-random <- sapply(slot(cp, 'polygons'), function(i) spsample(i, n=50, type='random', offset=c(0,0)))
+random <- sapply(slot(cp, 'polygons'), function(i) spsample(i, n=100, type='random', offset=c(0,0)))
 plot(cp) ; points(random[[2]], col='red', pch=3, cex=.5)#The number in double brackets changes polygons stack into a single SpatialPoints object
 random.merged <- do.call('rbind', random)
 #Extract the original IDs
@@ -259,6 +279,9 @@ head(available)
 
 ```{r eval=FALSE}
 data = rbind(available, used)
+#Write out dataset for example dataset
+write.csv(data,"data/MD_winter12sub.csv")
+
 ##A quick check of the data to determine if correct number of records.
 #''data.frame':	200 obs. of  9 variables:
 #100 locations used +

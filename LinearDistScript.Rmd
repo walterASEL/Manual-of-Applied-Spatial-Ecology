@@ -109,7 +109,7 @@ plot(st_geometry(deer.albers),add=T, col="red")
 11\. Then we need to expand the bounding polygon so all locations are included. We can then make the bounding polygon (AlbersSP) a class owin in order to proceed with functions in package spatstat.
 
 ```{r warning=FALSE,message=FALSE}
-buffSP <- st_buffer(AlbersSP,1500)
+buffSP <- st_buffer(AlbersSP,2000)
 plot(st_geometry(buffSP))
 plot(st_geometry(deer.albers),add=T,col="red")
 ```
@@ -128,12 +128,14 @@ is.owin(bdy.owin)
 12\. Now clip the raster using the buffered bounding box (buffSP) created in step 5.
 
 ```{r warning=FALSE,message=FALSE}
-bbclip <- crop(veg, buffSP) 
-cliproads <- st_intersection(roads, buffSP, byid=TRUE)
-cliprivers <- st_intersection(rivers, buffSP, byid=TRUE)
+cropSP <- st_buffer(AlbersSP,1000)
+bbclip <- crop(veg, cropSP) 
+cliproads <- st_intersection(roads, cropSP, byid=TRUE)
+cliprivers <- st_intersection(rivers, cropSP, byid=TRUE)
 
-plot(bbclip)
-plot(st_geometry(buffSP),add=T)
+plot(st_geometry(buffSP))
+plot(bbclip,add=T)
+plot(st_geometry(cropSP),add=T)
 plot(st_geometry(deer.albers),add=T,col="red")
 plot(st_geometry(cliproads),add=T)
 plot(st_geometry(cliprivers), col="blue",add=T)
