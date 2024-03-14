@@ -251,7 +251,7 @@ as.data.frame(cp)
 
 #Determine the habitat available using all code below
 #First create random sample of points in each polygon
-random <- sapply(slot(cp, 'polygons'), function(i) spsample(i, n=100, type='random', offset=c(0,0)))
+random <- sapply(slot(cp, 'polygons'), function(i) spsample(i, n=200, type='random', offset=c(0,0)))
 plot(cp) ; points(random[[2]], col='red', pch=3, cex=.5)#The number in double brackets changes polygons stack into a single SpatialPoints object
 random.merged <- do.call('rbind', random)
 #Extract the original IDs
