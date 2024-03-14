@@ -144,7 +144,7 @@ plot(st_geometry(cliprivers), col="blue",add=T)
 ```{r warning=FALSE,message=FALSE, eval=FALSE}
 segs <- st_segments(cliproads,units::set_units(50,m))
 segs_lines <- segs %>%
-  st_as_sf(coords = c("x", "y"), crs = 5070) %>%
+  st_as_sf(coords = c("x", "y"), crs(deer.albers)) %>%
   group_by(LINEARID) %>%
   dplyr::summarize() %>%  
   filter(st_is_empty(.) == FALSE) %>%
@@ -173,8 +173,8 @@ roaddist <- nncross(xy.ppp, segs.psp)$dist
 #Or identify segment number closest to each point
 v <- nearestsegment(xy.ppp,segs.psp)#Identifies segment number not a distance
 plot(segs.psp)
-plot(xy.ppp[11], add=TRUE, col="red")
-plot(segs.psp[v[11]], add=TRUE, lwd=8,col="blue")
+plot(xy.ppp[1], add=TRUE, col="red")
+plot(segs.psp[v[1]], add=TRUE, lwd=8,col="blue")
 ```
 
 16\. Now we do the same to a river layer by converting a single line to a set of segments packaged as a function.
@@ -182,7 +182,7 @@ plot(segs.psp[v[11]], add=TRUE, lwd=8,col="blue")
 ```{r eval=FALSE}
 segs2 <- st_segments(cliprivers,units::set_units(50,m))
 segs2_lines <- segs2 %>%
-  st_as_sf(coords = c("x", "y"), crs = 5070) %>%
+  st_as_sf(coords = c("x", "y"), crs(deer.albers)) %>%
   group_by(LINEARID) %>%
   dplyr::summarize() %>%  
   filter(st_is_empty(.) == FALSE) %>%

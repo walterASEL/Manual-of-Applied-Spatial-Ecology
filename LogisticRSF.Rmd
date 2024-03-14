@@ -119,14 +119,14 @@ table(layer1$prediction.class)
 
 ##############################################
 # create map of RSF prediction classes in R
-# m = SpatialPixelsDataFrame(points = layer1[c("x", "y")], data=layer1)
+m = SpatialPixelsDataFrame(points = layer1[c("x", "y")], data=layer1)
 # names(m)
 # par(mar=c(0,0,0,0))
-# image(m, attr=7, col=c("grey90", "grey70", "grey50", "grey30", "grey10"))
-# par(lend=1)
-# legend("bottomright", col=rev(c("grey90", "grey70", "grey50", "grey30", "grey10")),
-#        legend=c("High", "Medium-high", "Medium", "Medium-low", "Low"),
-#        title="Prediction Class", pch=15, cex=1.0,bty != "n", bg="white")
+image(m, attr=7, col=c("grey90", "grey70", "grey50", "grey30", "grey10"))
+par(lend=1)
+legend("bottomright", col=rev(c("grey90", "grey70", "grey50", "grey30", "grey10")),
+        legend=c("High", "Medium-high", "Medium", "Medium-low", "Low"),
+        title="Prediction Class", pch=15, cex=1.0,bty != "n", bg="white")
 
 # create Ascii grid of prediction classes
 #m = as(m, "SpatialGridDataFrame")

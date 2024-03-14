@@ -169,7 +169,7 @@ table(aspect_categorical)
 table(is.na(aspect_categorical))
 layers$aspect_categorical = aspect_categorical
 head(layers)
-#write.table(layers,"layer1.txt",sep=",",col.names=TRUE, quote=FALSE)
+write.table(layers,"data/layer1.txt",sep=",",col.names=TRUE, quote=FALSE)
 
 layers2 <- layers #change to layers2 simply to avoid confusion with "layer" term in function 
 #below
