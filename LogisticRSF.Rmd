@@ -91,11 +91,6 @@ range(predictions)
 #-----------------------------------------------------------------------------------
 # create Ascii grid of raw predictions if needed
 layer1$predictions = predictions
-#preds = layer1
-#preds = SpatialPixelsDataFrame(points=preds[c("x", "y")], data=preds)
-#preds = as(preds, "SpatialGridDataFrame")
-#names(preds)
-#writeAsciiGrid(preds, "predictions.asc", attr=13)#attr should be column number for 'predictions'
 
 #-----------------------------------------------------------------------------------
 # assign each cell or habitat unit to a 'prediction class'.

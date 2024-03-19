@@ -79,8 +79,9 @@ plot(st_geometry(utm.spdf), axes=T)#To visualize all locations
 
 ##change muleysSPDF from UTM to Albers
 muleys.spdf <-st_transform(muleysSPDF, crs=albers.crs)
+
 #Subset locations by year for season-specific RSFs if needed
-winter2012 <- muleys
+#winter2012 <- muleys
 # winter2012 <- crop(muleys.spdf,muleysbuffSP)
 # winter2012$id <- droplevels(winter2012$id)
 ```
@@ -134,11 +135,15 @@ mulcrop11clip<-crop(crop11, muleysbuffSP2)
 #4 = Forest
 #5 = Shrubland
 
+#Or use FedData package now
+#library(FedData)
+crop11nass <- NASS <- get_nass_cdl(template = AlbersSP, label = "NRCS CO", year = 2011)
+
 #Reclassify into 5 habitat categories
 m11 <- c(-Inf,0,NA, 5.5, 6.5, 1, 22.5, 24.5, 2, 26.5, 27.5, 2, 29.5, 30.5, 2, 35.5, 36.5, 
   3, 3.5, 4.5, 1, .5, 1.5, 1, 11.5, 12.5, 1, 27.5, 28.5, 1, 31.5, 33.5, 1,  42.5, 43.5, 1, 
   47.5, 49.5, 1, 58.5, 59.5, 1, 60.5, 61.5, 1, 65.5, 69.5, 1, 76.5, 77.5, 1, 110.5, 
-  111.5, 1, 120.5, 124.5, 1, 130.5, 131.5, 1, 189.5, 190.5, 1, 194.5, 195.5, 1, 228.5,
+  111.5, 1, 120.5, 124.5, 1, 130.5, 131.5, 1, 175.5, 190.5, 1, 194.5, 195.5, 1, 228.5,
   229.5, 1, 140.5, 143.5, 4, 170.5, 171.5, 1, 180.5, 181.5, 1, 36.5, 37.5, 1, 151.5, 
   152.5, 5, 41.5, 42.5, 1, 204.5, 205.5, 1, 230,Inf,NA)
 rclmat11 <- matrix(m11, ncol=3, byrow=TRUE)
@@ -146,10 +151,9 @@ crop11rc <- classify(mulcrop11clip, rclmat11)
 plot(crop11rc)
 
 ##Create cover layer
-cov <- c(-Inf,0,NA, 1, 140, 0, 140.5, 143.5, 1, 151.5,
-  205.5, 0, 230,Inf,NA)#cover=forest only
+cov <- c(-Inf,3.75,0, 3.76, 5,1)#cover=forest only
 rclmatcov <- matrix(cov, ncol=3, byrow=TRUE)
-cover <- classify(mulcrop11clip, rclmatcov)
+cover <- classify(crop11rc, rclmatcov)
 plot(cover)
 
 d_cover <- distance(crop11rc,target="1")
@@ -170,11 +174,9 @@ plot(muleysbuffSP2, add=TRUE)
 We will start by using the Rasterize function to create a raster of the road shapefile with crop data used as a mask. A mask will give the spatial resolution and projection information to the raster you plan to create.
 
 ```{r}
-roadrast <- rasterize(cliproads,crop11rc, mask=TRUE)
-image(roadrast)
-
-d_roadrast <- distance(roadrast,target="1")
-
+roadvect <- vect(cliproads)
+d_roadrast <- terra::distance(rasterize(roadvect,crop11rc))
+plot(d_roadrast)
 ##MAKE ALL RASTER LAYERS DATAFRAMES TO COMBINE LATER
 crop11df <- as.data.frame(crop11rc, xy=TRUE)
 #Distance to cover
