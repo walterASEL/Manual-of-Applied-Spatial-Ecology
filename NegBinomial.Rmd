@@ -242,22 +242,24 @@ res(nlcd)
 
 ```{r eval=FALSE}
 habitat_units_buffwin12 <- cbind(ext, dfland)
+colnames(habitat_units_buffwin12) <- c("crop","d_cover","d_roads","sunflower","wintercrop","alfalfa","forest","shrub")
 ```
 
 11\. Now we need to convert to a data frame for nb modeling. Read in animal_locations.txt or convert to data frame from above
 
 ```{r eval=FALSE}
 #locations = read.table("deer_locations.txt", sep='\t', header=T)
-locations.spdf <- crop(muleys.spdf,muleysbuffSP)
-locations.df = as.data.frame(locations.spdf)
-#locations.df = as.data.frame(winter2012)
-locations <- locations.df[c(-1,-3:-24)]
+#locations.spdf <- crop(muleys.spdf,muleysbuffSP)
+locations.xy <- st_coordinates(muleys.spdf)
+locations.df = st_drop_geometry(muleys.spdf)
+locations <- cbind(locations.df, locations.xy)
+#Clean up so fewer columns
+locations <- locations.df[c(-1,-3:-20)]
 
 #Add xy columns of circle centroids
-mbuff.xy <- as.data.frame(grid.pts)
-str(mbuff.xy)
-habitat_units_buffwin12$x <- mbuff.xy$x
-habitat_units_buffwin12$y <- mbuff.xy$y
+mbuff.xy <- as.data.frame(st_coordinates(g.grid))
+habitat_units_buffwin12$x <- mbuff.xy$X
+habitat_units_buffwin12$y <- mbuff.xy$Y
 
 plot(habitat_units_buffwin12$x, habitat_units_buffwin12$y, type='p', cex=1.5)
 points(locations$x, locations$y, col="red", cex=0.5, pch=19)
