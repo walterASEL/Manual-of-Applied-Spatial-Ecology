@@ -137,7 +137,7 @@ mulcrop11clip<-crop(crop11, muleysbuffSP2)
 
 #Or use FedData package now
 #library(FedData)
-crop11nass <- NASS <- get_nass_cdl(template = AlbersSP, label = "NRCS CO", year = 2011)
+#crop11nass <- NASS <- get_nass_cdl(template = AlbersSP, label = "NRCS CO", year = 2011)
 
 #Reclassify into 5 habitat categories
 m11 <- c(-Inf,0,NA, 5.5, 6.5, 1, 22.5, 24.5, 2, 26.5, 27.5, 2, 29.5, 30.5, 2, 35.5, 36.5, 
@@ -206,78 +206,42 @@ ext <- exact_extract(r, muleysbuffSP2, function(values, coverage_fraction) weigh
 9\. Code below extracts by land cover category and determines how many cells of each type were in each sample circle.
 
 ```{r eval=FALSE}
-sum_cover <- function(x){
-  list(x %>%
-    group_by(value) %>%
-    summarize(total_area = sum(coverage_area)) %>%
-    mutate(proportion = total_area/sum(total_area)))
-  
-}
+# sum_cover <- function(x){
+#   list(x %>%
+#     group_by(value) %>%
+#     summarize(total_area = sum(coverage_area)) %>%
+#     mutate(proportion = total_area/sum(total_area)))
+#   
+# }
+ex_crop <- exact_extract(crop11rc, st_as_sf(muleysbuffSP2))
+head(ext[[1]])#Here we can see the percent of each category in buffer IDs 1-6 for category 52
 
-#extract the area of each raster cell covered by the plot and summarize
-ex_crop <- exact_extract(crop11rc, muleysbuffSP2, coverage_area = TRUE, summarize_df = TRUE, fun = sum_cover)
+et=lapply(ex_crop,table)
 
-
-ex_crop <- exact_extract(crop11rc, muleysbuffSP2, coverage_area = TRUE)
-# 
-# #add polygon names that the results will be grouped by
-# names(ex_crop) <- muleysbuffSP2$ID
-muleysbuffSP3 <- vect(muleysbuffSP2)
-ex_crop <- terra::extract(crop11rc,muleysbuffSP3,list=TRUE)
-# 
-ex_crop[11:15,]
-
-#What issue do you notice with habitat categories?
-
-############################################
-#Code here thanks to Tyler Wagner, PA Coop Unit, for creating this loop to summarize 
-#proportions of habitat within each grid cell
-############################################
-##Created land use categories
-lus <- 1:5
-##### Loop through and append missing land use categories to each grid cell
-ex_crop_new <- list()
-for(i in 1:length(ex_crop_new)[1] ){
-  # Land use cats in a given cell
-  temp1 <- unique(ex_crop$value[[i]])
-  # Give missing category 999 value
-  ma1 <- match(lus, temp1, nomatch = 999, incomparables = NULL)
-  # Get location (category of missing land use type)
-  miss <- which(ma1%in%999)
-  ex_crop_new[[i]] <- c(ex_crop[[i]], miss)
-}
-
-# New summary of land use in a grid cell
-tab2 <- lapply(ex_crop_new, table)
-tab2[[18]]
-tab[[18]]
-
-tab <- list(ex_crop)
-
-# Proportions of all land cover types per grid cell
 prop <- list()
 for(i in 1:length(ex_crop)[1] ){
-  prop[[i]] <- round((margin.table(ex_crop[[i]],1)/margin.table(ex_crop[[i]])),digits = 6)
+  prop[[i]] <- round((margin.table(et[[i]],1)/margin.table(et[[i]])),digits = 6)
 }
-#Function coredata is from the zoo package to convert the proportions from a list 
-#to a matrix
+prop
+
 M <- coredata(do.call(cbind, lapply(prop, zoo)))
 colnames(M) <- NULL
 #Transpose matrix so land cover become separate columns of data
 matrix <- t(M)
 #Now convert the matrix to a data frame so it is easier to manipulate
 dfland <- as.data.frame(matrix)
+
 #Assing column names to land cover
 colnames(dfland) <- c("sunflower","wintercrop","alfalfa","forest","shrub")
-#Write out csv with new nlcd circle percents
-#write.csv(dfland,paste(".", "circl_perc_nlcd.csv",sep=""))
+head(dfland)
+#Cell size of raster layer
+res(nlcd)
 ```
 
 10\. Now that we have Land Cover in a similar format as the distance-to-derived data, we want to convert ext(the combined extracted rasters) into a data frame so it is easier to manipulate as well. The "extract" function in the raster package is supposed to be able to do this but does not work for some reason.
 
 ```{r eval=FALSE}
-a <- as.data.frame(ext)
-habitat_units_buffwin12 <- cbind(dfland, a)
+habitat_units_buffwin12 <- cbind(ext, dfland)
 ```
 
 11\. Now we need to convert to a data frame for nb modeling. Read in animal_locations.txt or convert to data frame from above
