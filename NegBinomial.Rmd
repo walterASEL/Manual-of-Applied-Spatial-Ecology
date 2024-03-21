@@ -274,7 +274,7 @@ points(locations$X, locations$Y, col="red", cex=0.5, pch=19)
 source("data/count_locations.R")
 
 pooled.locations = locations
-colnames(pooled.locations) <- c("ID","X","Y")
+colnames(pooled.locations) <- c("ID","x","y")
 pooled.locations$ID = 1
 NB = F.count.relocations(locations.df = pooled.locations, 
     habitat.units.df = habitat_units_buffwin12, 
