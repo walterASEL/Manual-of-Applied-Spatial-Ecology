@@ -92,7 +92,7 @@ muleys.spdf <-st_transform(muleysSPDF, crs=albers.crs)
 # Create vectors of the x and y points using boundary box created around deer locations
 bb <- st_bbox(muleys.spdf)
      
-increment = 1000
+increment = 2512#628 m daily move distance times 4 
 minx=(min(bb$xmin)-(increment))
 maxx=(max(bb$xmax)+(increment))
 miny=(min(bb$ymin)-(increment))
@@ -108,18 +108,19 @@ AlbersSP <- st_as_sfc(my_bbox)
 6\. Now we need to set up our sample circles across our study area keeping in mind our discussions on "available" habitats. For this exercise, we will keep it simple by only including a polygon around our mule deer locations. This is for demonstration only, the appropriate study area should be specific to your study design and objectives. We also need to determine what is the appropriate size of our sample circles. In this case, we will use the mean daily movement distance for mule deer we determined to be 628 meters. This will be the radius of our sample circles.
 
 ```{r}
+buff.increment = 1256#twice the buffer size
 g = expand.grid(
-    x = seq(my_bbox$xmin, my_bbox$xmax, by = increment),
-    y = seq(my_bbox$ymin, my_bbox$ymax, by = increment))
+    x = seq(my_bbox$xmin, my_bbox$xmax, by = buff.increment),
+    y = seq(my_bbox$ymin, my_bbox$ymax, by = buff.increment))
 
 g.grid <- st_as_sf(g, coords = c("x", "y"), crs = albers.crs)
 
 #g_sfc <- sfc_point(as.matrix(g)) %>% 
 #  st_set_crs(5070)
-plot(g)  
-muleysbuffSP2=st_buffer(g.grid,500) %>% st_as_sfc()
-plot(st_geometry(muleysbuffSP2))
-plot(AlbersSP, add=T, lty=2)
+plot(st_geometry(g.grid)) 
+muleysbuffSP2=st_buffer(g.grid,628) %>% st_as_sfc()
+plot(st_geometry(muleysbuffSP2),add=T)
+plot(st_geometry(muleys.spdf),add=T,col="red")
 ```
 
 7\. We will start here by creating covariate layers specifically for the year of interest, in this case crop data from NRCS for 2011
@@ -156,7 +157,7 @@ rclmatcov <- matrix(cov, ncol=3, byrow=TRUE)
 cover <- classify(crop11rc, rclmatcov)
 plot(cover)
 
-d_cover <- distance(crop11rc,target="1")
+d_cover <- distance(cover,target="0")
 plot(d_cover)
 ##Bring in roads layer
 roads<-st_read("data/AlbersRoads.shp")
@@ -177,6 +178,15 @@ We will start by using the Rasterize function to create a raster of the road sha
 roadvect <- vect(cliproads)
 d_roadrast <- terra::distance(rasterize(roadvect,crop11rc))
 plot(d_roadrast)
+
+compareGeom(crop11rc,d_cover,d_roadrast)
+
+#Now we need to extract all raster layers, grid and create a stack of all rasters
+r <- c(crop11rc, d_cover, d_roadrast)
+names(r) <- c("crop11","d_cover","d_roads")
+plot(r)
+names(r)
+
 ##MAKE ALL RASTER LAYERS DATAFRAMES TO COMBINE LATER
 crop11df <- as.data.frame(crop11rc, xy=TRUE)
 #Distance to cover
@@ -189,14 +199,6 @@ layers1 = cbind(crop11df, d_covdf,final_roaddf)
 layers1 = layers1[,c(3,6,9,7:8)]
 names(layers1) = c("crop","d_cover","d_roads","x", "y")
 #write.table(layers1,"layer1.txt",sep=",",col.names=TRUE, quote=FALSE)
-
-compareGeom(crop11rc,d_cover,d_roadrast)
-
-#Now we need to extract all raster layers, grid and create a stack of all rasters
-r <- c(crop11rc, d_cover, d_roadrast)
-names(r) <- c("crop11","d_cover","d_roads")
-plot(r)
-names(r)
 
 ext <- exact_extract(r, muleysbuffSP2, function(values, coverage_fraction) weighted.mean(values,coverage_fraction,na.rm=TRUE), stack_apply=TRUE)
 
@@ -211,10 +213,10 @@ ext <- exact_extract(r, muleysbuffSP2, function(values, coverage_fraction) weigh
 #     group_by(value) %>%
 #     summarize(total_area = sum(coverage_area)) %>%
 #     mutate(proportion = total_area/sum(total_area)))
-#   
+# 
 # }
 ex_crop <- exact_extract(crop11rc, st_as_sf(muleysbuffSP2))
-head(ext[[1]])#Here we can see the percent of each category in buffer IDs 1-6 for category 52
+head(ex_crop[[1]])#Here we can see the percent of each category in buffer IDs 1-6 for category 52
 
 et=lapply(ex_crop,table)
 
@@ -234,8 +236,8 @@ dfland <- as.data.frame(matrix)
 #Assing column names to land cover
 colnames(dfland) <- c("sunflower","wintercrop","alfalfa","forest","shrub")
 head(dfland)
-#Cell size of raster layer
-res(nlcd)
+#Cell size of raster layers
+res(crop11rc)
 ```
 
 10\. Now that we have Land Cover in a similar format as the distance-to-derived data, we want to convert ext(the combined extracted rasters) into a data frame so it is easier to manipulate as well. The "extract" function in the raster package is supposed to be able to do this but does not work for some reason.
