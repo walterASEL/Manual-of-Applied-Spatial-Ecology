@@ -22,6 +22,7 @@ library(FedData)
 library(landscapemetrics)
 library(ggplot2)
 library(sf)
+library(terra)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -104,22 +105,22 @@ outnames <- innames
 for (i in 1:length(innames)){
   data <- indata[which(indata$COUNTY_NAM==innames[i]),]
   if(dim(data)[1] != 0){
-    st_write(data, dsn = ".", layer=paste(outnames[i],".shp",sep="/"), driver = "ESRI Shapefile")
-    write.table(innames, "List.txt", col.names=FALSE, quote=FALSE, 
+    st_write(data, dsn = "data", layer=paste(outnames[i],".shp",sep=""), driver = "ESRI Shapefile")
+    write.table(innames, "data/List.txt", col.names=FALSE, quote=FALSE, 
   row.names=FALSE)
 }
 }
 
 #Read in a list of shapefiles files from above
-Listshps<-read.table("List.txt",sep="\t",header=F)
+Listshps<-read.table("data/List.txt",sep="\t",header=F)
 Listshps
 
 shape <- function(Listshps) {
-file <- as.character(Listshps[1,],".shp")
-shp <- st_read(dsn=".", layer=file)
-mask <- mask(raster,shp)
+file <- as.character(paste("data/", Listshps[1,],".shp", sep=""))
+shp <- st_read(file)
+mask <- mask(county_hab,shp)
 ### Calculate the Class statistics in each county
-cl.data <- lsm_c_enn(mask)
+cl.data <- lsm_l_ta(mask)
 }
 
 results <- ddply(Listshps, 1, shape)
