@@ -8,14 +8,13 @@ editor_options:
 
 ## 7.1 and 7.2 Fragstats Metrics within Polygons
 
-Some research designs may just need landscape metrics for a single area or several study areas and that is what the SDMToolsl package is able to estimate in the code that follows. While the single area can be defined by the extent of the raster we imported as in previous chapters, the ability of the SDMToolsl package to determine patch and class statistics depends on the area defined by the user from that could be study site, within polygons such as counties or townships, or within buffers around locations.
+Some research designs may just need landscape metrics for a single area or several study areas and that is what the \\href{<https://r-spatialecology.github.io/landscapemetrics/>}{\emph{landscapemetrics}} package is able to estimate in the code that follows. While a single area can be defined by the extent of the raster imported, the ability of the \emph{landscapemetrics} package to determine patch and class statistics depends on the area defined by the user. This could be a study site, within polygons such as counties or townships, or within buffers around locations.
 
 1\. Open the script "Frag_Auto.Rmd" and run code directly from the script
 
 2\. First we need to load the packages needed for the exercise
 
 ```{r warning=FALSE, message=FALSE}
-#library(SDMTools)
 library(plyr)
 library(FedData)
 #install.packages("landscapemetrics")
@@ -33,39 +32,9 @@ utm.crs <- st_crs(9001)
 albers.crs <- st_crs(5070)
 ```
 
-4\. Load vegetation raster layer clipped in ArcMap
-
-```{r eval=FALSE}
-crops <-rast("data/crop2012utm12.tif")
-plot(crops)
-class(crops)
-
-# reclassify the values into 9 groups
-# all values between 0 and 20 equal 1, etc.
-m <- c(-Inf,0,NA,2, 7, 2, 20, 60, 3, 60, 70, 4, 110, 132, 5, 133, 150, 6, 151, 191, 7, 
-  192,Inf,NA)
-rclmat <- matrix(m, ncol=3, byrow=TRUE)
-rc <- classify(crops, rclmat)
-plot(rc)
-as.matrix(table(values(rc)))
-
-check_landscape(rc)
-#Now we get into Landscape Metrics with the SDTM Tool
-#Calculate the Patch statistics
-ps.data = lsm_p_enn(rc)
-ps.data
-
-#Calculate the Class statistics
-cl.data = calculate_lsm(rc)
-cl.data
-```
-
-5\. Some research designs may need landscape metrics for several areas that may be available as a shapefile or some other polygon layer.
+4\. Get land cover raster layer using the FedData pacakage and study area shapefiles
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
-#Load raster file into R
-#raster <- rast("data/county_hab")
-
 #Load PA shapefile into R
 HareCounties <- st_read("data/Hare_Counties.shp")
 
@@ -88,6 +57,31 @@ county.coords$NAME <- HareCounties$COUNTY_NAM
 ggplot() +
   geom_sf(data = HareCounties) +
   geom_text(data = county.coords, aes(X, Y, label = NAME), colour ="black")
+```
+
+5\\. Reclassify raster and crop out a single county outline for analysis. Then run landscape metrics on that county
+
+```{r eval=FALSE}
+#Grab one county to get landscape metrics
+onecounty <- subset(HareCounties, HareCounties$COUNTY_NAM == "FOREST")
+
+# reclassify the values into 3 groups
+# all values between 0 and 20 equal 1, etc.
+m <- c(-Inf,0,NA, 1, 39, 3, 40, 44, 1, 44.5,52.5,3, 70.5,82.5,2,89.5,95.5,3,95.5, Inf,NA)
+rclmat <- matrix(m, ncol=3, byrow=TRUE)
+rc <- classify(county_hab, rclmat)
+plot(rc)
+
+countyrast <- crop(rc,onecounty, mask=TRUE)
+check_landscape(countyrast)
+
+#Calculate a single patch-level metric for euclidian nearest neighbor
+ps.data = lsm_p_enn(countyrast)
+ps.data
+
+#Calculate the Class statistics for available metrics
+cl.data = calculate_lsm(countyrast, level = "class")
+cl.data
 ```
 
 6\. Now we want to export by County name (i.e., COUNTY_NAM) as individual shapefiles. We will only select the first 2 counties for processing to save time
@@ -118,10 +112,10 @@ Listshps
 shape <- function(Listshps) {
 file <- as.character(paste("data/", Listshps[1,],".shp", sep=""))
 shp <- st_read(file)
-mask <- mask(county_hab,shp)
+mask <- mask(rc,shp)
 ### Calculate the Class statistics in each county
-cl.data <- lsm_l_ta(mask)
-}
+cl.data <- calculate_lsm(mask, level = "class")
+}#or replace patch with "patch" or "landscape" level
 
 results <- ddply(Listshps, 1, shape)
 results
