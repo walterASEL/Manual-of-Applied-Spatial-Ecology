@@ -8,19 +8,18 @@ editor_options:
 
 Some research designs may just need landscape metrics for a single area or several study areas and that is what the SDMToolsl package is able to estimate in the code that follows. While the single area can be defined by the extent of the raster we imported as in previous chapters, the ability of the SDMToolsl package to determine patch and class statistics depends on the area defined by the user from that could be study site, within polygons such as counties or townships, or within buffers around locations.
 
-1\. Open the script "PatchAnalystScript.Rmd" and run code directly from the script
+1\\. Open the script "PatchAnalystScript.Rmd" and run code directly from the script
 
-2\. First we need to load the packages needed for the exercise
+2\\. First we need to load the packages needed for the exercise
 
 ```{r warning=FALSE, message=FALSE}
-#library(SDMTools)
 library(plyr)
 library(landscapemetrics)
 library(sf)
 library(terra)
 ```
 
-3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+3\\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
 
 ```{r warning=FALSE, message=FALSE}
 ll.crs <- st_crs(4269)
@@ -28,23 +27,7 @@ utm.crs <- st_crs(26912)
 albers.crs <- st_crs(5070)
 ```
 
-4\. Load vegetation raster layer created previoulsy. NOTE: The Cropland data layer for this region of Colorado was not available for 2011.
-
-```{r}
-crops <-rast("data/crop2012utm12.tif")
-
-# reclassify the values into 9 groups
-# all values between 0 and 20 equal 1, etc.
-m <- c(-Inf,0,NA,2, 7, 2, 20, 60, 3, 60, 70, 4, 110, 132, 5, 133, 150, 6, 151, 191, 7, 
-  192,Inf,NA)
-rclmat <- matrix(m, ncol=3, byrow=TRUE)
-rc <- classify(crops, rclmat)
-plot(rc)
-```
-
-5.  What if we wanted to compare difference in patch statistics among all deer with all locations combined?
-
-We will start by creating buffers around individual locations for our mule deer dataset
+4\\. We will start by creating buffers around individual locations for our mule deer dataset
 
 ```{r warning=FALSE, message=FALSE}
 muleys <-read.csv("data/muleysexample.csv", header=T)
@@ -56,39 +39,80 @@ plot(st_geometry(coords),axes=T)
 deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)
 plot(st_geometry(deer.spdf),axes=T)
 
-#Project deer.spdf to UTM to 
-deer.utm <-st_transform(deer.spdf, crs=st_crs(crops))
-plot(st_geometry(deer.utm),axes=T)
+#Project deer.spdf to albers to 
+deer.alb <-st_transform(deer.spdf, crs=albers.crs)
+plot(st_geometry(deer.alb),axes=T)
 
-deer.utm.df <- as.data.frame(deer.utm)
-deer.utm.xy <- st_coordinates(deer.utm)
- 
-muleys <- cbind(deer.utm.df,deer.utm.xy)
-#Remove utm xys if needed
-muleys <- muleys[c(-9:-10)]
 #Only use the 5 lines of code below to subsample for demonstration purposes!
-onemuley <-muleys[1:5,]
-twomuley <-muleys[202:206,]
+muleysdf <- as.data.frame(st_drop_geometry(deer.spdf))
+muleysxy <- as.data.frame(st_coordinates(deer.spdf))
+muleys2 <- cbind(muleysdf, muleysxy)
+
+onemuley <-muleys2[1:5,]
+twomuley <-muleys2[202:206,]
 shortmd <- rbind(onemuley, twomuley)
-muleys <- shortmd
+shortmd <- shortmd[-c(9:10)]
+muleys2 <- shortmd
+
+
+coords2 <- st_as_sf(muleys2, coords = c("X", "Y"), crs = ll.crs)
+plot(st_geometry(coords2),axes=T)
+deer.spdf2 <-st_transform(coords2, crs=albers.crs)
+
+muleys2xy <- as.data.frame(st_coordinates(deer.spdf2))
+```
+
+Create a bounding box around all locations to extract crop layer raster later
+
+```{r}
+# Create vectors of the x and y points using boundary box created around deer locations
+bb <- st_bbox(deer.spdf2)
+     
+increment = 5000 
+minx=(min(bb$xmin)-(increment))
+maxx=(max(bb$xmax)+(increment))
+miny=(min(bb$ymin)-(increment))
+maxy=(max(bb$ymax)+(increment))
+
+my_bbox = st_bbox(c(xmin = minx, xmax = maxx, 
+                    ymin = miny, ymax = maxy),
+                  crs = 5070)
+
+AlbersSP <- st_as_sfc(my_bbox)
+```
+
+4\. Load vegetation raster layer created previoulsy. NOTE: The Cropland data layer for this region of Colorado was not available for 2011.
+
+```{r}
+#Or use FedData package now
+#library(FedData)
+crop11nass <- NASS <- get_nass_cdl(template = AlbersSP, label = "NRCS CO", year = 2011)
+# reclassify the values into 6 groups
+m <- c(-Inf,0,NA,2, 7, 1, 20, 60, 2, 60, 70, 3, 110, 132, 4, 133, 150, 5, 151, 191, 6, 
+  192,Inf,NA)
+rclmat <- matrix(m, ncol=3, byrow=TRUE)
+rc <- classify(crop11nass, rclmat)
+plot(rc)
+
+rc <- project(rc, "EPSG:5070", res = 30, method = "near")
 ```
 
 6\. Next we need to create a function to extract Fragstats metrics within individual polygons
 
 ```{r eval=FALSE}
-buff3rd <- function(muleys) {
-  coords <- st_as_sf(muleys, coords = c("X", "Y"), crs = utm.crs)
+buff3rd <- function(buffmetrics) {
+  coords <- st_as_sf(muleys2xy, coords = c("X", "Y"), crs = albers.crs)
   settbuff <- st_buffer(coords,1000) %>% st_as_sfc()
   settbuff <- vect(settbuff)
   buffclip <- mask(rc, settbuff)
-  buff.data <- calculate_lsm(buffclip)
-  newline <- coords$id
-  bind <-cbind(newline[1], buff.data)
+  buff.data <- calculate_lsm(buffclip, level = "landscape",consider_boundary = TRUE)
+  #newline <- coords$id
+  #bind <-cbind(newline[1], buff.data)
 }
 
-results <- ddply(muleys, .(id), buff3rd)
+results <- ddply(muleys2, .(id), buff3rd)
 results
-class(results)
+
 ```
 
 7\. Code above looks at patch and class metrics for each deer by combining all buffers into one polygon for each deer (i.e., comparable to defining available habitat in 3rd order selection. However, what if we wanted to compare difference in patch statistics among all deer by averaging metrics across buffers?

@@ -24,7 +24,7 @@ library(sf)
 library(terra)
 ```
 
-3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
+3\\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
 
 ```{r warning=FALSE, message=FALSE}
 ll.crs <- st_crs(4269)
@@ -32,7 +32,7 @@ utm.crs <- st_crs(9001)
 albers.crs <- st_crs(5070)
 ```
 
-4\. Get land cover raster layer using the FedData pacakage and study area shapefiles
+4\\. Get land cover raster layer using the FedData pacakage and study area shapefiles
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
 #Load PA shapefile into R
@@ -84,7 +84,7 @@ cl.data = calculate_lsm(countyrast, level = "class")
 cl.data
 ```
 
-6\. Now we want to export by County name (i.e., COUNTY_NAM) as individual shapefiles. We will only select the first 2 counties for processing to save time
+6\\. Now we want to export by County name (i.e., COUNTY_NAM) as individual shapefiles. We will only select the first 2 counties for processing to save time
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
 indata <- HareCounties
