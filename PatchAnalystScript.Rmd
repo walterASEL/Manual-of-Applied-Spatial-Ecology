@@ -59,7 +59,10 @@ coords2 <- st_as_sf(muleys2, coords = c("X", "Y"), crs = ll.crs)
 plot(st_geometry(coords2),axes=T)
 deer.spdf2 <-st_transform(coords2, crs=albers.crs)
 
+muleys2df <- as.data.frame(st_drop_geometry(deer.spdf2))
 muleys2xy <- as.data.frame(st_coordinates(deer.spdf2))
+muleys3 <- cbind(muleys2df, muleys2xy)
+
 ```
 
 Create a bounding box around all locations to extract crop layer raster later
@@ -86,7 +89,7 @@ AlbersSP <- st_as_sfc(my_bbox)
 ```{r}
 #Or use FedData package now
 #library(FedData)
-crop11nass <- NASS <- get_nass_cdl(template = AlbersSP, label = "NRCS CO", year = 2011)
+crop11nass <- get_nass_cdl(template = AlbersSP, label = "NRCS CO", year = 2011)
 # reclassify the values into 6 groups
 m <- c(-Inf,0,NA,2, 7, 1, 20, 60, 2, 60, 70, 3, 110, 132, 4, 133, 150, 5, 151, 191, 6, 
   192,Inf,NA)
@@ -112,23 +115,21 @@ buff3rd <- function(buffmetrics) {
 
 results <- ddply(muleys2, .(id), buff3rd)
 results
-
 ```
 
 7\. Code above looks at patch and class metrics for each deer by combining all buffers into one polygon for each deer (i.e., comparable to defining available habitat in 3rd order selection. However, what if we wanted to compare difference in patch statistics among all deer by averaging metrics across buffers?
 
 ```{r eval=FALSE}
-coords<-data.frame(x = muleys$X, y = muleys$Y)
-deer.spdf <- SpatialPointsDataFrame(coords=coords, data = muleys, proj4string = utm12.crs)
-setbuff <- gBuffer(deer.spdf, width=1000, byid=TRUE)
-muleys$newID <- paste(muleys$id, setbuff@plotOrder, sep="_")
-muleys$newID <- as.factor(muleys$newID)
+coords <- st_as_sf(muleys3, coords = c("X", "Y"), crs = albers.crs)
+coords$newid <- paste(seq_along(st_length(coords)))
+setbuff <- st_buffer(coords,dist=1000) %>% st_as_sfc()
 
-buff3rdA <- function(muleys) {
+buff3rdA <- function(muleys2xy) {
+  #setbuff <- vect(setbuff)
   bufclip <- mask(rc, setbuff)
-  buf.data <- PatchStat(bufclip)
+  buf.data <- calculate_lsm(bufclip, level = "landscape")
 }
 
-results2 <- ddply(muleys, .(newID), buff3rdA)
+results2 <- ddply(setbuff, .(newid), buff3rdA)
 results2
 ```
