@@ -42,8 +42,8 @@ MD.outline <- subset(st, st$NAME == "Maryland")
 5\. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site.
 
 ```{r eval=FALSE}
-PAnlcd <- get_nlcd(template=PA.outline, label = 'Pennsylvania',force.redo = T)
-MDnlcd <- get_nlcd(template=MD.outline, label = 'Maryland',force.redo = T)
+PAnlcd <- get_nlcd(template=PA.outline, label = 'Pennsylvania',year=2019,force.redo = T)
+MDnlcd <- get_nlcd(template=MD.outline, label = 'Maryland',year=2019,force.redo = T)
 nlcd <- mosaic(PAnlcd, MDnlcd, fun=min)
 plot(nlcd)
 #writeRaster(nlcd,"mosaic_nlcd.tif",format="GTiff",datatype = 'INT4U',overwrite=T)
@@ -52,7 +52,7 @@ plot(nlcd)
 
 PADEM <- get_ned(template=PA.outline, label = 'PAdem',force.redo = T)
 PADEM.proj <- project(PADEM,PAnlcd,method='near')
-#writeRaster(PADEM.proj,"PA_elev.tif",format="GTiff",datatype = 'INT4U',overwrite=T)
+PADEM.proj#writeRaster(PADEM.proj,"PA_elev.tif",format="GTiff",datatype = 'INT4U',overwrite=T)
 
 #Or read in raster from above
 #PADEM.proj <- rast("PA_elev.tif")
