@@ -14,7 +14,9 @@ editor_options:
 library(sf)
 library(terra)
 library(FedData)
-sessionInfo()#be sure version 3.0 is installed
+sessionInfo()#be sure version 4.2 is installed
+#devtools::install_github("ropensci/FedData")
+library(tigris)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise
@@ -28,7 +30,9 @@ albers.crs <- st_crs(5070) #CRS of shapefile layers #crs <- CRS("+proj=aea +lat_
 4\. We will use the tigris package to downloaded statewide layers for state and county outlines
 
 ```{r eval=FALSE}
-st <- tigris::states() %>%   dplyr::filter(GEOID < "60") %>%    tigris::shift_geometry() #GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling 
+st <- tigris::states() %>%   
+  dplyr::filter(GEOID < "60") %>%  
+  tigris::shift_geometry() #GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling 
 plot(st_geometry(st)) 
 st <- st_transform(st, albers.crs) 
 PA.outline <- subset(st, st$NAME == "Pennsylvania")  
@@ -39,7 +43,25 @@ PA.outline <- subset(st, st$NAME == "Pennsylvania")
 MD.outline <- subset(st, st$NAME == "Maryland")
 ```
 
-5\. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site.
+5\. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site. There are several choices of which type of data you can download using the FedData package v4.2
+
+LndCov = Land Cover
+LndChg = Land Cover Change
+LndCnf = Land Cover Confidence
+FctImp = Fractional Impervious Surface
+ImpDsc = Impervious Descriptor
+SpcChg = Spectral Change Day of Year
+
+We can also download data from current years (2020-2023). If you have legacy data (pre-2020) see next section
+
+```{r}
+nlcd <- get_nlcd_annual(
+    template = state.outline,label = "PA2021", year = 2021, product = "LndCov")
+
+plot(nlcd$rast[[1]])
+```
+
+Code for legacy data
 
 ```{r eval=FALSE}
 PAnlcd <- get_nlcd(template=PA.outline, label = 'Pennsylvania',year=2019,force.redo = T)

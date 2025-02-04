@@ -94,8 +94,8 @@ plot(st_geometry(SCcounties), add=T, lwd=3)
 
 #Import raster saved above just for demonstration
 #SCnlcd <-rast("SCnlcd2019.tif")
-plot(SCnlcd)
-plot(st_geometry(SCcounties), add=T, lwd=3)
+#plot(SCnlcd)
+#plot(st_geometry(SCcounties), add=T, lwd=3)
 ```
 
 7\. Plot out all the shapefiles overlayed on each other with and without the raster.
@@ -168,7 +168,7 @@ samp.survey<-terra::extract(clip, Sample.points.sv)
 samp.survey<-subset(samp.survey,!is.na(samp.survey$Class))
 ```
 
-12\. New code addition below (Update 1/7/2021) to use mapview package to treat plotting data layers as done with GIS software. This package enables user to zoom in and out and scroll around layer after calling a plot function \newpage
+12\. New code addition below (Update 1/7/2021) to use mapview package to treat plotting data layers as done with GIS software. This package enables user to zoom in and out and scroll around layer after calling a plot function
 
 ```{r eval=FALSE}
 library(mapview)
