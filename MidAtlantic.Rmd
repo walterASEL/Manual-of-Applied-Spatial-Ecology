@@ -30,7 +30,7 @@ albers.crs <- st_crs(5070) #CRS of shapefile layers #crs <- CRS("+proj=aea +lat_
 4\. We will use the tigris package to downloaded statewide layers for state and county outlines
 
 ```{r eval=FALSE}
-st <- tigris::states() %>%   
+st2 <- tigris::states() %>%   
   dplyr::filter(GEOID < "60") %>%  
   tigris::shift_geometry() #GEOID's above 60 are territories and islands, etc. So I'm removing them for scaling 
 plot(st_geometry(st)) 
@@ -45,18 +45,13 @@ MD.outline <- subset(st, st$NAME == "Maryland")
 
 5\. Here we are going to explore a new method to download NLCD or Digital Elevation Data from online within a polygon from your study site. There are several choices of which type of data you can download using the FedData package v4.2
 
-LndCov = Land Cover
-LndChg = Land Cover Change
-LndCnf = Land Cover Confidence
-FctImp = Fractional Impervious Surface
-ImpDsc = Impervious Descriptor
-SpcChg = Spectral Change Day of Year
+LndCov = Land Cover LndChg = Land Cover Change LndCnf = Land Cover Confidence FctImp = Fractional Impervious Surface ImpDsc = Impervious Descriptor SpcChg = Spectral Change Day of Year
 
 We can also download data from current years (2020-2023). If you have legacy data (pre-2020) see next section
 
 ```{r}
 nlcd <- get_nlcd_annual(
-    template = state.outline,label = "PA2021", year = 2021, product = "LndCov")
+    template = PA.outline,label = "PA2021", year = 2021, product = "LndCov")
 
 plot(nlcd$rast[[1]])
 ```
