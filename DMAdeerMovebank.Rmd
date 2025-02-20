@@ -37,10 +37,7 @@ CWD2018.xy <- data.frame(st_coordinates(deer))
 CWD2018.new <- cbind(CWD2018.df,CWD2018.xy)
 
 deer2018 <- st_as_sf(CWD2018.new, coords = c("X", "Y"), crs = 4269)
-plot(st_geometry(deer2018[1]))
-
-#Plot the first deer in the stack
-plot(st_geometry(CWD2018.new))
+plot(st_geometry(deer2018))
 
 #Now we will select a single deer to explore more
 deer1 <- subset(deer2018,deer2018$individual_local_identifier == "12373_12597F")

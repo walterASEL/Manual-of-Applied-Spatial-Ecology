@@ -129,7 +129,7 @@ deer.albers$subDate <-  as.POSIXct(as.factor(deer.albers$da), format="%Y-%m-%d",
 deer.albers$Oneperday <- paste(deer.albers$YearBurst,deer.albers$subDate,sep="_")
 deer.albers2 <- do.call(rbind, lapply(split(deer.albers,deer.albers$Oneperday) , 
 function(deer.albers) deer.albers[sample(nrow(deer.albers), 1) , ] ))
-ltr.year <- as.ltraj(coordinates(deer.albers2),deer.albers2$da,id=deer.albers2$id)
+ltr.year <- as.ltraj(st_coordinates(deer.albers2),deer.albers2$da,id=deer.albers2$id)
 ```
 
 10\. Now we can use the function to create movements of our deer over the landscape

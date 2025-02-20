@@ -46,7 +46,7 @@ table(muley15$id)
 ```{r}
 ######################################################
 ## Example of a trajectory of type II (time recorded) with conversion of the date to the 
-#format POSIX that nNeeds to be done to get proper digits of date into R then POSIXct uses
+#format POSIX that needs to be done to get proper digits of date into R then POSIXct uses
 #library(chron)
 da <- as.character(muley15$GPSFixTime)
 da <- as.POSIXct(strptime(muley15$GPSFixTime,format="%Y.%m.%d %H:%M:%S"))
