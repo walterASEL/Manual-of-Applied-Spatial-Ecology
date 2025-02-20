@@ -52,11 +52,11 @@ muleys$timediff <-as.numeric(abs(timediff))
 #Remove outlier locations
 coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
 plot(st_geometry(coords),axes=T)
-deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
-plot(st_geometry(deer.spdf),axes=T)
+deer.sf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.sf),axes=T)
 
 #Project deer.spdf to Albers as in previous exercise
-deer.albers <-st_transform(deer.spdf, crs=albers.crs)
+deer.albers <-st_transform(deer.sf, crs=albers.crs)
 plot(st_geometry(deer.albers),axes=T)
 
 ```
