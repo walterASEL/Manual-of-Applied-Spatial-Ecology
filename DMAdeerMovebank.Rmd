@@ -1,3 +1,9 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
 # Movement Methods
 
 ## Importing datasets from a web source
@@ -9,32 +15,34 @@ Movebank.org is a cloud-based repository for relocation data from GPS-collared o
 2\. First we need to load the packages needed for the exercise
 
 ```{r warning=FALSE, message=FALSE}
-library(move)
+library(move2)
 library(RCurl)
 library(circular)
+library(sf)
 ```
 
 3\. Next we are going to the [Movebank](https://www.movebank.org/) home page and explore what it has to offer. Need to create an account or select a dataset that does not require permission to use.
 
 ```{r eval=FALSE}
-login <- movebankLogin(username="wdwalter", password="XXXXX")
+movebank_store_credentials("wdwalter")
+#login <- movebankLogin(username="wdwalter", password="XXXXX")
 ```
 
 ```{r eval=FALSE}
-deer <- getMovebankData(study="DMA White-tailed Deer 2018 Pennsylvania USA",
-                        login=login, moveObject=TRUE)
-n.indiv(deer)
-n.locs(deer)
+deer <- movebank_download_study(430427298)
+table(deer$individual_local_identifier)
+
+CWD2018.df <- data.frame(st_drop_geometry(deer))
+CWD2018.xy <- data.frame(st_coordinates(deer))
+CWD2018.new <- cbind(CWD2018.df,CWD2018.xy)
+
+deer2018 <- st_as_sf(CWD2018.new, coords = c("X", "Y"), crs = 4269)
+plot(st_geometry(deer2018[1]))
+
 #Plot the first deer in the stack
-plot(deer[[1]])
+plot(st_geometry(CWD2018.new))
 
 #Now we will select a single deer to explore more
-deer1 <- deer[['X20212_20242F']]
-plot(deer1)
-
-#Select and plot locations of the initial 2 deer in your list
-deer2 <- deer[[c(1,2)]]
-plot(deer2)
-#Determine names of initial 2 deer selected above
-namesIndiv(deer2)
+deer1 <- subset(deer2018,deer2018$individual_local_identifier == "12373_12597F")
+plot(st_geometry(deer1),add=T, col="red",pch=16)
 ```
