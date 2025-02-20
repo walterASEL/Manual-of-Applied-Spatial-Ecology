@@ -61,8 +61,8 @@ muley15$timediff <-as.numeric(abs(timediff))
 #Remove outlier locations
 coords <- st_as_sf(muley15, coords = c("Long", "Lat"), crs = ll.crs)
 plot(st_geometry(coords),axes=T)
-deer.spdf <- st_crop(coords, xmin=-110.0,xmax=-106.5,ymin=36.8,ymax=39.0)#Visually identified based on previous plot
-plot(st_geometry(deer.spdf),axes=T)
+deer.sf <- st_crop(coords, xmin=-110.0,xmax=-106.5,ymin=36.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.sf),axes=T)
 
 #Project deer.spdf to Albers as in previous exercise
 deer.albers <-st_transform(deer.spdf, crs=albers.crs)
@@ -93,7 +93,7 @@ return(ho>15.9&ho<23.9)
 }
 deer <- cutltraj(ltraj, "foo(date)", nextr = TRUE)
 
-#Notice that the above code will remove 328 relocations that fall
+#Notice that the above code will remove 345 relocations that fall
 #outside of your time criteria
 #Warning message:
 #In cutltraj(ltraj, "foo(date)", nextr = TRUE) :
