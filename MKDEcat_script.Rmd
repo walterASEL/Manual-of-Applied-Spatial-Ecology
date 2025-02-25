@@ -92,6 +92,7 @@ FLnlcd <- get_nlcd(template=boundary, year = 2006, label = 'Florida',dataset = "
 nlcd.df <- as.data.frame(FLnlcd, xy=FALSE)
 nlcd.df2 <- as.data.frame(FLnlcd, xy=TRUE)
 nlcd.xy <- data.frame(x=nlcd.df2$x,y=nlcd.df2$y)
+habitat <- rast(nlcd.xy,type = "xyz",crs(FLnlcd))
 ##Cast over to SPxDF
 habitat <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
 crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
@@ -100,7 +101,7 @@ crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
 #Create an ltraj trajectory object. 
 ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
   typeII = TRUE)
-#plot(ltraj, spixdf=habitat)
+plot(ltraj, spixdf=habitat)
 #writeRaster(FLnlcd,"FL_nlcd.tif",format="GTiff",datatype = 'INT1U',overwrite=T)
 ```
 
@@ -187,7 +188,6 @@ rc.xy <- data.frame(x=rc.df2$x,y=rc.df2$y)
 ##Cast over to SPxDF
 habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df)
 crs(habitat2) <- st_crs(FLnlcd)$proj4string
-plot(habitat2)
 plot(ltraj, spixdf=habitat2)
 #CODE TO CONDUCT BRB
 #Assign parameter values for BRB 

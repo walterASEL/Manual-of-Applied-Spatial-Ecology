@@ -22,6 +22,7 @@ library(terra)
 library(wildlifeDI)#for sf2ltraj function in new BBMM code
 library(ggplot2)
 library(units)
+library(move2)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -109,9 +110,10 @@ g2
 7\. Next we will run BBMM. Because BBMM package is no longer maintained on CRAN, we will use the function provided by adehabitatHR package with plotting adapted to sf and ggplot2 packages
 
 ```{r}
-loc <- st_as_sf(x = cat143, coords = c("X","Y"),crs = utm.crs)
+#loc <- st_as_sf(x = cat143, coords = c("X","Y"),crs = utm.crs)
+loc <- mt_as_move2(cat143, coords = c("X", "Y"), na.fail = FALSE, time_column = "DT", track_id_column = "CatID",crs = utm.crs)
 
-cat143traj <- sf2ltraj(loc, date="DT",id="CatID")
+cat143traj <- move2_ltraj(loc)
 
 sig_df<-(liker(cat143traj, sig2 = 10, rangesig1 = c(1, 100)))
 
@@ -157,7 +159,7 @@ g3
 8. We will quickly explore autocorrelated kernel density estimator which uses the "auto" option to choose the best movement model to estimate home range.
 
 ```{r}
-cat143.akde <- hr_akde(cat143track, model=fit_ctmm(cat143track, "auto"), levels=c(0.5,0.80,0.90,0.95,0.99))
+cat143.akde <- hr_akde(cat143track, model=fit_ctmm(cat143track, "iid"), levels=c(0.5,0.80,0.90,0.95,0.99))
 
 cat143.akde.iso<-hr_isopleths(cat143.akde, levels=c(0.5,0.80,0.90,0.95,0.99))
 
@@ -218,7 +220,7 @@ hr.area.all$estimator<-factor(hr.area.all$estimator, levels=c("AKDE", "H Ref", "
 
 ggplot(hr.area.all, aes(y=area, x=level, color=estimator, fill=estimator))+
   geom_bar(stat="identity",position=position_dodge())+
-  scale_x_discrete(labels=c("50%", "95%", "99%"))+
+  scale_x_discrete(labels=c("50%","80%","90%", "95%", "99%"))+
   scale_color_discrete(name="Estimator")+
   scale_fill_discrete(name="Estimator")+
   scale_y_continuous(expand=c(0,0))+ ## This forces the bar to start at 0. ggplot normally has a space before 0 which I find annoying
