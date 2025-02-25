@@ -22,6 +22,7 @@ library(sf)
 library(terra)
 library(wildlifeDI)#for sf2ltraj function in new BBMM code
 library(ggplot2)
+library(move2)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -277,9 +278,9 @@ cat143<-subset(panther, panther$CatID == "143")
 cat143 <- cat143[-1,] #Remove first record with wrong timelag
 cat143$CatID <- factor(cat143$CatID)
 
-loc <- st_as_sf(x = cat143, coords = c("X","Y"),crs = utm.crs)
+loc <- mt_as_move2(cat143, coords = c("X", "Y"), na.fail = FALSE, time_column = "DT", track_id_column = "CatID",crs = utm.crs)
 
-cat143traj <- sf2ltraj(loc, date="DT",id="CatID")
+cat143traj <- move2_ltraj(loc)
 
 sig_df<-(liker(cat143traj, sig2 = 10, rangesig1 = c(1, 100)))
 
