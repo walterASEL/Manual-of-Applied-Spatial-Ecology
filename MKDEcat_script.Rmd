@@ -89,6 +89,13 @@ boundary <- st_as_sfc(my_bbox)
 ```{r eval=FALSE}
 FLnlcd <- get_nlcd(template=boundary, year = 2006, label = 'Florida',dataset = "landcover", force.redo = T)
 
+
+writeRaster(FLnlcd, filename="data/FLnlcd.asc", filetype="AAIGrid", gdal=c("DECIMAL_PRECISION=2"), datatype="FLT8S", NAflag = -9999, overwrite=TRUE)
+
+FLnlcd.asc <- rast("data/FLnlcd.asc")
+
+FLnlcd.spixdf <- asc2spixdf(FLnlcd.asc) # Function from adehabitat to convert to SpatialPixelDataFrame
+
 nlcd.df <- as.data.frame(FLnlcd, xy=FALSE)
 nlcd.df2 <- as.data.frame(FLnlcd, xy=TRUE)
 nlcd.xy <- data.frame(x=nlcd.df2$x,y=nlcd.df2$y)
