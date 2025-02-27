@@ -96,8 +96,8 @@ nlcd.xy <- data.frame(x=nlcd.df2$x,y=nlcd.df2$y)
 #habitat <- rast(nlcd.xy,type = "xyz",crs(FLnlcd))
 ##Cast over to SPxDF
 ## coerce them to SpatialPoints 
-#nlcd.sp <- SpatialPoints(as.data.frame(nlcd.df2))
-#nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
+nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
+nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
 
 habitat <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
 crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
@@ -190,6 +190,10 @@ rc <- classify(FLnlcd, rclmat)
 rc.df <- as.data.frame(rc, xy=FALSE)
 rc.df2 <- as.data.frame(rc, xy=TRUE)
 rc.xy <- data.frame(x=rc.df2$x,y=rc.df2$y)
+
+nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
+nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
+crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
 ##Cast over to SPxDF
 habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df2)
 #crs(habitat2) <- st_crs(FLnlcd)$proj4string
@@ -202,7 +206,7 @@ lmin <- 50 #locations less than 50 meters apart are considered inactive.
 hmin <- 100 #arbitrarily set to be same as hab grid cell resolution 
 
 #Diffusion component for each habitat type using plug-in method
-vv2<- BRB.D(ltraj, Tmax = tmax, Lmin = lmin,  habitat = habitat2)
+vv2<- BRB.D(ltraj, Tmax = tmax, Lmin = lmin,  habitat = habitat)
 vv2
 
 ud2 <- BRB(ltraj, D = vv2, Tmax = tmax, Lmin = lmin, hmin=hmin, habitat = habitat2, b=TRUE, 
