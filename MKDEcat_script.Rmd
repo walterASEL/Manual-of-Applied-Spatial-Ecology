@@ -57,6 +57,8 @@ cat143$CatID <- droplevels(cat143$CatID)
 coords <- st_as_sf(cat143, coords = c("X", "Y"), crs = utm.crs)
 plot(st_geometry(coords),axes=T)
 cat.albers <- st_transform(coords, albers.crs)
+plot(st_geometry(cat.albers),axes=T)
+
 ```
 
 NOTE: Two issues at this step held me back with the method for weeks so we will stress them here:
@@ -88,26 +90,22 @@ boundary <- st_as_sfc(my_bbox)
 
 ```{r eval=FALSE}
 FLnlcd <- get_nlcd(template=boundary, year = 2006, label = 'Florida',dataset = "landcover", force.redo = T)
-
-
-writeRaster(FLnlcd, filename="data/FLnlcd.asc", filetype="AAIGrid", gdal=c("DECIMAL_PRECISION=2"), datatype="FLT8S", NAflag = -9999, overwrite=TRUE)
-
-FLnlcd.asc <- rast("data/FLnlcd.asc")
-
-FLnlcd.spixdf <- asc2spixdf(FLnlcd.asc) # Function from adehabitat to convert to SpatialPixelDataFrame
-
 nlcd.df <- as.data.frame(FLnlcd, xy=FALSE)
 nlcd.df2 <- as.data.frame(FLnlcd, xy=TRUE)
 nlcd.xy <- data.frame(x=nlcd.df2$x,y=nlcd.df2$y)
-habitat <- rast(nlcd.xy,type = "xyz",crs(FLnlcd))
+#habitat <- rast(nlcd.xy,type = "xyz",crs(FLnlcd))
 ##Cast over to SPxDF
+## coerce them to SpatialPoints 
+#nlcd.sp <- SpatialPoints(as.data.frame(nlcd.df2))
+#nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
+
 habitat <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
 crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
 #plot(habitat)
 
 #Create an ltraj trajectory object. 
 ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
-  typeII = TRUE)
+  typeII = TRUE,proj4string = CRS("+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=1,1,-1,0,0,0,0 +units=m +no_defs +type=crs"))
 plot(ltraj, spixdf=habitat)
 #writeRaster(FLnlcd,"FL_nlcd.tif",format="GTiff",datatype = 'INT1U',overwrite=T)
 ```
@@ -116,17 +114,17 @@ plot(ltraj, spixdf=habitat)
 
 ```{r}
 # FLnlcd2 <- rast("data/FL_nlcd.tif")
-# FLnlcd2 <- project(FLnlcd2,FLnlcd,method="near")
-# nlcd.df2 <- as.data.frame(FLnlcd2, xy=FALSE)
-# nlcd.df3 <- as.data.frame(FLnlcd2, xy=TRUE)
-# nlcd.xy <- data.frame(x=nlcd.df3$x,y=nlcd.df3$y)
+# #FLnlcd2 <- project(FLnlcd2,FLnlcd,method="near")
+# nlcd.df3 <- as.data.frame(FLnlcd2, xy=FALSE)
+# nlcd.df4 <- as.data.frame(FLnlcd2, xy=TRUE)
+# nlcd.xy2 <- data.frame(x=nlcd.df4$x,y=nlcd.df4$y)
 # ##Cast over to SPxDF
-# habitat2 <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
+# habitat2 <- SpatialPixelsDataFrame(nlcd.xy2,nlcd.df3)
 # 
-# #Create an ltraj trajectory object. 
-# ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
-#   typeII = TRUE)
-# plot(ltraj, spixdf=habitat)
+# # #Create an ltraj trajectory object. 
+#  ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
+#    typeII = TRUE)
+#  plot(ltraj, spixdf=habitat)
 ```
 
 8\. Now identify habitats that can and can not be used by panthers
@@ -193,8 +191,8 @@ rc.df <- as.data.frame(rc, xy=FALSE)
 rc.df2 <- as.data.frame(rc, xy=TRUE)
 rc.xy <- data.frame(x=rc.df2$x,y=rc.df2$y)
 ##Cast over to SPxDF
-habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df)
-crs(habitat2) <- st_crs(FLnlcd)$proj4string
+habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df2)
+#crs(habitat2) <- st_crs(FLnlcd)$proj4string
 plot(ltraj, spixdf=habitat2)
 #CODE TO CONDUCT BRB
 #Assign parameter values for BRB 
@@ -230,8 +228,8 @@ rc1.df <- as.data.frame(rc1, xy=FALSE)
 rc1.df2 <- as.data.frame(rc1, xy=TRUE)
 rc1.xy <- data.frame(x=rc1.df2$x,y=rc1.df2$y)
 ##Cast over to SPxDF
-habitat3 <- SpatialPixelsDataFrame(rc1.xy,rc1.df)
-crs(habitat3) <- st_crs(FLnlcd)$proj4string
+habitat3 <- SpatialPixelsDataFrame(rc1.xy,rc1.df2)
+#crs(habitat3) <- st_crs(FLnlcd)$proj4string
 plot(habitat3)
 plot(ltraj, spixdf=habitat3)
 
