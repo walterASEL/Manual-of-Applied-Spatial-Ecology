@@ -106,7 +106,7 @@ habitat <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
 #Create an ltraj trajectory object. 
 ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
   typeII = TRUE,proj4string = CRS("+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=1,1,-1,0,0,0,0 +units=m +no_defs +type=crs"))
-plot(ltraj$traj, spixdf=habitat$Class)
+plot(ltraj, spixdf=habitat)
 #writeRaster(FLnlcd,"FL_nlcd.tif",format="GTiff",datatype = 'INT1U',overwrite=T)
 ```
 
@@ -206,7 +206,7 @@ lmin <- 50 #locations less than 50 meters apart are considered inactive.
 hmin <- 100 #arbitrarily set to be same as hab grid cell resolution 
 
 #Diffusion component for each habitat type using plug-in method
-vv2<- BRB.D(ltraj, Tmax = tmax, Lmin = lmin,  habitat = habitat)
+vv2<- BRB.D(ltraj, Tmax = tmax, Lmin = lmin,  habitat = habitat2)
 vv2
 
 ud2 <- BRB(ltraj, D = vv2, Tmax = tmax, Lmin = lmin, hmin=hmin, habitat = habitat2, b=TRUE, 
