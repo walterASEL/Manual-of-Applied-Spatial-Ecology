@@ -86,7 +86,7 @@ my_bbox = st_bbox(c(xmin = minx, xmax = maxx,
 boundary <- st_as_sfc(my_bbox)
 ```
 
-6\. So the raster layer that is included in this exercise is in UTM Zone 17. Now, import the raster layer to have layers in the same projection.
+6\. So the raster layer that is included in this exercise is in UTM Zone 17. Now, we will use the boundary layer created in the section above to extract a raster layer around the cat143
 
 ```{r eval=FALSE}
 FLnlcd <- get_nlcd(template=boundary, year = 2006, label = 'Florida',dataset = "landcover", force.redo = T)
@@ -110,24 +110,7 @@ plot(ltraj, spixdf=habitat)
 #writeRaster(FLnlcd,"FL_nlcd.tif",format="GTiff",datatype = 'INT1U',overwrite=T)
 ```
 
-7\. With the same projections for our 2 data layers, we can move forward. First we need to create ltraj as in Chapter 3 and use some additional code to overlay the trajectory onto the Spatial Pixels Data Frame using the command "spixdf" as in the code below that results in Fig. 4.11. Basically, if this works then we are on the right path to moving forward with MKDE.
-
-```{r}
-# FLnlcd2 <- rast("data/FL_nlcd.tif")
-# #FLnlcd2 <- project(FLnlcd2,FLnlcd,method="near")
-# nlcd.df3 <- as.data.frame(FLnlcd2, xy=FALSE)
-# nlcd.df4 <- as.data.frame(FLnlcd2, xy=TRUE)
-# nlcd.xy2 <- data.frame(x=nlcd.df4$x,y=nlcd.df4$y)
-# ##Cast over to SPxDF
-# habitat2 <- SpatialPixelsDataFrame(nlcd.xy2,nlcd.df3)
-# 
-# # #Create an ltraj trajectory object. 
-#  ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
-#    typeII = TRUE)
-#  plot(ltraj, spixdf=habitat)
-```
-
-8\. Now identify habitats that can and can not be used by panthers
+7\. Now identify habitats that can and can not be used by panthers
 
 ```{r eval=FALSE}
 #Be sure to do this step after plotting ltraj onto spixdf or won't work!
@@ -143,7 +126,7 @@ fullgrid(hab) <- FALSE
 class(hab)
 ```
 
-9\. Now we can begin to create Movement-based KDEs using biased random bridges (BRBs)
+8\. Now we can begin to create Movement-based KDEs using biased random bridges (BRBs)
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
 #Assign parameter values for BRB 
@@ -165,7 +148,7 @@ ud
 names(ud) <- id(ltraj) 
 ```
 
-10\. Create contours using getverticeshr to display or export as shapefiles (Fig. 4.15).
+9\. Create contours using getverticeshr to display or export as shapefiles (Fig. 4.15).
 
 ```{r eval=FALSE}
 ver1_99 <- getverticeshr(ud, percent=99, standardize = TRUE, whi = id(ltraj))
@@ -179,7 +162,7 @@ plot(ver1_99)
 plot(ver1_50, add=T)
 ```
 
-11\. Now let's create a new UD using an actual habitat layer that has more than "used/unused" such as the 7 habitat categories from original dataset
+10\. Now let's create a new UD using an actual habitat layer that has more than "used/unused" such as the 7 habitat categories from original dataset
 
 ```{r eval=FALSE}
 #Start by importing the habitat layer again and run the following
@@ -221,7 +204,7 @@ ver2_99 <- getverticeshr(ud2, percent=99, standardize = TRUE, whi = id(ltraj))
 ver2_50 <- getverticeshr(ud2, percent=50, standardize = TRUE, whi = id(ltraj))
 ```
 
-12\. Now let's create a new UD using an actual habitat layer that has more than "used/unused" such as the 4 habitat categories from original dataset
+11\. Now let's create a new UD using an actual habitat layer that has more than "used/unused" such as the 4 habitat categories from original dataset
 
 ```{r eval=FALSE}
 #4 habitats instead of the 7 above with water, open, and forested
@@ -251,7 +234,7 @@ ver3_99 <- getverticeshr(ud3, percent=99, standardize = TRUE, whi = id(ltraj))
 ver3_50 <- getverticeshr(ud3, percent=50, standardize = TRUE, whi = id(ltraj))
 ```
 
-15\. Now we will plot these for comparison with the habitat layer differing by each analysis.
+12\. Now we will plot these for comparison with the habitat layer differing by each analysis.
 
 ```{r eval=FALSE}
 par(mfrow=c(1,3))
