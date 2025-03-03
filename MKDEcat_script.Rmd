@@ -100,13 +100,13 @@ nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
 nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
 
 habitat <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
-crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
+#crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
 #plot(habitat)
 
 #Create an ltraj trajectory object. 
 ltraj <- as.ltraj(st_coordinates(cat.albers), cat.albers$DT, id = cat.albers$Sex, burst = cat.albers$Sex, 
   typeII = TRUE,proj4string = CRS("+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=1,1,-1,0,0,0,0 +units=m +no_defs +type=crs"))
-plot(ltraj, spixdf=habitat)
+plot(ltraj$traj, spixdf=habitat$Class)
 #writeRaster(FLnlcd,"FL_nlcd.tif",format="GTiff",datatype = 'INT1U',overwrite=T)
 ```
 
@@ -193,9 +193,9 @@ rc.xy <- data.frame(x=rc.df2$x,y=rc.df2$y)
 
 nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
 nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
-crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
+#crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
 ##Cast over to SPxDF
-habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df2)
+habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df)
 #crs(habitat2) <- st_crs(FLnlcd)$proj4string
 plot(ltraj, spixdf=habitat2)
 #CODE TO CONDUCT BRB
@@ -232,7 +232,7 @@ rc1.df <- as.data.frame(rc1, xy=FALSE)
 rc1.df2 <- as.data.frame(rc1, xy=TRUE)
 rc1.xy <- data.frame(x=rc1.df2$x,y=rc1.df2$y)
 ##Cast over to SPxDF
-habitat3 <- SpatialPixelsDataFrame(rc1.xy,rc1.df2)
+habitat3 <- SpatialPixelsDataFrame(rc1.xy,rc1.df)
 #crs(habitat3) <- st_crs(FLnlcd)$proj4string
 plot(habitat3)
 plot(ltraj, spixdf=habitat3)
