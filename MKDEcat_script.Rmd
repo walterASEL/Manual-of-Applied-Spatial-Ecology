@@ -58,7 +58,6 @@ coords <- st_as_sf(cat143, coords = c("X", "Y"), crs = utm.crs)
 plot(st_geometry(coords),axes=T)
 cat.albers <- st_transform(coords, albers.crs)
 plot(st_geometry(cat.albers),axes=T)
-
 ```
 
 NOTE: Two issues at this step held me back with the method for weeks so we will stress them here:
@@ -96,8 +95,8 @@ nlcd.xy <- data.frame(x=nlcd.df2$x,y=nlcd.df2$y)
 #habitat <- rast(nlcd.xy,type = "xyz",crs(FLnlcd))
 ##Cast over to SPxDF
 ## coerce them to SpatialPoints 
-nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
-nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
+#nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
+#nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
 
 habitat <- SpatialPixelsDataFrame(nlcd.xy,nlcd.df)
 #crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
@@ -174,9 +173,6 @@ rc.df <- as.data.frame(rc, xy=FALSE)
 rc.df2 <- as.data.frame(rc, xy=TRUE)
 rc.xy <- data.frame(x=rc.df2$x,y=rc.df2$y)
 
-nlcd.sp <- SpatialPoints(as.data.frame(nlcd.xy))
-nlcd.asc <- ascgen(nlcd.sp, cellsize=30)
-#crs(habitat) <- st_crs(FLnlcd)$proj4string#"NAD83 / Conus Albers"
 ##Cast over to SPxDF
 habitat2 <- SpatialPixelsDataFrame(rc.xy,rc.df)
 #crs(habitat2) <- st_crs(FLnlcd)$proj4string
