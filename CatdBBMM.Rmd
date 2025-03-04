@@ -189,7 +189,7 @@ plot(st_geometry(coords),pch=1, cex=0.5, add=T)
 ```{r}
 ## Exams the changes in home-range size for various values of k
 ## Be patient! the algorithm can be very long
-#LoC.area <- LoCoH.k.area(idsp, k=c(5:40))
+LoC.area <- LoCoH.k.area(idsp, k=c(5:40))
 #NOTE: The line of code above does not run for this animal
 
 ## the k-LoCoH method:
