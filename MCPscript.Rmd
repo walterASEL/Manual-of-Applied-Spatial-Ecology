@@ -60,7 +60,7 @@ plot(deer.spdf, add=TRUE)
 
 ```{r eval=FALSE}
 cp <- as(cp,"sf")
-st_write(cp, "MCPhomerange.shp")
+#st_write(cp, "MCPhomerange.shp")
 ```
 
 7\. We have chosen to exclude 5% of the most extreme relocations, but we could have made another choice. We may compute the MCP for various choices of the number of extreme relocations to be excluded, using the function mcp.area:

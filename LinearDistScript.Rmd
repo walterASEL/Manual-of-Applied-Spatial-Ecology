@@ -21,6 +21,7 @@ library(terra)
 library(dplyr)
 library(nngeo)
 library(rlang)
+library(FedData)
 ```
 
 3\. Now let's have a separate section of code to include projection information we will use throughout the exercise. In previous versions, these lines of code were within each block of code
@@ -44,8 +45,6 @@ plot(st_geometry(deer.spdf),axes=T)
 #Project deer.spdf to Albers as in previous exercise
 deer.albers <-st_transform(deer.spdf, crs=albers.crs)
 plot(st_geometry(deer.albers,axes=T))
-
-
 ```
 
 5.  Only use code in next section for example exercise so fewer locations are used.
@@ -91,7 +90,7 @@ rivers<-st_read("data/AlbersRivers.shp")
 10\. Load vegetation raster layer tif that came in the Albers projection from the online source.
 
 ```{r}
-veg <-rast("data/cropnlcd.tif")
+veg <- get_nass_cdl( template = AlbersSP, label = "cropland", year = 2011 )
 ```
 
 ```{r}
