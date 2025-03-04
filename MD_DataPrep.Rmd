@@ -94,7 +94,7 @@ AlbersSP <- st_as_sfc(my_bbox)
 
 ```{r warning=FALSE, message=FALSE}
 crops <-rast("data/crop12clip.tif")
-
+crops <- get_nass_cdl( template = AlbersSP, label = "cropland", year = 2012)
 # Reclassify crops raster from above into 9 groups
 # all values between 0 and 20 equal 1, etc.
 m <- c(-Inf,0,NA,1, 60, 2, 60, 70, 3, 110, 132, 4, 133, 150, 5, 151, 205,6)
@@ -279,7 +279,7 @@ head(available)
 ```{r eval=FALSE}
 data = rbind(available, used)
 #Write out dataset for example dataset
-write.csv(data,"data/MD_winter12sub.csv")
+#write.csv(data,"data/MD_winter12sub.csv")
 
 ##A quick check of the data to determine if correct number of records.
 #''data.frame':	200 obs. of  9 variables:
