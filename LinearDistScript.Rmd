@@ -67,7 +67,7 @@ plot(st_geometry(deer.albers),axes=T)
 # Create vectors of the x and y points using boundary box created around deer locations
 bb1 <- st_bbox(deer.albers)
      
-increment = 1000
+increment = 4000
 minx=(min(bb1$xmin)-(increment))
 maxx=(max(bb1$xmax)+(increment))
 miny=(min(bb1$ymin)-(increment))
@@ -108,9 +108,9 @@ plot(st_geometry(deer.albers),add=T, col="red")
 11\. Then we need to expand the bounding polygon so all locations are included. We can then make the bounding polygon (AlbersSP) a class owin in order to proceed with functions in package spatstat.
 
 ```{r warning=FALSE,message=FALSE}
-buffSP <- st_buffer(AlbersSP,2000)
-plot(st_geometry(buffSP))
-plot(st_geometry(deer.albers),add=T,col="red")
+# buffSP <- st_buffer(AlbersSP,2000)
+# plot(st_geometry(buffSP))
+# plot(st_geometry(deer.albers),add=T,col="red")
 ```
 
 12\. Code below will be for use with the spatstat package to convert segments of line layers (e.g., roads, rivers) to lines to enable distance to feature from deer locations. Most calculations with spatstat require 3 new classes so most code is created to achieve this goal:
@@ -119,28 +119,28 @@ plot(st_geometry(deer.albers),add=T,col="red")
 
 ```{r}
 #Replace AlbersSP with buffSP if using a subsample of deer
-bdy.owin <- as.owin(buffSP)
+bdy.owin <- as.owin(AlbersSP)
 is.owin(bdy.owin)
 #It is TRUE so now we can move forward with the analysis
 ```
 
-12\. Now clip the raster using the buffered bounding box (buffSP) created in step 5.
+13\. Now clip the raster using the buffered bounding box (buffSP) created in step 5.
 
 ```{r warning=FALSE,message=FALSE}
-cropSP <- st_buffer(AlbersSP,1000)
-bbclip <- crop(veg, cropSP) 
-cliproads <- st_intersection(roads, cropSP, byid=TRUE)
-cliprivers <- st_intersection(rivers, cropSP, byid=TRUE)
+#cropSP <- st_buffer(AlbersSP,1000)
+bbclip <- crop(veg, AlbersSP) 
+cliproads <- st_intersection(roads, AlbersSP, byid=TRUE)
+cliprivers <- st_intersection(rivers, AlbersSP, byid=TRUE)
 
-plot(st_geometry(buffSP))
+plot(st_geometry(AlbersSP))
 plot(bbclip,add=T)
-plot(st_geometry(cropSP),add=T)
+#plot(st_geometry(cropSP),add=T)
 plot(st_geometry(deer.albers),add=T,col="red")
 plot(st_geometry(cliproads),add=T)
 plot(st_geometry(cliprivers), col="blue",add=T)
 ```
 
-13\. We will start with the road layer by converting a single line to a set of segments packaged as a function.
+14\. We will start with the road layer by converting a single line to a set of segments packaged as a function.
 
 ```{r warning=FALSE,message=FALSE, eval=FALSE}
 segs <- st_segments(cliproads,units::set_units(50,m))
@@ -159,7 +159,7 @@ points(deer.albers)
 segs.psp[1:5]
 ```
 
-14\. We first need to handle the mule deer locations. We need to make mule deer xy coordinates a planar point pattern (i.e., ppp) for use in package spatstat.
+15\. We first need to handle the mule deer locations. We need to make mule deer xy coordinates a planar point pattern (i.e., ppp) for use in package spatstat.
 
 ```{r warning=FALSE,message=FALSE, eval=FALSE}
 newdeer <- data.frame(st_coordinates(deer.albers))
@@ -167,7 +167,7 @@ xy.ppp <- as.ppp(newdeer,W=bdy.owin)
 plot(xy.ppp)
 ```
 
-15\. Now we can determine the distance from mule deer locations (xy.ppp) to the nearest road
+16\. Now we can determine the distance from mule deer locations (xy.ppp) to the nearest road
 
 ```{r eval=FALSE}
 roaddist <- nncross(xy.ppp, segs.psp)$dist
@@ -178,7 +178,7 @@ plot(xy.ppp[1], add=TRUE, col="red")
 plot(segs.psp[v[1]], add=TRUE, lwd=8,col="blue")
 ```
 
-16\. Now we do the same to a river layer by converting a single line to a set of segments packaged as a function.
+17\. Now we do the same to a river layer by converting a single line to a set of segments packaged as a function.
 
 ```{r eval=FALSE}
 segs2 <- st_segments(cliprivers,units::set_units(50,m))
@@ -198,7 +198,7 @@ is.psp(segs2.psp)
 #All is TRUE so now we can move forward with the analysis
 ```
 
-17\. Now we can determine the distance from mule deer locations (xy.ppp) to the nearest river.
+18\. Now we can determine the distance from mule deer locations (xy.ppp) to the nearest river.
 
 ```{r eval=FALSE}
 rivdist <- nncross(xy.ppp, segs2.psp)$dist
@@ -212,7 +212,7 @@ plot(xy.ppp[10], add=TRUE, col="blue")
 plot(segs2.psp[riv[10]], add=TRUE, lwd=5, col="blue")
 ```
 
-18\. We can then summarize the distances in some meaningful way for analysis. Instead of representing distance to road as individual numerical values we can bin the distances in some categories we determine appropriate for our research objective.
+19\. We can then summarize the distances in some meaningful way for analysis. Instead of representing distance to road as individual numerical values we can bin the distances in some categories we determine appropriate for our research objective.
 
 ```{r eval=FALSE}
 br <- seq(0,1000,200)
@@ -228,7 +228,7 @@ Rivresults <- river.tbl/sum(river.tbl)
 Rivresults
 ```
 
-19\. Or we can place each distance into a category or Bin for each deer
+20\. Or we can place each distance into a category or Bin for each deer
 
 ```{r eval=FALSE}
 BinRoad <- bin(roaddist, nbins=5, method='content', labels=c('1','2','3','4','5'))

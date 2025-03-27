@@ -36,8 +36,8 @@ muleys <-read.csv("data/muleysexample.csv", header=T)
 #Remove outlier locations
 coords <- st_as_sf(muleys, coords = c("Long", "Lat"), crs = ll.crs)
 plot(st_geometry(coords),axes=T)
-deer.spdf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
-plot(st_geometry(deer.spdf),axes=T)
+deer.sf <- st_crop(coords, xmin=-107.0,xmax=-110.5,ymin=37.8,ymax=39.0)#Visually identified based on previous plot
+plot(st_geometry(deer.sf),axes=T)
 ```
 
 5.  Only use code in this section for example exercise so fewer locations are used.
@@ -46,7 +46,7 @@ plot(st_geometry(deer.spdf),axes=T)
 #deer.spdf <- deer.spdf[sample(nrow(deer.spdf),2000),]
 
 #Project deer.spdf to Albers as in previous exercise
-deer.albers <-st_transform(deer.spdf, crs=albers.crs)
+deer.albers <-st_transform(deer.sf, crs=albers.crs)
 plot(st_geometry(deer.albers),axes=T)
 
 #Need to grab the data for the cropped dataset for use later
@@ -93,7 +93,7 @@ AlbersSP <- st_as_sfc(my_bbox)
 7\. Now it is time to import some raster layers of the covariates we are interested in for our analysis. Start with raster of vegetation from the 2012 NRCS Crop data that is a nice dataset that is crop specific for each year. Crop data can be found at the NRCS webpage Cropland Data Layer that can be accessed for each county of each state.
 
 ```{r warning=FALSE, message=FALSE}
-crops <-rast("data/crop12clip.tif")
+#crops <-rast("data/crop12clip.tif")
 crops <- get_nass_cdl( template = AlbersSP, label = "cropland", year = 2012)
 # Reclassify crops raster from above into 9 groups
 # all values between 0 and 20 equal 1, etc.
