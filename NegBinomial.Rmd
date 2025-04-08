@@ -78,7 +78,7 @@ utm.spdf <- st_transform(muleysSPDF, data = muleys, crs = utm.crs)
 plot(st_geometry(utm.spdf), axes=T)#To visualize all locations
 
 ##change muleysSPDF from UTM to Albers
-muleys.spdf <-st_transform(muleysSPDF, crs=albers.crs)
+muleys.sf <-st_transform(muleysSPDF, crs=albers.crs)
 
 #Subset locations by year for season-specific RSFs if needed
 #winter2012 <- muleys
@@ -90,7 +90,7 @@ muleys.spdf <-st_transform(muleysSPDF, crs=albers.crs)
 
 ```{r}
 # Create vectors of the x and y points using boundary box created around deer locations
-bb <- st_bbox(muleys.spdf)
+bb <- st_bbox(muleys.sf)
      
 increment = 2512#628 m daily move distance times 4 
 minx=(min(bb$xmin)-(increment))
