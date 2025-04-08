@@ -120,7 +120,7 @@ g.grid <- st_as_sf(g, coords = c("x", "y"), crs = albers.crs)
 plot(st_geometry(g.grid)) 
 muleysbuffSP2=st_buffer(g.grid,628) %>% st_as_sfc()
 plot(st_geometry(muleysbuffSP2),add=T)
-plot(st_geometry(muleys.spdf),add=T,col="red")
+plot(st_geometry(muleys.sf),add=T,col="red")
 ```
 
 7\. We will start here by creating covariate layers specifically for the year of interest, in this case crop data from NRCS for 2011
@@ -252,8 +252,8 @@ colnames(habitat_units_buffwin12) <- c("crop","d_cover","d_roads","sunflower","w
 ```{r eval=FALSE}
 #locations = read.table("deer_locations.txt", sep='\t', header=T)
 #locations.spdf <- crop(muleys.spdf,muleysbuffSP)
-locations.xy <- as.data.frame(st_coordinates(muleys.spdf))
-locations.df = st_drop_geometry(muleys.spdf)
+locations.xy <- as.data.frame(st_coordinates(muleys.sf))
+locations.df = st_drop_geometry(muleys.sf)
 locations <- cbind(locations.df, locations.xy)
 #Clean up so fewer columns
 locations <- locations[c(-1,-3:-22)]
