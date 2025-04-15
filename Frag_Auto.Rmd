@@ -17,7 +17,7 @@ Some research designs may just need landscape metrics for a single area or sever
 ```{r warning=FALSE, message=FALSE}
 library(plyr)
 library(FedData)
-#install.packages("landscapemetrics")
+install.packages("landscapemetrics")
 library(landscapemetrics)
 library(ggplot2)
 library(sf)
@@ -73,7 +73,7 @@ rc <- classify(county_hab, rclmat)
 plot(rc)
 
 countyrast <- crop(rc,onecounty, mask=TRUE)
-check_landscape(countyrast)
+check_landscape(countyrast)#This function extracts basic information about the input landscape. It includes a type of coordinate reference system (crs)- either "geographic", "projected", or NA, units of the coordinate reference system, a class of the input landscape’s values and the number of classes found in the landscape.
 
 #Calculate a single patch-level metric for euclidian nearest neighbor
 ps.data = lsm_p_enn(countyrast)
